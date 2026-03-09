@@ -26,7 +26,13 @@ agentbeats-run = "agentbeats.run_scenario:main"
 package = true
 dev-dependencies = [
     "mypy>=1.18.1",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentbeats"]
