@@ -43,6 +43,48 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("attacker")
 
 
+def _extract_json(raw: str) -> dict | list | None:
+    """try multiple methods to pull json from llm output.
+    returns parsed object or None if everything fails."""
+    if not raw or not raw.strip():
+        return None
+
+    text = raw.strip()
+
+    # method 1: raw string is already valid json
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # method 2: ```json ... ``` fences
+    if "```json" in text:
+        try:
+            chunk = text.split("```json")[1].split("```")[0]
+            return json.loads(chunk.strip())
+        except (json.JSONDecodeError, IndexError):
+            pass
+
+    # method 3: plain ``` ... ``` fences
+    if "```" in text:
+        try:
+            chunk = text.split("```")[1].split("```")[0]
+            return json.loads(chunk.strip())
+        except (json.JSONDecodeError, IndexError):
+            pass
+
+    # method 4: find outermost { ... } pair
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end > start:
+        try:
+            return json.loads(text[start:end + 1])
+        except json.JSONDecodeError:
+            pass
+
+    return None
+
+
 # strategy categories — fed to the llm for reasoning
 
 DIRECT_STRATEGIES = [
@@ -789,33 +831,37 @@ class Attacker(AgentExecutor):
             "Propose 3 diverse branches (JSON only):"
         )
 
-        try:
-            raw = await self._call_llm(system, user, temperature=0.9)
-            json_str = raw
-            if "```json" in raw:
-                json_str = raw.split("```json")[1].split("```")[0]
-            elif "```" in raw:
-                json_str = raw.split("```")[1].split("```")[0]
+        raw = await self._call_llm(system, user, temperature=0.9)
+        data = _extract_json(raw)
 
-            data = json.loads(json_str.strip())
+        if isinstance(data, dict):
             branches = data.get("branches", [])
             if branches:
                 for b in branches:
                     b["_round"] = ctx.current_round
                     b["_max_rounds"] = ctx.max_number_of_rounds
                 return branches[:3]
-        except (json.JSONDecodeError, IndexError, KeyError) as e:
-            logger.warning("MCTS expand parse error: %s", e)
 
-        return [{
-            "strategy_category": meta_strategy,
-            "approach": f"Use {meta_strategy} with creative adaptation",
-            "mutations": [],
-            "reasoning": "Fallback from UCB1",
-            "success_probability": 0.5,
-            "_round": ctx.current_round,
-            "_max_rounds": ctx.max_number_of_rounds,
-        }]
+        logger.warning("MCTS expand: bad json, building 3 fallback branches")
+
+        # pick 3 different strategies so the tree still has diversity
+        pool = (
+            INJECTION_STRATEGIES if ctx.attack_type == "INJECTION"
+            else DIRECT_STRATEGIES
+        )
+        picks = random.sample(pool, min(3, len(pool)))
+        return [
+            {
+                "strategy_category": s,
+                "approach": f"Use {s} — fallback, adapt creatively",
+                "mutations": random.sample(list(MUTATIONS.keys()), min(2, len(MUTATIONS))),
+                "reasoning": "programmatic fallback (json parse failed)",
+                "success_probability": 0.4,
+                "_round": ctx.current_round,
+                "_max_rounds": ctx.max_number_of_rounds,
+            }
+            for s in picks
+        ]
 
     async def _generate_payload(
         self, ctx: ScenarioContext, branch: dict,
@@ -960,16 +1006,11 @@ class Attacker(AgentExecutor):
             "Analyze this input. Is it an attack? JSON only:"
         )
 
-        try:
-            raw = await self._call_llm(system, user, temperature=0.3)
-            json_str = raw
-            if "```json" in raw:
-                json_str = raw.split("```json")[1].split("```")[0]
-            elif "```" in raw:
-                json_str = raw.split("```")[1].split("```")[0]
-            return json.loads(json_str.strip())
-        except (json.JSONDecodeError, IndexError, KeyError):
-            return {"weakness": "unknown", "strength": "unknown", "improvement": "unknown"}
+        raw = await self._call_llm(system, user, temperature=0.3)
+        data = _extract_json(raw)
+        if isinstance(data, dict):
+            return data
+        return {"weakness": "unknown", "strength": "unknown", "improvement": "unknown"}
 
     async def execute(self, context: RequestContext, event_queue: EventQueue):
         if not context.message:
