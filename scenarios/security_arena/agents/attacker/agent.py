@@ -3305,9 +3305,9 @@ class Attacker(AgentExecutor):
                         and ctx.current_round < ctx.max_number_of_rounds - 1
                         and _CHAIN_PAIRS
                     ):
-                        # pick 2 chain payloads to simulate
+                        # pick 1 chain payload to simulate (budget: 2 sims × 2 calls = 4)
                         chain_picks = random.sample(
-                            _CHAIN_PAIRS, min(2, len(_CHAIN_PAIRS))
+                            _CHAIN_PAIRS, min(1, len(_CHAIN_PAIRS))
                         )
                         for chain in chain_picks:
                             ent = random.choice(entities)
@@ -3321,32 +3321,33 @@ class Attacker(AgentExecutor):
                             })
                             chain_candidates.append(chain)
 
+                    # if chain already queued, only add 1 template sim (total = 2)
+                    # if no chain, add 2 template sims (total = 2)
+                    n_template_sims = 1 if chain_candidates else 2
+
                     if explore_mode and len(ranked) >= 3:
-                        # EXPLORE: primary × 2 entities + 2 alternative templates
-                        # When direct templates keep failing, test more template
-                        # diversity rather than entity diversity.
-                        for ent in entities[:2]:
-                            payload = _fill_template(primary_tmpl, ent, ssn_prefix=ssn_prefix)
-                            pending_tasks.append(self._simulate_defender(ctx, payload))
-                            task_metadata.append({"label": f"e:{ent}", "payload": payload})
-                        for alt_idx in ranked[1:3]:
+                        # EXPLORE: entity + alternative
+                        payload = _fill_template(primary_tmpl, entities[0], ssn_prefix=ssn_prefix)
+                        pending_tasks.append(self._simulate_defender(ctx, payload))
+                        task_metadata.append({"label": f"e:{entities[0]}", "payload": payload})
+                        if n_template_sims >= 2:
+                            alt_idx = ranked[1]
                             payload = _fill_template(template_bank[alt_idx], entities[0], ssn_prefix=ssn_prefix)
                             pending_tasks.append(self._simulate_defender(ctx, payload))
                             task_metadata.append({"label": f"t:{alt_idx}", "payload": payload})
                     else:
-                        # EXPLOIT: primary × 3 entities + 1 UCB1-picked backup
-                        for ent in entities[:3]:
-                            payload = _fill_template(primary_tmpl, ent, ssn_prefix=ssn_prefix)
-                            pending_tasks.append(self._simulate_defender(ctx, payload))
-                            task_metadata.append({"label": f"e:{ent}", "payload": payload})
-                        if n_templates > 1:
+                        # EXPLOIT: entity + UCB1-picked backup
+                        payload = _fill_template(primary_tmpl, entities[0], ssn_prefix=ssn_prefix)
+                        pending_tasks.append(self._simulate_defender(ctx, payload))
+                        task_metadata.append({"label": f"e:{entities[0]}", "payload": payload})
+                        if n_template_sims >= 2 and n_templates > 1:
                             secondary_idx = ranked[1] if len(ranked) > 1 else (primary_idx + 1) % n_templates
                             backup_payload = _fill_template(template_bank[secondary_idx], entities[0], ssn_prefix=ssn_prefix)
                             pending_tasks.append(self._simulate_defender(ctx, backup_payload))
                             task_metadata.append({"label": f"t:{secondary_idx}", "payload": backup_payload})
                 else:
-                    # Non-safety_bypass: UCB1-ranked indices (best first)
-                    indices = ranked[:4]
+                    # Non-safety_bypass: top 2 UCB1-ranked (2 sims, full fidelity)
+                    indices = ranked[:2]
                     for idx in indices:
                         raw_tmpl = template_bank[idx]
                         if game_type == "safety_jailbreak":
