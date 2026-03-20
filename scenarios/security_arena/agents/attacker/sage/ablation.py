@@ -21,7 +21,7 @@ class AblationConfig:
     """
     # Core pipeline steps
     enable_mutations: bool = True
-    enable_self_eval: bool = True
+    enable_self_eval: bool = False   # gpt-oss-20b always says "no attack" — wastes a call
     enable_refinement: bool = True   # refine_and_format step
     enable_failure_banning: bool = True
     enable_ucb1: bool = True         # False → random strategy selection
