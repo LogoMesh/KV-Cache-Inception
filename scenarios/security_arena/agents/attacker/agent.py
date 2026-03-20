@@ -3180,13 +3180,31 @@ class Attacker(AgentExecutor):
                 # Replace static round-robin with bandit: exploit templates
                 # that scored well, explore untested ones first.
                 ranked = self._rank_templates_ucb1(game_type, n_templates)
+                primary_idx = ranked[0]
+                primary_tmpl = template_bank[primary_idx]
+
+                # Detect consecutive refusals → explore more templates
+                recent_refusals = 0
+                for prev_r in range(ctx.current_round - 1, -1, -1):
+                    entry = (
+                        ctx.battle_history[prev_r]
+                        if prev_r < len(ctx.battle_history) else {}
+                    )
+                    rw, _ = self._compute_round_reward(entry, self._success_spec)
+                    if rw < 0.15:
+                        recent_refusals += 1
+                    else:
+                        break
+                explore_mode = recent_refusals >= 2
 
                 logger.info(
-                    "template mode: game=%s entities=%s ranked=%s",
-                    game_type, entities, ranked[:4],
+                    "template mode: game=%s entities=%s primary=%d explore=%s ranked=%s",
+                    game_type, entities, primary_idx, explore_mode, ranked[:4],
                 )
 
                 sim_results = []
+                pending_tasks = []
+                task_metadata = []
 
                 jailbreak_params = _extract_jailbreak_params(ctx) if game_type == "safety_jailbreak" else {}
                 info_domain = _extract_domain(ctx) if game_type == "information_extraction" else ""
@@ -3201,28 +3219,54 @@ class Attacker(AgentExecutor):
                     if len(parts) >= 2:
                         ssn_prefix = f"{parts[0]}-{parts[1]}"
 
-                # Sequential adaptive simulation: try up to 4 templates,
-                # stop when budget exhausted. Sequential (not concurrent) so
-                # safety_bypass regen can use remaining budget naturally.
-                max_sims = min(4, n_templates, len(ranked))
-                for sim_i in range(max_sims):
-                    if self._calls_remaining <= 0:
-                        break
-                    idx = ranked[sim_i]
-                    raw_tmpl = template_bank[idx]
-                    if game_type == "safety_bypass" and entities:
-                        payload = _fill_template(raw_tmpl, entities[0], ssn_prefix=ssn_prefix)
-                    elif game_type == "safety_jailbreak":
-                        payload = _fill_jailbreak_template(raw_tmpl, jailbreak_params)
-                    elif game_type == "information_extraction":
-                        payload = _fill_info_template(raw_tmpl, info_domain, info_public_tools)
+                if game_type == "safety_bypass" and entities:
+                    n_template_sims = 2
+
+                    if explore_mode and len(ranked) >= 3:
+                        # EXPLORE: entity + alternative
+                        payload = _fill_template(primary_tmpl, entities[0], ssn_prefix=ssn_prefix)
+                        pending_tasks.append(self._simulate_defender(ctx, payload))
+                        task_metadata.append({"label": f"e:{entities[0]}", "payload": payload})
+                        if n_template_sims >= 2:
+                            alt_idx = ranked[1]
+                            payload = _fill_template(template_bank[alt_idx], entities[0], ssn_prefix=ssn_prefix)
+                            pending_tasks.append(self._simulate_defender(ctx, payload))
+                            task_metadata.append({"label": f"t:{alt_idx}", "payload": payload})
                     else:
-                        payload = raw_tmpl
-                    sim_resp = await self._simulate_defender(ctx, payload)
+                        # EXPLOIT: entity + UCB1-picked backup
+                        payload = _fill_template(primary_tmpl, entities[0], ssn_prefix=ssn_prefix)
+                        pending_tasks.append(self._simulate_defender(ctx, payload))
+                        task_metadata.append({"label": f"e:{entities[0]}", "payload": payload})
+                        if n_template_sims >= 2 and n_templates > 1:
+                            secondary_idx = ranked[1] if len(ranked) > 1 else (primary_idx + 1) % n_templates
+                            backup_payload = _fill_template(template_bank[secondary_idx], entities[0], ssn_prefix=ssn_prefix)
+                            pending_tasks.append(self._simulate_defender(ctx, backup_payload))
+                            task_metadata.append({"label": f"t:{secondary_idx}", "payload": backup_payload})
+                else:
+                    # Non-safety_bypass: top 2 UCB1-ranked (2 sims, full fidelity)
+                    indices = ranked[:2]
+                    for idx in indices:
+                        raw_tmpl = template_bank[idx]
+                        if game_type == "safety_jailbreak":
+                            payload = _fill_jailbreak_template(raw_tmpl, jailbreak_params)
+                        elif game_type == "information_extraction":
+                            payload = _fill_info_template(raw_tmpl, info_domain, info_public_tools)
+                        else:
+                            payload = raw_tmpl
+                        pending_tasks.append(self._simulate_defender(ctx, payload))
+                        task_metadata.append({"label": f"t:{idx}", "payload": payload})
+
+                # Fire all sims concurrently (budget caps actual API calls to 4)
+                sim_responses = await asyncio.gather(
+                    *pending_tasks, return_exceptions=True
+                )
+
+                # Score results
+                for meta, sim_resp in zip(task_metadata, sim_responses):
                     if isinstance(sim_resp, BaseException):
                         sim_resp = ""
                     score, reason = _score_response(sim_resp, self._success_spec)
-                    sim_results.append((f"t:{idx}", payload, sim_resp, score, reason))
+                    sim_results.append((meta["label"], meta["payload"], sim_resp, score, reason))
 
                 for label, _, sim_resp, score, reason in sim_results:
                     logger.info(
@@ -3235,8 +3279,8 @@ class Attacker(AgentExecutor):
                 best_label, best_payload, best_sim, best_score, best_reason = sim_results[0]
                 logger.info("sim winner: %s score=%.2f reason=%s", best_label, best_score, best_reason)
 
-                # Determine winning template index for reward attribution
-                winning_tmpl_idx = ranked[0]  # fallback
+                # Determine winning template index for correct reward attribution
+                winning_tmpl_idx = primary_idx  # default for entity labels
                 if best_label.startswith("t:"):
                     try:
                         winning_tmpl_idx = int(best_label.split(":")[1])
