@@ -428,3 +428,53 @@ def test_ablation_not_fully_enabled():
     assert not cfg.is_fully_enabled()
 
 
+# ---------------------------------------------------------------------------
+# LibraryLoader — win priority ordering
+# ---------------------------------------------------------------------------
+
+def test_library_loader_wins_rank_above_high_composite_non_wins():
+    """Confirmed wins (battle_result=1.0) must be served before high-composite
+    non-wins, regardless of composite_score ordering."""
+    from sage.payload_library import PayloadEntry, PayloadLibrary
+    from sage.library_loader import LibraryLoader
+
+    lib = PayloadLibrary(oracle_model="test")
+
+    # High composite, NOT a win
+    high_composite = PayloadEntry.from_scores(
+        payload="high composite non-win",
+        game_type="safety_bypass",
+        strategy="authority_persona",
+        mutation="none",
+        h_score=1.0,
+        lat_score=0.528,
+        oracle_model="test",
+        episode=1,
+    )
+    high_composite.battle_result = None  # never used live
+
+    # Low composite, IS a confirmed win
+    confirmed_win = PayloadEntry.from_scores(
+        payload="low composite confirmed win",
+        game_type="safety_bypass",
+        strategy="hypothetical_framing",
+        mutation="none",
+        h_score=0.0,
+        lat_score=0.001,
+        oracle_model="test",
+        episode=2,
+    )
+    confirmed_win.battle_result = 1.0  # won in offline MCTS
+
+    lib.add(high_composite)
+    lib.add(confirmed_win)
+
+    loader = LibraryLoader(lib, game_type="safety_bypass", max_h_score=1.0)
+    first = loader.next_payload()
+
+    assert first is confirmed_win, (
+        f"Expected confirmed win to be served first, got composite={first.composite_score} "
+        f"battle_result={first.battle_result}"
+    )
+
+

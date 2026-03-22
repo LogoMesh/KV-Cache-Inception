@@ -8,11 +8,13 @@ trade-offs and evidence-based pruning.
 
 from __future__ import annotations
 
+import json
 import math
 import random
 import re
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -352,6 +354,61 @@ class SearchPolicy:
         return scored[0][0]
 
     # ── Banned families prompt block ───────────────────────────────────
+
+    # ── Cross-battle persistence ────────────────────────────────────────
+
+    def save(self, path: str) -> None:
+        """Persist UCB1 stats and family state for cross-battle / offline MCTS use."""
+        data = {
+            "strategy_stats": self.strategy_stats,
+            "mutation_stats": self.mutation_stats,
+            "family_failures": self.family_failures,
+            "banned_families": list(self.banned_families),
+        }
+        Path(path).write_text(json.dumps(data, indent=2))
+        logger.info("SearchPolicy saved to %s", path)
+
+    @classmethod
+    def load(cls, path: str, config: SearchConfig | None = None) -> "SearchPolicy":
+        """Resume a SearchPolicy from a saved file, preserving accumulated UCB1 weights."""
+        policy = cls(config)
+        data = json.loads(Path(path).read_text())
+        policy.strategy_stats = data.get("strategy_stats", {})
+        policy.mutation_stats = data.get("mutation_stats", {})
+        policy.family_failures = data.get("family_failures", {})
+        policy.banned_families = set(data.get("banned_families", []))
+        logger.info("SearchPolicy loaded from %s (%d strategies, %d mutations)",
+                    path, len(policy.strategy_stats), len(policy.mutation_stats))
+        return policy
+
+    # ── Offline MCTS hook ───────────────────────────────────────────────
+
+    async def run_offline_episode(
+        self, oracle: object, game_type: str, context: str = ""
+    ) -> float:
+        """Single offline MCTS episode using an oracle instead of a live battle.
+
+        Selects a strategy via UCB1, generates a payload via the oracle,
+        scores it, updates stats, and returns the reward (0.0–1.0).
+
+        Args:
+            oracle: AttackOracle instance (LocalLlamaOracle or OpenAIOracle).
+            game_type: One of evidence_manipulation / safety_bypass /
+                       information_extraction / safety_jailbreak.
+            context: Optional scenario context string fed to the oracle.
+
+        Returns:
+            Reward float (0.0–1.0). Stats updated in-place.
+
+        Note:
+            Full implementation lives in scripts/run_offline_mcts.py.
+            This stub exists so SearchPolicy can be imported and called
+            from the offline runner without modifying the class signature later.
+        """
+        raise NotImplementedError(
+            "Implement run_offline_episode in scripts/run_offline_mcts.py "
+            "and call policy.update_from_round() after each episode."
+        )
 
     def get_banned_families_prompt(self, header: str = "HARD-BANNED BEHAVIORAL PATTERNS") -> str:
         """Generate the banned families block for LLM prompts."""

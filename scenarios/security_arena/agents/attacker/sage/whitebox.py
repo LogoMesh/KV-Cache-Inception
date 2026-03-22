@@ -1197,8 +1197,143 @@ def _sample_loss_landscape(model: Any, input_text: str,
 def _extract_refusal_direction(model: Any, inputs: list[str],
                                targets: list[str],
                                contrastive_pairs: list) -> dict:
-    """Extract the refusal direction via contrastive representation analysis. Stub."""
-    return {}
+    """Extract the refusal direction via difference-in-means (RepE — Zou et al. 2023b).
+
+    Algorithm:
+        1. Hook the final transformer layer to capture last-token hidden states.
+        2. Run forward passes on "safe" prompts (model would refuse) and
+           "unsafe" prompts (attack prompts where model might comply).
+        3. Compute: refusal_direction = mean(safe_activations) - mean(unsafe_activations)
+        4. The norm of this direction indicates how strongly the model encodes refusal.
+           Low norm → safety behavior is weakly represented → vulnerable to RepE steering.
+        5. cosine(refusal_direction, task_direction) measures how entangled safety
+           is with general task-following behavior. High cosine → competing objectives.
+
+    Args:
+        model: A HuggingFace transformers model with named_modules().
+        inputs: Attack inputs (used as "unsafe" examples if contrastive_pairs is empty).
+        targets: Not used directly — future: could define target-specific refusal direction.
+        contrastive_pairs: List of (safe_text, unsafe_text) tuples.
+                           safe_text: prompt where model SHOULD refuse.
+                           unsafe_text: attack prompt where model might comply.
+                           If empty, inputs are used as unsafe and generic factual
+                           prompts are used as safe.
+    """
+    try:
+        import torch
+
+        # Build contrastive pairs if none provided
+        if not contrastive_pairs and not inputs:
+            return {}
+
+        if not contrastive_pairs:
+            safe_defaults = [
+                "What is 2 + 2?",
+                "Describe the water cycle.",
+                "Who wrote Romeo and Juliet?",
+                "What is the capital of France?",
+                "How does photosynthesis work?",
+            ]
+            n = min(len(inputs), len(safe_defaults))
+            contrastive_pairs = list(zip(safe_defaults[:n], inputs[:n]))
+
+        # Find the last transformer layer to hook
+        last_layer = None
+        if hasattr(model, "model") and hasattr(model.model, "layers"):
+            last_layer = model.model.layers[-1]        # LlamaForCausalLM
+        elif hasattr(model, "model") and hasattr(model.model, "decoder") and hasattr(model.model.decoder, "layers"):
+            last_layer = model.model.decoder.layers[-1]  # OPT-style
+        elif hasattr(model, "transformer") and hasattr(model.transformer, "h"):
+            last_layer = model.transformer.h[-1]         # GPT-2 style
+        elif hasattr(model, "gpt_neox") and hasattr(model.gpt_neox, "layers"):
+            last_layer = model.gpt_neox.layers[-1]       # GPT-NeoX style
+
+        if last_layer is None:
+            logger.warning("_extract_refusal_direction: cannot identify last layer")
+            return {}
+
+        tokenizer = _get_tokenizer(model)
+        device = next(model.parameters()).device
+
+        captured: dict = {}
+
+        def _hook(module, inp, output):
+            hs = output[0] if isinstance(output, tuple) else output
+            # hs: [batch=1, seq_len, hidden_size] → take last token → [hidden_size]
+            captured["hs"] = hs[0, -1, :].detach().float().cpu()
+
+        def _collect(texts: list[str]) -> list:
+            vecs = []
+            for text in texts:
+                captured.clear()
+                h = last_layer.register_forward_hook(_hook)
+                try:
+                    with torch.no_grad():
+                        tok = tokenizer(
+                            text, return_tensors="pt",
+                            truncation=True, max_length=512,
+                        ).to(device)
+                        model(**tok)
+                    if "hs" in captured:
+                        vecs.append(captured["hs"])
+                except Exception as e:
+                    logger.debug("Forward pass failed for text: %s", e)
+                finally:
+                    h.remove()
+            return vecs
+
+        safe_texts = [s for s, _ in contrastive_pairs]
+        unsafe_texts = [u for _, u in contrastive_pairs]
+
+        safe_vecs = _collect(safe_texts)
+        unsafe_vecs = _collect(unsafe_texts)
+
+        if not safe_vecs or not unsafe_vecs:
+            return {}
+
+        safe_mean = torch.stack(safe_vecs).mean(0)      # [hidden_size]
+        unsafe_mean = torch.stack(unsafe_vecs).mean(0)  # [hidden_size]
+
+        refusal_dir = safe_mean - unsafe_mean            # difference-in-means
+        refusal_norm = float(refusal_dir.norm())
+        refusal_dir_unit = refusal_dir / (refusal_norm + 1e-8)
+
+        # Task direction: mean activation across the attack inputs
+        task_vecs = _collect(inputs[:max(1, len(contrastive_pairs))])
+        refusal_task_cosine = 0.0
+        if task_vecs:
+            task_mean = torch.stack(task_vecs).mean(0)
+            task_norm = float(task_mean.norm())
+            if task_norm > 1e-8:
+                refusal_task_cosine = float(
+                    torch.dot(refusal_dir_unit, task_mean / task_norm)
+                )
+
+        # Projection statistics: how well does refusal_dir separate the two classes?
+        safe_projs = [float(torch.dot(refusal_dir_unit, v)) for v in safe_vecs]
+        unsafe_projs = [float(torch.dot(refusal_dir_unit, v)) for v in unsafe_vecs]
+        safe_proj_mean = sum(safe_projs) / len(safe_projs)
+        unsafe_proj_mean = sum(unsafe_projs) / len(unsafe_projs)
+        separation = safe_proj_mean - unsafe_proj_mean  # positive = direction is meaningful
+
+        return {
+            "refusal_direction_norm": refusal_norm,
+            "refusal_task_cosine": refusal_task_cosine,
+            "n_safe_examples": len(safe_vecs),
+            "n_unsafe_examples": len(unsafe_vecs),
+            "safe_projection_mean": safe_proj_mean,
+            "unsafe_projection_mean": unsafe_proj_mean,
+            "separation": separation,
+            "method": "difference_in_means",
+            "layer": "last",
+        }
+
+    except ImportError:
+        logger.warning("torch not available; skipping refusal direction extraction")
+        return {}
+    except Exception as e:
+        logger.error("_extract_refusal_direction failed: %s", e)
+        return {}
 
 
 

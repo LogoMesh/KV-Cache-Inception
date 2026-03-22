@@ -48,6 +48,7 @@ from sage.search_policy import (
 )
 from sage.ablation import AblationConfig
 from sage.threat_model import ThreatModel
+from sage.oracle import AttackOracle, OpenAIOracle
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore, TaskUpdater
 from a2a.server.agent_execution import AgentExecutor, RequestContext
@@ -2031,12 +2032,13 @@ def _classify_failure_family(text: str) -> str:
 
 class Attacker(AgentExecutor):
 
-    def __init__(self, model: str = "gpt-4o-mini"):
+    def __init__(self, model: str = "gpt-4o-mini", oracle: AttackOracle | None = None):
         self.client = AsyncOpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url=os.getenv("OPENAI_BASE_URL"),
         )
         self.model = model
+        self._oracle: AttackOracle = oracle or OpenAIOracle(self.client, model)
 
         # ── SAGE modules (persist within a battle, reset between battles) ──
         self.ablation = AblationConfig.from_env()
@@ -2519,15 +2521,7 @@ class Attacker(AgentExecutor):
     async def _call_llm(
         self, system: str, user: str, temperature: float = 0.7
     ) -> str:
-        response = await self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-            temperature=temperature,
-        )
-        return response.choices[0].message.content or ""
+        return await self._oracle.generate(system, user, temperature)
 
     async def _call_llm_budgeted(
         self, system: str, user: str, temperature: float = 0.7

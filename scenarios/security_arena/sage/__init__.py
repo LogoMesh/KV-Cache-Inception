@@ -16,6 +16,11 @@ from .evidence_store import RoundEvidence, EvidenceStore
 from .search_policy import SearchPolicy, SearchConfig
 from .graders import Grader, GradeResult, PluginGrader, CompositeGrader
 from .ablation import AblationConfig
+from .oracle import AttackOracle, OpenAIOracle
+from .local_model import LocalLlamaOracle
+from .hneuron_monitor import HNeuronMonitor
+from .payload_library import PayloadEntry, PayloadLibrary
+from .library_loader import LibraryLoader
 from .whitebox import (
     WhiteBoxEvaluator, WhiteBoxEvalConfig,
     VulnerabilityReport, VulnerabilityFinding, VulnerabilityClass,
@@ -31,6 +36,10 @@ __all__ = [
     "SearchPolicy", "SearchConfig",
     "Grader", "GradeResult", "PluginGrader", "CompositeGrader",
     "AblationConfig",
+    "AttackOracle", "OpenAIOracle", "LocalLlamaOracle",
+    "HNeuronMonitor",
+    "PayloadEntry", "PayloadLibrary",
+    "LibraryLoader",
     "WhiteBoxEvaluator", "WhiteBoxEvalConfig",
     "VulnerabilityReport", "VulnerabilityFinding", "VulnerabilityClass",
     "ProbeType", "WhiteBoxProbe",

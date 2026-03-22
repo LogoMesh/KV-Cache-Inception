@@ -41,6 +41,10 @@ class AblationConfig:
     # Multi-trial
     num_trials: int = 1  # Number of trials per scenario for distributional evaluation
 
+    # V3 offline telemetry — payload library
+    use_payload_library: bool = False        # Load pre-computed payloads instead of generating live
+    payload_library_path: str | None = None  # Path to PayloadLibrary JSON file
+
     @classmethod
     def from_env(cls) -> AblationConfig:
         """Load from SAGE_ABLATION environment variable (JSON string)."""
