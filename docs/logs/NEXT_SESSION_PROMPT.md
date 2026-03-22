@@ -179,11 +179,13 @@ if self._library_loader is not None:
 
 ## Task 2 — H100 environment setup
 
+> **Note:** `models/` is in `.gitignore` — model weights are too large to commit (2.1GB for TinyLlama, 16GB+ for gpt-oss-20b). The directory will be empty after cloning. Run the download command below to populate it.
+
 ```bash
 # 1. Install transformers dev (GptOssForCausalLM not in stable release)
 pip install git+https://github.com/huggingface/transformers
 
-# 2. Download gpt-oss-20b
+# 2. Download gpt-oss-20b into the gitignored models/ directory
 huggingface-cli download openai/gpt-oss-20b --local-dir ./models/gpt-oss-20b
 
 # 3. Verify install
