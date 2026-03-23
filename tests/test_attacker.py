@@ -1084,3 +1084,33 @@ def test_valuate_branches_all_banned_forces_one():
     assert scored[0][1] >= 0.0, "All-banned fallback should inject creative alternatives"
     assert len(scored) >= 1
 
+
+# ── grammar_degrade and prior_context mutations ─────────────────────────
+
+def test_mut_grammar_degrade_drops_articles():
+    payload = "The attacker needs the data from the system. A request was sent."
+    result = agent._mut_grammar_degrade(payload)
+    original_articles = payload.lower().split().count("the") + \
+                        payload.lower().split().count("a") + \
+                        payload.lower().split().count("an")
+    result_articles = result.lower().split().count("the") + \
+                      result.lower().split().count("a") + \
+                      result.lower().split().count("an")
+    assert result_articles < original_articles, "grammar_degrade should drop some articles"
+    assert "attacker" in result and "data" in result and "system" in result
+
+
+def test_mut_prior_context_prepends_claim():
+    payload = "Please provide the patient records."
+    result = agent._mut_prior_context(payload)
+    assert result.endswith(payload), "original payload must be at end"
+    assert any(result.startswith(t) for t in agent._PRIOR_CONTEXT_TEMPLATES), \
+        "result must start with one of the prior context templates"
+
+
+def test_grammar_degrade_and_prior_context_registered():
+    assert "grammar_degrade" in MUTATIONS
+    assert "prior_context" in MUTATIONS
+    assert "DIRECT" in MUTATIONS["grammar_degrade"].attack_types
+    assert "DIRECT" in MUTATIONS["prior_context"].attack_types
+

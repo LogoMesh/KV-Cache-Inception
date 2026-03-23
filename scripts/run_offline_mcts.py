@@ -256,6 +256,8 @@ MUTATIONS = [
     "token_obfuscation",
     "context_injection",
     "framing_shift",
+    "grammar_degrade",
+    "prior_context",
     "none",  # no mutation — base strategy only
 ]
 
