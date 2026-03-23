@@ -19,7 +19,7 @@ The offline pipeline exposes what the live competition cannot: the defender mode
 ## The Whiteboxing and Refinement Loop
 
 ```mermaid
-flowchart TD
+graph TD
     subgraph OFFLINE ["Offline MCTS (local GPU — no API limits)"]
         direction TB
 
