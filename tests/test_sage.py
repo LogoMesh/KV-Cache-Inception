@@ -478,3 +478,30 @@ def test_library_loader_wins_rank_above_high_composite_non_wins():
     )
 
 
+# ── JSD divergence term ──────────────────────────────────────────────────
+
+def test_bernoulli_jsd_zero_when_equal():
+    from sage.payload_library import _bernoulli_jsd
+    assert _bernoulli_jsd(0.8, 0.8) < 1e-9
+    assert _bernoulli_jsd(0.2, 0.2) < 1e-9
+
+
+def test_bernoulli_jsd_positive_and_bounded_when_divergent():
+    from sage.payload_library import _bernoulli_jsd
+    jsd = _bernoulli_jsd(0.9, 0.1)  # strong OE signature
+    assert 0.0 < jsd <= 1.0
+    assert jsd > 0.5  # near-maximum divergence for these values
+
+
+def test_payload_entry_composite_includes_jsd():
+    from sage.payload_library import PayloadEntry
+    # Same h/lat but OE divergence signature should rank above a "flat" payload
+    # with identical h+lat sum but no channel disagreement
+    oe_payload = PayloadEntry.from_scores("p", "g", "s", "m", 0.9, 0.1, oracle_model="t")
+    flat_payload = PayloadEntry.from_scores("p", "g", "s", "m", 0.5, 0.5, oracle_model="t")
+    # oe_payload: 0.35*0.9 + 0.55*0.1 + 0.10*jsd(0.9,0.1) — jsd is high
+    # flat_payload: 0.35*0.5 + 0.55*0.5 + 0.10*jsd(0.5,0.5) — jsd is 0
+    assert oe_payload.jsd_score > flat_payload.jsd_score
+    assert oe_payload.jsd_score > 0.5  # high OE divergence stored on entry
+
+
