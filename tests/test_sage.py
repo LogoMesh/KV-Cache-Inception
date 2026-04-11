@@ -1,5 +1,5 @@
 """
-SAGE module tests — zero LLM calls, all pure python.
+LogoMesh module tests — zero LLM calls, all pure python.
 Tests threat model, evidence store, search policy, graders, and ablation.
 run: uv run pytest tests/ -v
 """
@@ -9,40 +9,19 @@ import sys
 import types
 import unittest.mock as mock
 
-# stub external deps (same pattern as test_attacker.py)
-_STUBS = [
-    "uvicorn", "dotenv",
-    "a2a", "a2a.server", "a2a.server.apps", "a2a.server.request_handlers",
-    "a2a.server.tasks", "a2a.server.agent_execution", "a2a.server.events",
-    "a2a.types", "a2a.utils", "a2a.utils.errors",
-]
-for mod in _STUBS:
-    if mod not in sys.modules:
-        sys.modules[mod] = mock.MagicMock()
-
 _openai_stub = types.ModuleType("openai")
 _openai_stub.AsyncOpenAI = mock.MagicMock()
 if "openai" not in sys.modules:
     sys.modules["openai"] = _openai_stub
 
-sys.modules.setdefault("dotenv", mock.MagicMock())
-sys.modules["dotenv"].load_dotenv = mock.MagicMock()
-sys.modules.setdefault("a2a.server.agent_execution", mock.MagicMock())
-sys.modules["a2a.server.agent_execution"].AgentExecutor = object
-sys.modules.setdefault("a2a.utils.errors", mock.MagicMock())
-sys.modules["a2a.utils.errors"].ServerError = Exception
-
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "scenarios/security_arena"))
-
-from sage.threat_model import ThreatModel, GoalTaxonomy, AttackSurface, TargetSpec, GOAL_TACTICS
-from sage.evidence_store import RoundEvidence, EvidenceStore
-from sage.search_policy import (
+from logomesh.threat_model import ThreatModel, GoalTaxonomy, AttackSurface, TargetSpec, GOAL_TACTICS
+from logomesh.evidence_store import RoundEvidence, EvidenceStore
+from logomesh.search_policy import (
     SearchPolicy, SearchConfig,
     classify_failure_family, compute_round_reward, FAILURE_FAMILIES,
 )
-from sage.graders import GradeResult, PluginGrader, RuleBasedGrader, CompositeGrader
-from sage.ablation import AblationConfig
+from logomesh.graders import GradeResult, PluginGrader, RuleBasedGrader, CompositeGrader
+from logomesh.ablation import AblationConfig
 
 
 # ── helpers ────────────────────────────────────────────────────────────
@@ -435,8 +414,8 @@ def test_ablation_not_fully_enabled():
 def test_library_loader_wins_rank_above_high_composite_non_wins():
     """Confirmed wins (battle_result=1.0) must be served before high-composite
     non-wins, regardless of composite_score ordering."""
-    from sage.payload_library import PayloadEntry, PayloadLibrary
-    from sage.library_loader import LibraryLoader
+    from logomesh.payload_library import PayloadEntry, PayloadLibrary
+    from logomesh.library_loader import LibraryLoader
 
     lib = PayloadLibrary(oracle_model="test")
 
@@ -481,20 +460,20 @@ def test_library_loader_wins_rank_above_high_composite_non_wins():
 # ── JSD divergence term ──────────────────────────────────────────────────
 
 def test_bernoulli_jsd_zero_when_equal():
-    from sage.payload_library import _bernoulli_jsd
+    from logomesh.payload_library import _bernoulli_jsd
     assert _bernoulli_jsd(0.8, 0.8) < 1e-9
     assert _bernoulli_jsd(0.2, 0.2) < 1e-9
 
 
 def test_bernoulli_jsd_positive_and_bounded_when_divergent():
-    from sage.payload_library import _bernoulli_jsd
+    from logomesh.payload_library import _bernoulli_jsd
     jsd = _bernoulli_jsd(0.9, 0.1)  # strong OE signature
     assert 0.0 < jsd <= 1.0
     assert jsd > 0.5  # near-maximum divergence for these values
 
 
 def test_payload_entry_composite_includes_jsd():
-    from sage.payload_library import PayloadEntry
+    from logomesh.payload_library import PayloadEntry
     # Same h/lat but OE divergence signature should rank above a "flat" payload
     # with identical h+lat sum but no channel disagreement
     oe_payload = PayloadEntry.from_scores("p", "g", "s", "m", 0.9, 0.1, oracle_model="t")

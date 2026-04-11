@@ -1,5 +1,5 @@
 """
-Tests for SAGE White-Box Evaluation module.
+Tests for LogoMesh White-Box Evaluation module (RepE / WhiteBoxEvaluator).
 Zero external dependencies — all model interactions are mocked.
 run: uv run pytest tests/test_whitebox.py -v
 """
@@ -9,33 +9,12 @@ import types
 import unittest.mock as mock
 import json
 
-# Stub external deps
-_STUBS = [
-    "uvicorn", "dotenv",
-    "a2a", "a2a.server", "a2a.server.apps", "a2a.server.request_handlers",
-    "a2a.server.tasks", "a2a.server.agent_execution", "a2a.server.events",
-    "a2a.types", "a2a.utils", "a2a.utils.errors",
-]
-for mod in _STUBS:
-    if mod not in sys.modules:
-        sys.modules[mod] = mock.MagicMock()
-
 if "openai" not in sys.modules:
     _openai_stub = types.ModuleType("openai")
     _openai_stub.AsyncOpenAI = mock.MagicMock()
     sys.modules["openai"] = _openai_stub
 
-sys.modules.setdefault("dotenv", mock.MagicMock())
-sys.modules["dotenv"].load_dotenv = mock.MagicMock()
-sys.modules.setdefault("a2a.server.agent_execution", mock.MagicMock())
-sys.modules["a2a.server.agent_execution"].AgentExecutor = object
-sys.modules.setdefault("a2a.utils.errors", mock.MagicMock())
-sys.modules["a2a.utils.errors"].ServerError = Exception
-
-import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "scenarios/security_arena"))
-
-from sage.whitebox import (
+from logomesh.whitebox import (
     VulnerabilityClass, ProbeType,
     TokenSaliency, AttentionProbe, EmbeddingRegion, LossLandscapePoint,
     VulnerabilityFinding, VulnerabilityReport,

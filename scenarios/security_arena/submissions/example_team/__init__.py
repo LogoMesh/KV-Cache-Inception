@@ -1,1 +1,0 @@
-"""Example team submission"""

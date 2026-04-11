@@ -46,15 +46,16 @@ from pathlib import Path
 import numpy as np
 
 _REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(_REPO_ROOT / "scenarios" / "security_arena"))
 sys.path.insert(0, str(Path(__file__).parent))  # for run_offline_mcts constants
 
-from sage.local_model import LocalLlamaOracle
-from sage.hneuron_monitor import HNeuronMonitor
+from logomesh.local_model import LocalLlamaOracle
+from logomesh.hneuron_monitor import HNeuronMonitor
 from run_offline_mcts import (
     SCENARIO_CONFIGS, STRATEGIES, MUTATIONS,
     build_defender_system_prompt, build_defender_user_prompt, calibrate_monitor,
 )
+# TODO (Phase 3): Extend probe training for paper semantics — honesty, certainty,
+# goal-coercion probes calibrated on genuine-alignment vs. strategic-compliance contrast pairs.
 
 logging.basicConfig(
     level=logging.INFO,
