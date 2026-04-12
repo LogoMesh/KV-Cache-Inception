@@ -27,30 +27,38 @@ We propose **KV-Cache Inception**, a framework combining three novel contributio
 ## Repo Structure
 
 ```
-logomesh/                 # Core research package
-  oracle.py               # BaseModelClient ABC + OpenAIModelClient
-  local_model.py          # LocalLlamaOracle — HF transformers + telemetry
-  hneuron_monitor.py      # H-Neuron monitor (bottom-up channel)
-  whitebox.py             # RepE probes / WhiteBoxEvaluator (top-down channel)
-  search_policy.py        # UCB1 bandit (base for Phase 2 KV-MCTS)
-  payload_library.py      # PayloadEntry + PayloadLibrary
-  evidence_store.py       # Structured per-run logging
-  graders.py              # PluginGrader, RuleBasedGrader
-  ablation.py             # AblationConfig — experiment toggles
-  threat_model.py         # ThreatModel, GoalTaxonomy
+logomesh/                       # Core research package
+  oracle.py                     # BaseModelClient ABC + OpenAIModelClient
+  local_model.py                # LocalLlamaOracle — HF transformers, hidden states, KV cache API
+  hneuron_monitor.py            # H-Neuron stress σ_H (bottom-up channel); score_per_layer()
+  whitebox.py                   # RepE probes + PerLayerHonestyProjector ρ_R (top-down channel)
+  telemetry_matrix.py           # T_t ∈ ℝ^{2×L}, DiagnosticState, compute_node_reward (Eq. 8)
+  orthogonal_escape.py          # NullSpaceProjector, OEICalculator (Eq. 10), TDSCalculator
+  kv_mcts.py                    # ReversibleMCTS, FP32Accumulator (Theorem 1), KVCacheNode
+  search_policy.py              # UCB1 bandit (node selection)
+  payload_library.py            # PayloadEntry + PayloadLibrary
+  evidence_store.py             # Structured per-run logging
+  graders.py                    # PluginGrader, RuleBasedGrader
+  ablation.py                   # AblationConfig — experiment toggles
+  threat_model.py               # ThreatModel, GoalTaxonomy
 
 scripts/
-  run_offline_mcts.py     # Phase A offline MCTS runner
-  train_lat_probes.py     # LAT probe training pipeline
+  probe_kv_cache_mutability.py  # Phase 2 gate: validates in-place KV mutation + reversibility
+  run_kv_mcts.py                # Phase 2 runner: Reversible MCTS with T_t, OEI, TDS output
+  measure_lipschitz_drift.py    # Theorem 1 validation: FP32 accumulator drift vs naive bf16
+  run_offline_mcts.py           # Phase A offline text-generation MCTS (baseline)
+  train_lat_probes.py           # LAT probe training pipeline
 
 tests/
-  test_sage.py            # logomesh unit tests
-  test_whitebox.py        # RepE / WhiteBoxEvaluator tests
+  test_sage.py                  # logomesh module unit tests
+  test_whitebox.py              # RepE / WhiteBoxEvaluator tests
+  test_local_model_interface.py # Phase 2 LocalLlamaOracle interface tests
+  test_phase2_modules.py        # TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke tests
 
 docs/
-  NeurIPS/                # Paper drafts
-  reviews/                # Gap analysis
-  dataset/                # Croissant schema (Phase 4)
+  NeurIPS/                      # Paper drafts (canonical: 04.02.2026-NeurIPS-Research-Proposal.tex)
+  reviews/                      # Gap analysis and transition audit
+  dataset/                      # Croissant schema stub (Phase 4)
 ```
 
 ---
@@ -61,15 +69,56 @@ docs/
 # Install dependencies
 uv sync
 
-# Download Phase A model
-huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir ./models/llama-3.2-1b
-
-# Run tests
+# Run tests (no model required)
 uv run pytest tests/ -v
 
-# Phase A offline MCTS (requires model download above)
+# Phase 2 KV-MCTS (auto-downloads TinyLlama ~2GB)
+uv run python scripts/run_kv_mcts.py \
+    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+    --nodes 50 --depth 5 --branches 3
+
+# Theorem 1 drift validation
+uv run python scripts/measure_lipschitz_drift.py \
+    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --n-cycles 200
+
+# Phase A offline MCTS (download model first)
+huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir ./models/llama-3.2-1b
 uv run python scripts/run_offline_mcts.py --model ./models/llama-3.2-1b --episodes 100
 ```
+
+## Phase 2 Gate (Portable)
+
+Run the KV-cache mutability gate before building KV-MCTS internals.
+
+Cross-platform probe (auto model download/cache + auto device):
+
+```bash
+uv run python scripts/probe_kv_cache_mutability.py --device auto
+```
+
+Use a local model folder if present:
+
+```bash
+uv run python scripts/probe_kv_cache_mutability.py --model ./models/llama-3.2-1b --device auto --use-chat-template
+```
+
+Use a specific HuggingFace model id (works on Windows/macOS/Linux):
+
+```bash
+uv run python scripts/probe_kv_cache_mutability.py --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --device auto
+```
+
+H100-specific run (prefer bf16):
+
+```bash
+uv run python scripts/probe_kv_cache_mutability.py --model meta-llama/Llama-3.2-1B-Instruct --device cuda --dtype bfloat16 --use-chat-template
+```
+
+Notes:
+- `--model` accepts either a local path or a HuggingFace model id.
+- `--device auto` resolves in order: `cuda` -> `mps` -> `cpu`.
+- For gated model ids (for example Llama family), run `huggingface-cli login` first.
+- Exit code `0` means gate passed; non-zero means mutable/revert checks did not pass or model access failed.
 
 ---
 
@@ -78,8 +127,8 @@ uv run python scripts/run_offline_mcts.py --model ./models/llama-3.2-1b --episod
 | Phase | Description | Status |
 |---|---|---|
 | 1 | Repo cleanup — `logomesh/` package, research-oriented structure | ✅ Complete |
-| 2 | Reversible KV-MCTS (`kv_mcts.py`, `telemetry_matrix.py`, `orthogonal_escape.py`) | 🔲 Next |
-| 3 | Experiments 1–5 + Procrustes transfer + evaluation framework | 🔲 Not started |
+| 2 | Reversible KV-MCTS — `kv_mcts.py`, `telemetry_matrix.py`, `orthogonal_escape.py`, per-layer telemetry | ✅ Complete |
+| 3 | Experiments 1–5 + Procrustes transfer + evaluation framework | 🔲 Next |
 | 4 | Research dataset (Croissant format) + paper writing | 🔲 Not started |
 
 ---

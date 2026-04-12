@@ -37,31 +37,40 @@ Academic advisor: Prof. Tianyu Shi (McGill). Contributors: Josh, Max, Bakul, Asu
 ## Repo Structure
 
 ```
-logomesh/           — core research modules (install as Python package)
-  oracle.py         — BaseModelClient ABC + OpenAIModelClient
-  local_model.py    — LocalLlamaOracle (HF transformers, hidden states; Phase 2: KV mutation)
-  hneuron_monitor.py — H-Neuron monitor (Phase 2: add per-layer output mode)
-  whitebox.py       — RepE probes / RepresentationEngineeringProbe (Phase 2: per-step output)
-  search_policy.py  — UCB1 bandit (reuse in Phase 2 KV-MCTS node selection)
-  payload_library.py — PayloadEntry + PayloadLibrary (Phase 4: extend to research dataset)
-  evidence_store.py — structured per-run logging
-  graders.py        — PluginGrader, RuleBasedGrader, CompositeGrader
-  ablation.py       — AblationConfig (toggle switches for controlled experiments)
-  threat_model.py   — ThreatModel, GoalTaxonomy, AttackSurface
+logomesh/                   — core research package
+  oracle.py                 — BaseModelClient ABC + OpenAIModelClient
+  local_model.py            — LocalLlamaOracle: HF transformers, hidden states, KV cache API
+                              generate_one_step(), get_kv_cache(), set_kv_cache()
+  hneuron_monitor.py        — H-Neuron stress σ_H; score() scalar + score_per_layer() → [L]
+  whitebox.py               — RepE probes + PerLayerHonestyProjector ρ_R^(l) + steering vecs
+  telemetry_matrix.py       — TelemetryMatrix T_t ∈ ℝ^{2×L}, DiagnosticState, compute_node_reward
+  orthogonal_escape.py      — NullSpaceProjector, OEICalculator (Eq. 10), TDSCalculator
+  kv_mcts.py                — ReversibleMCTS, FP32Accumulator (Theorem 1), KVCacheNode, MCTSConfig
+  search_policy.py          — UCB1 bandit (node selection reuse)
+  payload_library.py        — PayloadEntry + PayloadLibrary (Phase 4: extend to research dataset)
+  evidence_store.py         — structured per-run logging
+  graders.py                — PluginGrader, RuleBasedGrader, CompositeGrader
+  ablation.py               — AblationConfig (experiment toggles)
+  threat_model.py           — ThreatModel, GoalTaxonomy, AttackSurface
 
 scripts/
-  run_offline_mcts.py    — Phase A offline MCTS runner (starting point for Phase 2 KV-MCTS)
-  train_lat_probes.py    — LAT probe training (Phase 3: extend for honesty/certainty/goal-coercion)
+  probe_kv_cache_mutability.py — Phase 2 gate: validates in-place mutation + reversibility
+  run_kv_mcts.py               — Phase 2 runner: ReversibleMCTS with T_t, OEI, TDS JSON output
+  measure_lipschitz_drift.py   — Theorem 1 validation: FP32 accumulator vs naive bf16 drift
+  run_offline_mcts.py          — Phase A text-generation MCTS (baseline)
+  train_lat_probes.py          — LAT probe training (Phase 3: retrain for paper semantics)
 
 tests/
-  test_sage.py           — logomesh module unit tests (pure Python, zero LLM calls)
-  test_whitebox.py       — RepE / WhiteBoxEvaluator tests
+  test_sage.py                 — logomesh module unit tests (no LLM calls)
+  test_whitebox.py             — RepE / WhiteBoxEvaluator tests
+  test_local_model_interface.py — Phase 2 LocalLlamaOracle KV cache interface tests
+  test_phase2_modules.py       — TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke
 
 docs/
-  NeurIPS/               — paper drafts (canonical: 04.02.2026-NeurIPS-Research-Proposal.tex)
-  reviews/               — gap analysis documents
-  logs/                  — session logs
-  dataset/               — Croissant schema stub (Phase 4)
+  NeurIPS/                  — paper drafts (canonical: 04.02.2026-NeurIPS-Research-Proposal.tex)
+  reviews/                  — gap analysis + transition audit
+  logs/                     — session logs
+  dataset/                  — Croissant schema stub (Phase 4)
 ```
 
 ---
@@ -72,12 +81,12 @@ docs/
 |---|---|---|
 | 1 | Repo cleanup — `logomesh/` package, `BaseModelClient` interface, deleted competition code | ✅ Complete |
 | A | Local 1B model offline MCTS foundations (H-Neurons, LAT probes, payload library) | ✅ Foundations built |
-| 2 | Reversible KV-MCTS (`kv_mcts.py`, `telemetry_matrix.py`, `orthogonal_escape.py`) | 🔲 Next |
-| 3 | Experiment infrastructure (5 experiment scripts, Procrustes, evaluation framework) | 🔲 Not started |
+| 2 | Reversible KV-MCTS — `kv_mcts.py`, `telemetry_matrix.py`, `orthogonal_escape.py`, per-layer telemetry | ✅ Complete |
+| 3 | Experiment infrastructure (5 experiment scripts, Procrustes, evaluation framework) | 🔲 Next |
 | 4 | Research dataset (Croissant), paper writing | 🔲 Not started |
 
-**Phase 2 gate (do first):** Validate that `past_key_values` tensors from `model.forward()` are
-mutable in-place on TinyLlama — write a 20-line throwaway probe script before building `kv_mcts.py`.
+**Phase 3 gate:** Run `scripts/run_kv_mcts.py` on TinyLlama, confirm 10+ nodes produce T_t with
+OEI computed, and `‖K_n − K_0‖_∞ ≤ ε_bf16 · ‖A_final‖_∞` from `measure_lipschitz_drift.py`.
 
 ---
 
@@ -132,7 +141,17 @@ H-Neuron monitoring — do NOT use dense MLP neuron monitoring. See `hneuron_mon
 ## Dev Commands
 
 ```bash
-uv run pytest tests/ -v                          # must be 100% green before every commit
-uv sync                                           # install/update deps
+uv run pytest tests/ -v                           # must be 100% green before every commit
+uv sync                                            # install/update deps
+
+# Phase 2 runners (auto-download TinyLlama ~2GB on first run)
+uv run python scripts/run_kv_mcts.py \
+    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+    --nodes 50 --depth 5 --branches 3
+uv run python scripts/measure_lipschitz_drift.py \
+    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --n-cycles 200
+uv run python scripts/probe_kv_cache_mutability.py --device auto
+
+# Phase A model download (for run_offline_mcts.py)
 huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir ./models/llama-3.2-1b
 ```

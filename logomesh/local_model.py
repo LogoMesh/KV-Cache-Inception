@@ -31,8 +31,25 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _resolve_model_ref(model_path: str) -> str:
+    """Return the model reference to pass to from_pretrained.
+
+    If model_path points to an existing local directory, return it as-is.
+    Otherwise treat it as a HuggingFace model id (hub handles download/cache).
+    """
+    path = Path(model_path)
+    if path.exists():
+        return str(path)
+    # Treat as HuggingFace model id — do not require local existence
+    logger.info(
+        "Local path '%s' not found — treating as HuggingFace model id (will use hub cache).",
+        model_path,
+    )
+    return model_path
+
+
 def _load_model(model_path: str, device: str):
-    """Load tokenizer + model from a local directory.
+    """Load tokenizer + model from a local directory or HuggingFace model id.
 
     Separated from __init__ so callers can control when the heavy import
     and CUDA allocation happen (e.g. only in offline scripts, not tests).
@@ -40,23 +57,18 @@ def _load_model(model_path: str, device: str):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    path = Path(model_path)
-    if not path.exists():
-        raise FileNotFoundError(
-            f"Model directory not found: {path}\n"
-            "Download with: huggingface-cli download meta-llama/Llama-3.2-1B-Instruct "
-            f"--local-dir {path}"
-        )
+    model_ref = _resolve_model_ref(model_path)
 
-    logger.info("Loading tokenizer from %s", path)
-    tokenizer = AutoTokenizer.from_pretrained(str(path))
+    logger.info("Loading tokenizer from %s", model_ref)
+    tokenizer = AutoTokenizer.from_pretrained(model_ref)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    logger.info("Loading model from %s onto %s", path, device)
+    torch_dtype = torch.float16 if device != "cpu" else torch.float32
+    logger.info("Loading model from %s onto %s (dtype=%s)", model_ref, device, torch_dtype)
     model = AutoModelForCausalLM.from_pretrained(
-        str(path),
-        dtype=torch.float16 if device != "cpu" else torch.float32,
+        model_ref,
+        torch_dtype=torch_dtype,
         device_map=device,
     )
     model.eval()
@@ -105,10 +117,14 @@ class LocalLlamaOracle:
         import torch
 
         if device is None:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-            if device == "cpu":
+            if torch.cuda.is_available():
+                device = "cuda"
+            elif getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+                device = "mps"
+            else:
+                device = "cpu"
                 logger.warning(
-                    "CUDA not available — running on CPU. Inference will be slow. "
+                    "Neither CUDA nor MPS available — running on CPU. Inference will be slow. "
                     "Install torch with CUDA: see pyproject.toml [tool.uv.sources]."
                 )
         tokenizer, model = _load_model(model_path, device)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 2 gate: validate in-place KV-cache mutability on local HuggingFace models.
+"""Phase 2 gate: validate in-place KV-cache mutability on HuggingFace models.
 
 This probe verifies the required precondition for Reversible MCTS:
   1) A KV-cache tensor can be mutated in place.
@@ -8,32 +8,40 @@ This probe verifies the required precondition for Reversible MCTS:
 
 Expected usage:
   uv run python scripts/probe_kv_cache_mutability.py \
+      --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+      --device auto
+
+Or with a local folder:
+  uv run python scripts/probe_kv_cache_mutability.py \
       --model ./models/llama-3.2-1b \
-      --device cuda
+      --device auto
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 from pathlib import Path
 from typing import Any
 
 
-def _clone_legacy_cache(past_key_values: Any):
-    """Clone tuple/list-form past_key_values recursively."""
+def _clone_cache(past_key_values: Any):
+    """Clone past_key_values while preserving tensor values and structure."""
     import torch
 
-    if not isinstance(past_key_values, (tuple, list)):
-        raise TypeError("Only tuple/list past_key_values are supported by this probe")
-    cloned_layers = []
-    for layer in past_key_values:
-        if not isinstance(layer, (tuple, list)):
-            raise TypeError("Unexpected layer format in past_key_values")
-        cloned_layers.append(
-            tuple(t.clone() if torch.is_tensor(t) else t for t in layer)
-        )
-    return tuple(cloned_layers)
+    if isinstance(past_key_values, (tuple, list)):
+        cloned_layers = []
+        for layer in past_key_values:
+            if not isinstance(layer, (tuple, list)):
+                raise TypeError("Unexpected layer format in past_key_values")
+            cloned_layers.append(
+                tuple(t.clone() if torch.is_tensor(t) else t for t in layer)
+            )
+        return tuple(cloned_layers)
+
+    # Dynamic cache classes in newer transformers are safest to clone deeply.
+    return copy.deepcopy(past_key_values)
 
 
 def _get_first_key_tensor(past_key_values: Any):
@@ -55,28 +63,64 @@ def _get_first_key_tensor(past_key_values: Any):
     raise TypeError(f"Unsupported past_key_values type: {type(past_key_values)!r}")
 
 
+def _resolve_device(requested: str):
+    import torch
+
+    if requested != "auto":
+        return requested
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
+
+
+def _resolve_dtype(requested: str, device: str):
+    import torch
+
+    if requested == "float32":
+        return torch.float32, "float32"
+    if requested == "float16":
+        return torch.float16, "float16"
+    if requested == "bfloat16":
+        return torch.bfloat16, "bfloat16"
+
+    # auto mode
+    if device == "cuda":
+        if torch.cuda.is_bf16_supported():
+            return torch.bfloat16, "bfloat16"
+        return torch.float16, "float16"
+    if device == "mps":
+        return torch.float16, "float16"
+    return torch.float32, "float32"
+
+
+def _resolve_model_ref(model_arg: str) -> tuple[str, bool]:
+    """Return (model_reference, is_local_path)."""
+    as_path = Path(model_arg)
+    if as_path.exists():
+        return str(as_path), True
+    return model_arg, False
+
+
 def run_probe(args: argparse.Namespace) -> dict:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    model_path = Path(args.model)
-    if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model path does not exist: {model_path}. "
-            "Download first with huggingface-cli."
-        )
+    model_ref, is_local = _resolve_model_ref(args.model)
+    device = _resolve_device(args.device)
+    torch_dtype, dtype_label = _resolve_dtype(args.dtype, device)
 
-    device = args.device
-    if device == "auto":
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+    tokenizer = AutoTokenizer.from_pretrained(model_ref)
+    if tokenizer.pad_token is None and tokenizer.eos_token is not None:
+        tokenizer.pad_token = tokenizer.eos_token
 
-    torch_dtype = torch.float16 if device != "cpu" else torch.float32
-    tokenizer = AutoTokenizer.from_pretrained(str(model_path))
     model = AutoModelForCausalLM.from_pretrained(
-        str(model_path),
+        model_ref,
         torch_dtype=torch_dtype,
-        device_map=device,
+        low_cpu_mem_usage=True,
     )
+    model.to(device)
     model.eval()
 
     prompt = args.prompt
@@ -107,8 +151,8 @@ def run_probe(args: argparse.Namespace) -> dict:
         raise TypeError("Resolved key tensor is not a torch.Tensor")
 
     # Clone cache twice so baseline and mutated runs are comparable.
-    baseline_cache = _clone_legacy_cache(past_key_values)
-    mutated_cache = _clone_legacy_cache(past_key_values)
+    baseline_cache = _clone_cache(past_key_values)
+    mutated_cache = _clone_cache(past_key_values)
 
     probe_input_ids = inputs["input_ids"][:, -1:]
     with torch.no_grad():
@@ -148,8 +192,10 @@ def run_probe(args: argparse.Namespace) -> dict:
     reversible = revert_max_delta <= args.revert_tol
 
     return {
-        "model": str(model_path),
+        "model": model_ref,
+        "model_source": "local_path" if is_local else "huggingface_id_or_cache",
         "device": device,
+        "dtype": dtype_label,
         "cache_type": cache_type,
         "alpha": args.alpha,
         "min_delta": args.min_delta,
@@ -165,12 +211,22 @@ def run_probe(args: argparse.Namespace) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", required=True, help="Local model directory")
+    parser.add_argument(
+        "--model",
+        default="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+        help="Model reference: local directory path or HuggingFace model id",
+    )
     parser.add_argument(
         "--device",
         default="auto",
-        choices=["auto", "cpu", "cuda"],
+        choices=["auto", "cpu", "cuda", "mps"],
         help="Torch device selection",
+    )
+    parser.add_argument(
+        "--dtype",
+        default="auto",
+        choices=["auto", "float32", "float16", "bfloat16"],
+        help="Torch dtype selection (auto adapts per device)",
     )
     parser.add_argument(
         "--prompt",
@@ -205,11 +261,16 @@ def main() -> int:
     try:
         result = run_probe(args)
     except Exception as exc:
+        suggestion = (
+            "If using a gated model id, run `huggingface-cli login` first. "
+            "If using a local path, verify the directory exists and contains model files."
+        )
         print(
             json.dumps(
                 {
                     "gate_passed": False,
                     "error": str(exc),
+                    "suggestion": suggestion,
                 },
                 indent=2,
                 sort_keys=True,

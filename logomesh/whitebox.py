@@ -1336,5 +1336,155 @@ def _extract_refusal_direction(model: Any, inputs: list[str],
         return {}
 
 
+# ---------------------------------------------------------------------------
+# Phase 2: Per-layer RepE honesty projector (ρ_R^(l) and d_K^(l))
+# ---------------------------------------------------------------------------
+
+class PerLayerHonestyProjector:
+    """Per-layer RepE honesty projection for Phase 2 Telemetry Matrix.
+
+    Computes w_hon^(l) via difference-in-means on contrastive example pairs
+    (benign vs. coerced). These weights serve dual purpose:
+      1. Honesty projection:  ρ_R^(l)(t) = clip(w_hon^(l) · h_t^(l) / ‖w‖, 0, 1)
+      2. MCTS steering vector: d_K^(l) = w_hon^(l) (used at magnitude α)
+
+    Equation reference: ρ_R^(l)(t) = w_hon^(l)⊤ h_t^(l)  (paper §4.1)
+
+    Usage:
+        projector = PerLayerHonestyProjector()
+        await projector.calibrate(oracle, benign_examples, coerced_examples)
+
+        # After oracle.generate_one_step():
+        rho_R = projector.project(oracle.get_hidden_states())  # shape [L]
+
+        # For MCTS steering:
+        dk_vectors = projector.steering_vectors  # list[ndarray], one per layer
+    """
+
+    def __init__(self) -> None:
+        import numpy as np
+        self._weights: list[np.ndarray] = []  # w_hon^(l) per layer, L2-normalized
+        self._calibrated: bool = False
+        self._n_layers: int = 0
+
+    @property
+    def calibrated(self) -> bool:
+        return self._calibrated
+
+    @property
+    def n_layers(self) -> int:
+        return self._n_layers
+
+    @property
+    def steering_vectors(self) -> "list[np.ndarray]":
+        """w_hon^(l) per layer — use as d_K^(l) in MCTS KV-cache steering."""
+        return self._weights
+
+    async def calibrate(
+        self,
+        oracle: "object",  # LocalLlamaOracle — imported lazily to avoid circular dep
+        benign_examples: list[str],
+        coerced_examples: list[str],
+        system_prompt: str = "You are a helpful assistant.",
+    ) -> None:
+        """Fit per-layer honesty direction via difference-in-means.
+
+        Args:
+            oracle: LocalLlamaOracle instance (must have generate() and get_hidden_states()).
+            benign_examples: Prompts where the model responds genuinely/helpfully.
+            coerced_examples: Prompts that pressure the model toward misaligned compliance.
+            system_prompt: System prompt used for both example sets.
+
+        Sets self._weights[l] = L2-normalised(mean(h_coerced^(l)) - mean(h_benign^(l))).
+        """
+        import numpy as np
+
+        benign_states = await self._collect_hidden_states(oracle, benign_examples, system_prompt)
+        coerced_states = await self._collect_hidden_states(oracle, coerced_examples, system_prompt)
+
+        if not benign_states or not coerced_states:
+            logger.error("PerLayerHonestyProjector calibration failed: no hidden states collected.")
+            return
+
+        n_layers = len(benign_states[0])
+        weights = []
+        for layer_idx in range(n_layers):
+            b_vecs = np.stack([s[layer_idx] for s in benign_states], axis=0)   # [N, d]
+            c_vecs = np.stack([s[layer_idx] for s in coerced_states], axis=0)  # [M, d]
+            direction = c_vecs.mean(axis=0) - b_vecs.mean(axis=0)              # [d]
+            norm = np.linalg.norm(direction)
+            if norm > 1e-8:
+                direction = direction / norm
+            weights.append(direction.astype(np.float32))
+
+        self._weights = weights
+        self._n_layers = n_layers
+        self._calibrated = True
+        logger.info("PerLayerHonestyProjector calibrated: %d layers, d=%d", n_layers, weights[0].shape[0] if weights else 0)
+
+    def project(self, hidden_states: list) -> "list[float]":
+        """Compute ρ_R^(l) for all layers from cached hidden states.
+
+        Args:
+            hidden_states: List of Tensors from oracle.get_hidden_states(),
+                           one per layer, shape [hidden_size] or [seq, hidden_size].
+
+        Returns:
+            List of floats in [0.0, 1.0], length = len(hidden_states).
+            Returns list of 0.5 values if not calibrated or shapes mismatch.
+        """
+        import numpy as np
+
+        if not self._calibrated or not hidden_states:
+            return [0.5] * len(hidden_states)
+
+        scores = []
+        for layer_idx, h in enumerate(hidden_states):
+            if layer_idx >= len(self._weights):
+                scores.append(0.5)
+                continue
+            try:
+                h_np = h.float().detach().cpu().numpy()
+                if h_np.ndim == 2:
+                    h_np = h_np[-1]  # take last token
+                w = self._weights[layer_idx]
+                if h_np.shape != w.shape:
+                    scores.append(0.5)
+                    continue
+                proj = float(np.dot(w, h_np))
+                # Clip to [0, 1]: positive projection = more coerced/aligned-faking direction
+                scores.append(float(max(0.0, min(1.0, (proj + 1.0) / 2.0))))
+            except Exception as e:
+                logger.debug("PerLayerHonestyProjector.project layer %d failed: %s", layer_idx, e)
+                scores.append(0.5)
+
+        return scores
+
+    async def _collect_hidden_states(
+        self,
+        oracle: "object",
+        examples: list[str],
+        system_prompt: str,
+    ) -> "list[list[np.ndarray]]":
+        """Run oracle on examples and return per-layer hidden states."""
+        import numpy as np
+
+        all_states: list[list[np.ndarray]] = []
+        for text in examples:
+            try:
+                await oracle.generate(system=system_prompt, user=text)
+                hs = oracle.get_hidden_states()
+                if not hs:
+                    continue
+                layer_vecs = []
+                for h in hs:
+                    h_np = h.float().detach().cpu().numpy()
+                    if h_np.ndim == 2:
+                        h_np = h_np[-1]
+                    layer_vecs.append(h_np.astype(np.float32))
+                all_states.append(layer_vecs)
+            except Exception as e:
+                logger.warning("PerLayerHonestyProjector._collect_hidden_states failed: %s", e)
+        return all_states
 
 

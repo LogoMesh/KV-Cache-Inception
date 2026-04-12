@@ -173,6 +173,32 @@ class HNeuronMonitor:
             return self._score_moe()
         return self._score_dense()
 
+    def score_per_layer(self) -> "list[float]":
+        """Return σ_H^(l) for every transformer layer, as a list of length L.
+
+        Phase 2 approximation: applies the same TOP_K neuron indices (found at
+        last-layer calibration) identically to every layer. Phase 3 will retrain
+        with per-layer honesty probes for a more paper-faithful implementation.
+
+        Returns:
+            List of floats in [0.0, 1.0], length = number of transformer layers
+            (including embedding layer). Returns a list of 0.5 values if not
+            calibrated or if hidden states are unavailable.
+
+        Call immediately after oracle.generate() or oracle.generate_one_step(),
+        before the next forward pass overwrites the cached states.
+        Used by TelemetryMatrix assembly in kv_mcts.py.
+        """
+        import numpy as np
+
+        hidden_states = self._oracle.get_hidden_states()
+        if not hidden_states or not self._calibrated or self._is_moe:
+            n = len(hidden_states) if hidden_states else 0
+            return [0.5] * n
+
+        scores = [self._score_layer(h) for h in hidden_states]
+        return scores
+
     # ------------------------------------------------------------------
     # Internal — dense path (Llama-3.2-1B)
     # ------------------------------------------------------------------
@@ -230,15 +256,22 @@ class HNeuronMonitor:
         if not hidden_states:
             logger.warning("No hidden states available. Call oracle.generate() first.")
             return 0.5
+        return self._score_layer(hidden_states[-1])
 
-        # Use the last layer's hidden states.
-        # Shape is [hidden_size] (last token) or [seq, hidden_size] — handle both.
-        last_layer = hidden_states[-1]
+    def _score_layer(self, h) -> float:
+        """Score a single layer's hidden-state tensor.
+
+        Args:
+            h: Tensor of shape [hidden_size] (last-token) or [seq, hidden_size].
+
+        Returns:
+            Float in [0.0, 1.0] normalised against calibration baselines.
+        """
         try:
-            if last_layer.dim() == 1:
-                activation_row = last_layer.tolist()
+            if h.dim() == 1:
+                activation_row = h.tolist()
             else:
-                activation_row = last_layer[-1].tolist()
+                activation_row = h[-1].tolist()
         except Exception:
             return 0.5
 

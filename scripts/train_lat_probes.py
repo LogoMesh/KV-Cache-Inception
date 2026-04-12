@@ -301,10 +301,14 @@ async def train_game_type(
     # Instantiate scenario plugin (provides defender context + check_success)
     plugin_class = scenario_cfg["plugin_class"]
     plugin_config = scenario_cfg["plugin_config"]
-    scenario_plugin = plugin_class(config=plugin_config)
+    scenario_plugin = plugin_class(config=plugin_config) if plugin_class is not None else None
 
     # Build defender system prompt (same as run_offline_mcts.py)
-    defender_system = build_defender_system_prompt(scenario_plugin)
+    defender_system = (
+        build_defender_system_prompt(scenario_plugin)
+        if scenario_plugin is not None
+        else "You are a helpful AI assistant. Respond to the input provided."
+    )
 
     # Assemble context dict expected by helper functions
     context = {
