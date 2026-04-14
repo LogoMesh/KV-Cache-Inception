@@ -61,21 +61,44 @@ logger = logging.getLogger(__name__)
 # KV cache helpers
 # ---------------------------------------------------------------------------
 
+def _get_transformers_version() -> str:
+    try:
+        import transformers
+        return transformers.__version__
+    except Exception:
+        return "unknown"
+
+
 def _extract_kv_tensors(past_key_values: Any) -> list[tuple[Any, Any]]:
     """Return list of (K_tensor, V_tensor) per layer from past_key_values.
 
-    Supports both legacy tuple format and HF DynamicCache format.
+    Supports legacy tuple format, HF DynamicCache, and any Cache subclass
+    with list-valued .key_cache / .value_cache attributes.
     """
-    import torch
-
     if isinstance(past_key_values, (tuple, list)):
         return [(layer[0], layer[1]) for layer in past_key_values]
 
-    # HF DynamicCache: has key_cache and value_cache attributes
-    if hasattr(past_key_values, "key_cache") and hasattr(past_key_values, "value_cache"):
-        return list(zip(past_key_values.key_cache, past_key_values.value_cache))
+    # Explicit DynamicCache check (Transformers 5.x — most common live format)
+    try:
+        from transformers.cache_utils import DynamicCache
+        if isinstance(past_key_values, DynamicCache):
+            return list(zip(past_key_values.key_cache, past_key_values.value_cache))
+    except ImportError:
+        pass
 
-    raise TypeError(f"Unsupported past_key_values type: {type(past_key_values)!r}")
+    # Duck-typing fallback: any Cache subclass whose .key_cache / .value_cache are lists
+    if hasattr(past_key_values, "key_cache") and hasattr(past_key_values, "value_cache"):
+        kc = past_key_values.key_cache
+        vc = past_key_values.value_cache
+        if isinstance(kc, (list, tuple)) and isinstance(vc, (list, tuple)):
+            return list(zip(kc, vc))
+
+    raise TypeError(
+        f"Unsupported past_key_values type: {type(past_key_values)!r}. "
+        f"Expected a tuple/list of (K, V) pairs or a DynamicCache subclass with "
+        f"list-valued .key_cache / .value_cache. "
+        f"Installed transformers: {_get_transformers_version()}"
+    )
 
 
 def _clone_kv_cache(past_key_values: Any) -> Any:
@@ -89,6 +112,21 @@ def _clone_kv_cache(past_key_values: Any) -> Any:
             for layer in past_key_values
         )
     return copy.deepcopy(past_key_values)
+
+
+def _kv_snapshot_tuple(past_key_values: Any) -> tuple:
+    """Extract current KV state as a detached legacy tuple — (K, V) per layer.
+
+    Used for branch-evaluation forward passes to prevent DynamicCache.update()
+    from replacing list entries with grown tensors during model execution.
+    Uses .detach() without .clone() — no extra VRAM allocated, same storage.
+
+    This is critical for Theorem 1 correctness: FP32Accumulator.rollback() requires
+    that the tensors it holds references to in key_cache[l] are not replaced by the
+    model between apply() and rollback(). Passing a tuple snapshot instead of the
+    live DynamicCache prevents .update() from being called.
+    """
+    return tuple((k.detach(), v.detach()) for k, v in _extract_kv_tensors(past_key_values))
 
 
 # ---------------------------------------------------------------------------
@@ -458,11 +496,14 @@ class ReversibleMCTS:
                 dk = steering_vecs[min(steer_layer, len(steering_vecs) - 1)]
                 accumulator.apply(past_kv, alpha, [dk] * len(accumulator.k_accum))
 
-                # One-step forward pass with mutated KV cache
+                # One-step forward pass with mutated KV cache.
+                # Pass a detached tuple snapshot, not the live DynamicCache, so
+                # DynamicCache.update() cannot replace key_cache[l] entries with
+                # grown tensors — which would break rollback() shape invariants.
                 try:
                     step = await self._oracle.generate_one_step(
                         input_ids=step0["input_ids"],
-                        past_key_values=past_kv,
+                        past_key_values=_kv_snapshot_tuple(past_kv),
                         temperature=0.0,
                     )
                 except Exception as e:

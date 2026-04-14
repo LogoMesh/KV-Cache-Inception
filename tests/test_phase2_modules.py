@@ -223,7 +223,19 @@ class TestTDSCalculator:
 # FP32Accumulator
 # ===========================================================================
 
-from logomesh.kv_mcts import FP32Accumulator, KVCacheNode, MCTSConfig
+from logomesh.kv_mcts import FP32Accumulator, KVCacheNode, MCTSConfig, _kv_snapshot_tuple
+
+
+class _FakeDynamicCache:
+    """Minimal DynamicCache-compatible mock with .key_cache / .value_cache lists.
+
+    Does NOT inherit from transformers.cache_utils.DynamicCache — no transformers
+    dependency in tests. Mimics the duck-typing interface used by _extract_kv_tensors.
+    """
+
+    def __init__(self, key_cache: list, value_cache: list) -> None:
+        self.key_cache = key_cache
+        self.value_cache = value_cache
 
 
 class TestFP32Accumulator:
@@ -232,6 +244,13 @@ class TestFP32Accumulator:
         return tuple(
             (torch.randn(1, 1, 2, d), torch.randn(1, 1, 2, d))
             for _ in range(n_layers)
+        )
+
+    def _make_fake_dynamic_cache(self, n_layers: int = 3, d: int = 4) -> _FakeDynamicCache:
+        """Returns a _FakeDynamicCache with list-valued key_cache / value_cache."""
+        return _FakeDynamicCache(
+            key_cache=[torch.randn(1, 1, 2, d) for _ in range(n_layers)],
+            value_cache=[torch.randn(1, 1, 2, d) for _ in range(n_layers)],
         )
 
     def test_from_kv_cache_creates_zero_accumulators(self):
@@ -274,6 +293,79 @@ class TestFP32Accumulator:
         assert acc.residual_norm() < 1e-5
         diff_norm = float((kv[0][0].float() - k0_clone).abs().max().item())
         assert diff_norm < 1e-3, f"Drift after 20 cycles: {diff_norm}"
+
+    # -- DynamicCache format variants ------------------------------------------
+
+    def test_from_kv_cache_creates_zero_accumulators_dynamic_cache(self):
+        dc = self._make_fake_dynamic_cache()
+        acc = FP32Accumulator.from_kv_cache(dc)
+        assert len(acc.k_accum) == 3
+        for a in acc.k_accum:
+            assert a.dtype == torch.float32
+            assert a.abs().max().item() == 0.0
+
+    def test_apply_rollback_residual_near_zero_dynamic_cache(self):
+        dc = self._make_fake_dynamic_cache(n_layers=2, d=4)
+        acc = FP32Accumulator.from_kv_cache(dc)
+        dk = [np.ones(4, dtype=np.float32), np.ones(4, dtype=np.float32)]
+
+        # Save a clone of the original key tensor in the list
+        k0_clone = dc.key_cache[0].clone()
+
+        acc.apply(dc, alpha=1.0, dk_vectors=dk)
+        acc.rollback(dc, alpha=1.0, dk_vectors=dk)
+
+        assert acc.residual_norm() < 1e-6
+        diff_norm = float((dc.key_cache[0].float() - k0_clone.float()).abs().max().item())
+        assert diff_norm < 1e-4, f"DynamicCache rollback diff: {diff_norm}"
+
+    def test_multiple_apply_rollback_cycles_stay_bounded_dynamic_cache(self):
+        dc = self._make_fake_dynamic_cache(n_layers=2, d=4)
+        acc = FP32Accumulator.from_kv_cache(dc)
+        dk = [np.ones(4, dtype=np.float32)] * 2
+        k0_clone = dc.key_cache[0].float().clone()
+
+        for _ in range(20):
+            acc.apply(dc, alpha=0.5, dk_vectors=dk)
+            acc.rollback(dc, alpha=0.5, dk_vectors=dk)
+
+        assert acc.residual_norm() < 1e-5
+        diff_norm = float((dc.key_cache[0].float() - k0_clone).abs().max().item())
+        assert diff_norm < 1e-3, f"DynamicCache drift after 20 cycles: {diff_norm}"
+
+
+# ===========================================================================
+# _kv_snapshot_tuple
+# ===========================================================================
+
+class TestKVSnapshotTuple:
+    def test_tuple_format_passthrough(self):
+        kv = tuple((torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4)) for _ in range(3))
+        snap = _kv_snapshot_tuple(kv)
+        assert isinstance(snap, tuple)
+        assert len(snap) == 3
+        for k, v in snap:
+            assert torch.is_tensor(k) and torch.is_tensor(v)
+
+    def test_dynamic_cache_format(self):
+        dc = _FakeDynamicCache(
+            key_cache=[torch.randn(1, 1, 2, 4) for _ in range(2)],
+            value_cache=[torch.randn(1, 1, 2, 4) for _ in range(2)],
+        )
+        snap = _kv_snapshot_tuple(dc)
+        assert isinstance(snap, tuple)
+        assert len(snap) == 2
+        # Snapshot tensors are detached — no grad tracking
+        for k, v in snap:
+            assert not k.requires_grad
+            assert not v.requires_grad
+
+    def test_snapshot_data_matches_source(self):
+        kv = tuple((torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4)) for _ in range(2))
+        snap = _kv_snapshot_tuple(kv)
+        for (k_orig, v_orig), (k_snap, v_snap) in zip(kv, snap):
+            assert torch.allclose(k_orig, k_snap)
+            assert torch.allclose(v_orig, v_snap)
 
 
 # ===========================================================================

@@ -106,6 +106,7 @@ def _resolve_model_ref(model_arg: str) -> tuple[str, bool]:
 def run_probe(args: argparse.Namespace) -> dict:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
+    from logomesh.kv_mcts import _kv_snapshot_tuple
 
     model_ref, is_local = _resolve_model_ref(args.model)
     device = _resolve_device(args.device)
@@ -155,10 +156,13 @@ def run_probe(args: argparse.Namespace) -> dict:
     mutated_cache = _clone_cache(past_key_values)
 
     probe_input_ids = inputs["input_ids"][:, -1:]
+
+    # Use tuple snapshots for all model calls so DynamicCache.update() cannot
+    # replace key_cache[l] entries between mutation and restore steps.
     with torch.no_grad():
         baseline = model(
             input_ids=probe_input_ids,
-            past_key_values=baseline_cache,
+            past_key_values=_kv_snapshot_tuple(baseline_cache),
             use_cache=True,
         )
     baseline_logits = baseline.logits[:, -1, :].float()
@@ -167,9 +171,10 @@ def run_probe(args: argparse.Namespace) -> dict:
     original_key = mutated_key_tensor.detach().clone()
     with torch.no_grad():
         mutated_key_tensor.add_(args.alpha)
+        # Snapshot AFTER mutation so the model sees the mutated tensor
         mutated = model(
             input_ids=probe_input_ids,
-            past_key_values=mutated_cache,
+            past_key_values=_kv_snapshot_tuple(mutated_cache),
             use_cache=True,
         )
     mutated_logits = mutated.logits[:, -1, :].float()
@@ -179,10 +184,12 @@ def run_probe(args: argparse.Namespace) -> dict:
     mean_delta = float(delta.mean().item())
 
     with torch.no_grad():
+        # Restore original key tensor in the cache object (still valid — not replaced)
         mutated_key_tensor.copy_(original_key)
+        # Snapshot AFTER restore so the model sees the original tensor
         reverted = model(
             input_ids=probe_input_ids,
-            past_key_values=mutated_cache,
+            past_key_values=_kv_snapshot_tuple(mutated_cache),
             use_cache=True,
         )
     reverted_logits = reverted.logits[:, -1, :].float()
