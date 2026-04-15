@@ -69,20 +69,73 @@ def _get_transformers_version() -> str:
         return "unknown"
 
 
+def _extract_kv_from_layers(layers: Any) -> list[tuple[Any, Any]]:
+    """Extract (K, V) tensors from cache layer objects.
+
+    Supports layer entries as:
+      - tuple/list: (K, V, ...)
+      - object with .keys and .values (Transformers 5.3 CacheLayerMixin)
+      - object with .key and .value (older/custom variants)
+
+    Returns an empty list if schema is unrecognized.
+    """
+    if not isinstance(layers, (list, tuple)) or not layers:
+        return []
+
+    out: list[tuple[Any, Any]] = []
+    for layer in layers:
+        k = v = None
+
+        if isinstance(layer, (tuple, list)) and len(layer) >= 2:
+            k, v = layer[0], layer[1]
+        elif hasattr(layer, "keys") and hasattr(layer, "values"):
+            k, v = layer.keys, layer.values
+        elif hasattr(layer, "key") and hasattr(layer, "value"):
+            k, v = layer.key, layer.value
+
+        # Some cache layers may be lazily initialised.
+        if k is None or v is None:
+            return []
+
+        out.append((k, v))
+
+    return out
+
+
 def _extract_kv_tensors(past_key_values: Any) -> list[tuple[Any, Any]]:
     """Return list of (K_tensor, V_tensor) per layer from past_key_values.
 
-    Supports legacy tuple format, HF DynamicCache, and any Cache subclass
-    with list-valued .key_cache / .value_cache attributes.
+    Supports legacy tuple format, DynamicCache key_cache/value_cache format,
+    and DynamicCache layers format used in Transformers 5.3.
     """
     if isinstance(past_key_values, (tuple, list)):
         return [(layer[0], layer[1]) for layer in past_key_values]
 
-    # Explicit DynamicCache check (Transformers 5.x — most common live format)
+    # Explicit DynamicCache check (Transformers 5.x live formats)
     try:
         from transformers.cache_utils import DynamicCache
         if isinstance(past_key_values, DynamicCache):
-            return list(zip(past_key_values.key_cache, past_key_values.value_cache))
+            # Transformers <=5.2 style: list-valued key_cache/value_cache
+            if hasattr(past_key_values, "key_cache") and hasattr(past_key_values, "value_cache"):
+                kc = past_key_values.key_cache
+                vc = past_key_values.value_cache
+                if isinstance(kc, (list, tuple)) and isinstance(vc, (list, tuple)):
+                    return list(zip(kc, vc))
+
+            # Transformers 5.3 style: list-valued layers; each layer has keys/values
+            if hasattr(past_key_values, "layers"):
+                kv = _extract_kv_from_layers(past_key_values.layers)
+                if kv:
+                    return kv
+
+            dyn_keys = sorted(list(getattr(past_key_values, "__dict__", {}).keys()))
+            raise TypeError(
+                "Unsupported DynamicCache schema. Expected either "
+                "list-valued key_cache/value_cache or list-valued layers with "
+                "keys/values tensors. "
+                f"DynamicCache attrs: {dyn_keys}. "
+                f"Installed transformers: {_get_transformers_version()}"
+            )
     except ImportError:
         pass
 
@@ -93,10 +146,17 @@ def _extract_kv_tensors(past_key_values: Any) -> list[tuple[Any, Any]]:
         if isinstance(kc, (list, tuple)) and isinstance(vc, (list, tuple)):
             return list(zip(kc, vc))
 
+    # Duck-typing fallback for layers-based caches.
+    if hasattr(past_key_values, "layers"):
+        kv = _extract_kv_from_layers(past_key_values.layers)
+        if kv:
+            return kv
+
     raise TypeError(
         f"Unsupported past_key_values type: {type(past_key_values)!r}. "
         f"Expected a tuple/list of (K, V) pairs or a DynamicCache subclass with "
-        f"list-valued .key_cache / .value_cache. "
+        f"list-valued .key_cache / .value_cache, or a layers-based cache with "
+        f"per-layer keys/values tensors. "
         f"Installed transformers: {_get_transformers_version()}"
     )
 
@@ -127,6 +187,21 @@ def _kv_snapshot_tuple(past_key_values: Any) -> tuple:
     live DynamicCache prevents .update() from being called.
     """
     return tuple((k.detach(), v.detach()) for k, v in _extract_kv_tensors(past_key_values))
+
+
+def _kv_eval_cache(past_key_values: Any) -> Any:
+        """Return an evaluation-safe cache snapshot for one-step forward passes.
+
+        Why this exists:
+            - For tuple/list caches, a detached tuple view is sufficient and cheap.
+            - For DynamicCache-style objects, many model forwards expect cache methods
+                like get_seq_length(). Passing a tuple can fail. In those cases we pass
+                a deep-copied cache object so model-side update() calls do not mutate
+                the live cache tracked by FP32Accumulator.
+        """
+        if isinstance(past_key_values, (tuple, list)):
+                return _kv_snapshot_tuple(past_key_values)
+        return _clone_kv_cache(past_key_values)
 
 
 # ---------------------------------------------------------------------------
@@ -187,7 +262,6 @@ class FP32Accumulator:
         dv_vectors: list[np.ndarray] | None = None,
     ) -> None:
         """Apply steering: A^(l) += α·d^(l), K^(l) = K_base^(l) + cast(A^(l)).
-
         Modifies past_key_values in-place.
 
         Args:
@@ -205,8 +279,8 @@ class FP32Accumulator:
         n = min(len(layers), len(dk_vectors), len(self.k_accum))
         for l_idx in range(n):
             k_live, v_live = layers[l_idx]
-            dk = torch.from_numpy(dk_vectors[l_idx]).to(dtype=torch.float32)
-            dv = torch.from_numpy(dv_vectors[l_idx]).to(dtype=torch.float32)
+            dk = torch.from_numpy(dk_vectors[l_idx]).to(device=k_live.device, dtype=torch.float32)
+            dv = torch.from_numpy(dv_vectors[l_idx]).to(device=v_live.device, dtype=torch.float32)
 
             # Broadcast dk/dv to match cache shape [..., seq, d_head] or similar
             dk = _broadcast_to(dk, k_live.shape)
@@ -243,8 +317,8 @@ class FP32Accumulator:
         n = min(len(layers), len(dk_vectors), len(self.k_accum))
         for l_idx in range(n):
             k_live, v_live = layers[l_idx]
-            dk = torch.from_numpy(dk_vectors[l_idx]).to(dtype=torch.float32)
-            dv = torch.from_numpy(dv_vectors[l_idx]).to(dtype=torch.float32)
+            dk = torch.from_numpy(dk_vectors[l_idx]).to(device=k_live.device, dtype=torch.float32)
+            dv = torch.from_numpy(dv_vectors[l_idx]).to(device=v_live.device, dtype=torch.float32)
 
             dk = _broadcast_to(dk, k_live.shape)
             dv = _broadcast_to(dv, v_live.shape)
@@ -503,7 +577,7 @@ class ReversibleMCTS:
                 try:
                     step = await self._oracle.generate_one_step(
                         input_ids=step0["input_ids"],
-                        past_key_values=_kv_snapshot_tuple(past_kv),
+                        past_key_values=_kv_eval_cache(past_kv),
                         temperature=0.0,
                     )
                 except Exception as e:

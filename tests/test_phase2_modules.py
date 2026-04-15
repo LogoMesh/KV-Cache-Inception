@@ -223,7 +223,8 @@ class TestTDSCalculator:
 # FP32Accumulator
 # ===========================================================================
 
-from logomesh.kv_mcts import FP32Accumulator, KVCacheNode, MCTSConfig, _kv_snapshot_tuple
+from logomesh.kv_mcts import FP32Accumulator, KVCacheNode, MCTSConfig, _kv_snapshot_tuple, _kv_eval_cache
+from scripts.probe_kv_cache_mutability import _get_first_key_tensor
 
 
 class _FakeDynamicCache:
@@ -236,6 +237,21 @@ class _FakeDynamicCache:
     def __init__(self, key_cache: list, value_cache: list) -> None:
         self.key_cache = key_cache
         self.value_cache = value_cache
+
+
+class _FakeCacheLayer:
+    """Transformers 5.3-like cache layer with .keys / .values tensors."""
+
+    def __init__(self, keys: torch.Tensor, values: torch.Tensor) -> None:
+        self.keys = keys
+        self.values = values
+
+
+class _FakeDynamicCacheLayers:
+    """Transformers 5.3-like DynamicCache with list-valued .layers only."""
+
+    def __init__(self, layers: list[_FakeCacheLayer]) -> None:
+        self.layers = layers
 
 
 class TestFP32Accumulator:
@@ -252,6 +268,14 @@ class TestFP32Accumulator:
             key_cache=[torch.randn(1, 1, 2, d) for _ in range(n_layers)],
             value_cache=[torch.randn(1, 1, 2, d) for _ in range(n_layers)],
         )
+
+    def _make_fake_dynamic_cache_layers(self, n_layers: int = 3, d: int = 4) -> _FakeDynamicCacheLayers:
+        """Returns a 5.3-like dynamic cache with .layers entries."""
+        layers = [
+            _FakeCacheLayer(torch.randn(1, 1, 2, d), torch.randn(1, 1, 2, d))
+            for _ in range(n_layers)
+        ]
+        return _FakeDynamicCacheLayers(layers)
 
     def test_from_kv_cache_creates_zero_accumulators(self):
         kv = self._make_fake_kv()
@@ -333,6 +357,44 @@ class TestFP32Accumulator:
         diff_norm = float((dc.key_cache[0].float() - k0_clone).abs().max().item())
         assert diff_norm < 1e-3, f"DynamicCache drift after 20 cycles: {diff_norm}"
 
+    # -- DynamicCache layers-only variants (Transformers 5.3) -----------------
+
+    def test_from_kv_cache_creates_zero_accumulators_dynamic_cache_layers(self):
+        dc = self._make_fake_dynamic_cache_layers()
+        acc = FP32Accumulator.from_kv_cache(dc)
+        assert len(acc.k_accum) == 3
+        for a in acc.k_accum:
+            assert a.dtype == torch.float32
+            assert a.abs().max().item() == 0.0
+
+    def test_apply_rollback_residual_near_zero_dynamic_cache_layers(self):
+        dc = self._make_fake_dynamic_cache_layers(n_layers=2, d=4)
+        acc = FP32Accumulator.from_kv_cache(dc)
+        dk = [np.ones(4, dtype=np.float32), np.ones(4, dtype=np.float32)]
+
+        k0_clone = dc.layers[0].keys.clone()
+
+        acc.apply(dc, alpha=1.0, dk_vectors=dk)
+        acc.rollback(dc, alpha=1.0, dk_vectors=dk)
+
+        assert acc.residual_norm() < 1e-6
+        diff_norm = float((dc.layers[0].keys.float() - k0_clone.float()).abs().max().item())
+        assert diff_norm < 1e-4, f"DynamicCache(layers) rollback diff: {diff_norm}"
+
+    def test_multiple_apply_rollback_cycles_stay_bounded_dynamic_cache_layers(self):
+        dc = self._make_fake_dynamic_cache_layers(n_layers=2, d=4)
+        acc = FP32Accumulator.from_kv_cache(dc)
+        dk = [np.ones(4, dtype=np.float32)] * 2
+        k0_clone = dc.layers[0].keys.float().clone()
+
+        for _ in range(20):
+            acc.apply(dc, alpha=0.5, dk_vectors=dk)
+            acc.rollback(dc, alpha=0.5, dk_vectors=dk)
+
+        assert acc.residual_norm() < 1e-5
+        diff_norm = float((dc.layers[0].keys.float() - k0_clone).abs().max().item())
+        assert diff_norm < 1e-3, f"DynamicCache(layers) drift after 20 cycles: {diff_norm}"
+
 
 # ===========================================================================
 # _kv_snapshot_tuple
@@ -360,12 +422,63 @@ class TestKVSnapshotTuple:
             assert not k.requires_grad
             assert not v.requires_grad
 
+    def test_dynamic_cache_layers_format(self):
+        dc = _FakeDynamicCacheLayers(
+            layers=[
+                _FakeCacheLayer(torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4))
+                for _ in range(2)
+            ]
+        )
+        snap = _kv_snapshot_tuple(dc)
+        assert isinstance(snap, tuple)
+        assert len(snap) == 2
+        for k, v in snap:
+            assert not k.requires_grad
+            assert not v.requires_grad
+
     def test_snapshot_data_matches_source(self):
         kv = tuple((torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4)) for _ in range(2))
         snap = _kv_snapshot_tuple(kv)
         for (k_orig, v_orig), (k_snap, v_snap) in zip(kv, snap):
             assert torch.allclose(k_orig, k_snap)
             assert torch.allclose(v_orig, v_snap)
+
+
+class TestKVEvalCache:
+    def test_tuple_cache_returns_tuple_snapshot(self):
+        kv = tuple((torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4)) for _ in range(2))
+        eval_kv = _kv_eval_cache(kv)
+        assert isinstance(eval_kv, tuple)
+        assert len(eval_kv) == 2
+
+    def test_dynamic_layers_cache_returns_deepcopy(self):
+        dc = _FakeDynamicCacheLayers(
+            layers=[
+                _FakeCacheLayer(torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4))
+                for _ in range(2)
+            ]
+        )
+        eval_cache = _kv_eval_cache(dc)
+        assert eval_cache is not dc
+        assert isinstance(eval_cache, _FakeDynamicCacheLayers)
+        assert eval_cache.layers[0].keys is not dc.layers[0].keys
+        assert torch.allclose(eval_cache.layers[0].keys, dc.layers[0].keys)
+
+
+# ===========================================================================
+# Probe helper extraction
+# ===========================================================================
+
+class TestProbeKVExtraction:
+    def test_get_first_key_tensor_dynamic_cache_layers(self):
+        dc = _FakeDynamicCacheLayers(
+            layers=[
+                _FakeCacheLayer(torch.randn(1, 1, 2, 4), torch.randn(1, 1, 2, 4))
+            ]
+        )
+        key, cache_type = _get_first_key_tensor(dc)
+        assert torch.is_tensor(key)
+        assert cache_type == "dynamic_cache_layers"
 
 
 # ===========================================================================

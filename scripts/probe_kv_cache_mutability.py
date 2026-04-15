@@ -54,11 +54,28 @@ def _get_first_key_tensor(past_key_values: Any):
             raise ValueError("Unexpected layer0 format in past_key_values")
         return layer0[0], "legacy_tuple"
 
+    # Transformers <=5.2 style DynamicCache
     if hasattr(past_key_values, "key_cache"):
         key_cache = getattr(past_key_values, "key_cache")
         if not key_cache:
             raise ValueError("Empty key_cache on dynamic cache")
         return key_cache[0], "dynamic_cache"
+
+    # Transformers 5.3 style DynamicCache with list-valued layers
+    if hasattr(past_key_values, "layers"):
+        layers = getattr(past_key_values, "layers")
+        if not layers:
+            raise ValueError("Empty layers on dynamic cache")
+
+        layer0 = layers[0]
+        if hasattr(layer0, "keys"):
+            k = layer0.keys
+            if k is None:
+                raise ValueError("Layer 0 keys are not initialised")
+            return k, "dynamic_cache_layers"
+
+        if isinstance(layer0, (tuple, list)) and layer0:
+            return layer0[0], "dynamic_cache_layers_tuple"
 
     raise TypeError(f"Unsupported past_key_values type: {type(past_key_values)!r}")
 
@@ -106,7 +123,7 @@ def _resolve_model_ref(model_arg: str) -> tuple[str, bool]:
 def run_probe(args: argparse.Namespace) -> dict:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    from logomesh.kv_mcts import _kv_snapshot_tuple
+    from logomesh.kv_mcts import _kv_eval_cache
 
     model_ref, is_local = _resolve_model_ref(args.model)
     device = _resolve_device(args.device)
@@ -162,7 +179,7 @@ def run_probe(args: argparse.Namespace) -> dict:
     with torch.no_grad():
         baseline = model(
             input_ids=probe_input_ids,
-            past_key_values=_kv_snapshot_tuple(baseline_cache),
+            past_key_values=_kv_eval_cache(baseline_cache),
             use_cache=True,
         )
     baseline_logits = baseline.logits[:, -1, :].float()
@@ -174,7 +191,7 @@ def run_probe(args: argparse.Namespace) -> dict:
         # Snapshot AFTER mutation so the model sees the mutated tensor
         mutated = model(
             input_ids=probe_input_ids,
-            past_key_values=_kv_snapshot_tuple(mutated_cache),
+            past_key_values=_kv_eval_cache(mutated_cache),
             use_cache=True,
         )
     mutated_logits = mutated.logits[:, -1, :].float()
@@ -189,7 +206,7 @@ def run_probe(args: argparse.Namespace) -> dict:
         # Snapshot AFTER restore so the model sees the original tensor
         reverted = model(
             input_ids=probe_input_ids,
-            past_key_values=_kv_snapshot_tuple(mutated_cache),
+            past_key_values=_kv_eval_cache(mutated_cache),
             use_cache=True,
         )
     reverted_logits = reverted.logits[:, -1, :].float()

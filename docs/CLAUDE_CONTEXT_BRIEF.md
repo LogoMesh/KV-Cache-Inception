@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-11 (Phase 2 complete)
+Last updated: 2026-04-14 (import isolation completed; controlled offline probe retries stable)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -15,9 +15,11 @@ If Claude only reads one file first, use this one.
 
 | Priority | Document | Why it matters | Status |
 |---|---|---|---|
-| 1 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of all session changes and validation outcomes | Active |
-| 2 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (C1/C2 blockers now resolved) | Active |
-| 3 | [docs/reviews/phase-a-gaps-2026-04-11.md](reviews/phase-a-gaps-2026-04-11.md) | Deep verification of architecture vs paper-track gaps | Active |
+| 0 | [docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex](NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex) | Read-along working copy with in-document empirical verification callouts mapped to concrete logs and filepaths | Active (non-canonical) |
+| 1 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Latest deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
+| 2 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
+| 3 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
+| 4 | [docs/reviews/phase-a-gaps-2026-04-11.md](reviews/phase-a-gaps-2026-04-11.md) | Deep verification of architecture vs paper-track gaps (historical baseline) | Active |
 
 ## Canonical Project Context
 
@@ -28,18 +30,19 @@ If Claude only reads one file first, use this one.
 
 ## Current Snapshot
 
-- **Phase 2 is complete.** Core paper algorithm modules are implemented and all 117 tests pass.
-- Audit blockers C1 (null plugin crash) and C2 (HF model ID + MPS device) are resolved.
-- New modules: `telemetry_matrix.py`, `orthogonal_escape.py`, `kv_mcts.py`; extended: `hneuron_monitor.py`, `whitebox.py`, `local_model.py`.
-- New scripts: `run_kv_mcts.py`, `measure_lipschitz_drift.py`.
-- Next: Phase 3 — gate on `run_kv_mcts.py` smoke test with real model, then 5 experiment scripts.
+- Core Phase 2 modules are implemented and current full suite is green at **130 passed**.
+- DynamicCache compatibility is validated on cached Qwen runtime:
+	- Mutability gate now returns `gate_passed: true`.
+	- Minimal offline `run_kv_mcts.py` run completes through calibration + MCTS and writes output JSON.
+- Calibration overhead remains substantial, but it is now a performance concern rather than a hard runtime blocker in the validated path.
+- Next immediate work: Phase 3 experiment infrastructure (5 experiment scripts, Procrustes/evaluation stack), plus calibration/runtime optimization.
 
 ## Update Protocol (Keep This Stable)
 
 When any assistant creates or updates docs:
 1. Add or update the document in the Document Index table above.
 2. Update Last updated at the top of this file.
-3. Append a matching entry to [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) (or the current date log).
+3. Append a matching entry to the current date log (for example [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md)).
 4. Keep this file path unchanged so handoffs remain one-click.
 
 ## Copy-Ready Handoff Prompt

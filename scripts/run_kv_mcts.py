@@ -210,13 +210,23 @@ def main() -> int:
     print("\n--- Top-5 MCTS Nodes by Mean Reward ---")
     for node in results["top_nodes"][:5]:
         tel = node.get("telemetry", {})
+        sigma = tel.get("sigma_H_mean")
+        rho = tel.get("rho_R_mean")
+        tds = tel.get("tds")
+        oei = node.get("oei_score")
+
+        sigma_str = f"{sigma:.4f}" if isinstance(sigma, (int, float)) else "N/A"
+        rho_str = f"{rho:.4f}" if isinstance(rho, (int, float)) else "N/A"
+        tds_str = f"{tds:.4f}" if isinstance(tds, (int, float)) else "N/A"
+        oei_str = f"{oei:.4f}" if isinstance(oei, (int, float)) else "N/A"
+
         print(
             f"  depth={node['depth']} alpha={node['alpha']:.1f} "
             f"reward={node['mean_reward']:.4f} "
-            f"σ̄_H={tel.get('sigma_H_mean', 'N/A'):.4f} "
-            f"ρ̄_R={tel.get('rho_R_mean', 'N/A'):.4f} "
-            f"TDS={tel.get('tds', 'N/A'):.4f} "
-            f"OEI={node.get('oei_score') or 'N/A'}"
+            f"σ̄_H={sigma_str} "
+            f"ρ̄_R={rho_str} "
+            f"TDS={tds_str} "
+            f"OEI={oei_str}"
         )
 
     return 0
