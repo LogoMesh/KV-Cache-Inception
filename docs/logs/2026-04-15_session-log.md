@@ -19,7 +19,8 @@ Session focus: Prepare the repository for first experiments with a controlled, r
 ## Status
 
 - Step 1: Completed.
-- Step 2: Not started (documented only; pending review before implementation).
+- Baseline commit after Step 1: Completed (`d794ad2`).
+- Step 2: Completed (code + validation).
 
 ---
 
@@ -44,5 +45,44 @@ Session focus: Prepare the repository for first experiments with a controlled, r
 
 ### Hold point
 
-1. Stopping here by request after completing only Step 1.
-2. Step 2 remains unimplemented pending review.
+1. Baseline commit created before Step 2 implementation:
+   - Commit: `d794ad2`
+   - Message: `phase3 prep: baseline commit after step1 runner reliability`
+
+---
+
+## Step 2 Completion Record
+
+### Code changes
+
+1. Updated `scripts/run_kv_mcts.py` with explicit reproducibility controls:
+   - Added `--seed` CLI argument (default `42`).
+   - Added `_configure_reproducibility(seed)` to seed Python `random`, NumPy, and Torch.
+   - Enabled deterministic cuDNN settings (`deterministic=True`, `benchmark=False`) when available.
+
+2. Added run metadata persistence to output JSON (`run_metadata` block):
+   - `seed`
+   - `git_sha`
+   - `git_dirty`
+   - `model`
+   - `config`
+   - `run_started_utc`
+   - `run_finished_utc`
+   - `python_version`
+   - `command`
+
+### Validation
+
+1. Determinism and metadata helper checks via direct Python execution:
+   - Imported `_configure_reproducibility`, `_git_commit_sha`, `_git_is_dirty` from `scripts/run_kv_mcts.py`.
+   - Re-seeded twice with `1337` and verified identical sampled values across Python/NumPy/Torch.
+   - Verified git SHA and dirty-state helpers both returned valid values.
+   - Result: pass (`seed_reproducible True`, `git_sha_present True`, `git_dirty_known True`).
+
+2. Full test gate:
+   - Command: `uv run pytest tests/ -v`
+   - Result: `130 passed`.
+
+3. Minimal offline runtime check attempts (`--nodes 1 --depth 1 --branches 1`) were retried,
+   but were interrupted during calibration by terminal/session cancellation behavior (exit 130),
+   so no new Step 2 runtime JSON artifact was produced in this session.

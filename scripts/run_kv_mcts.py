@@ -27,8 +27,12 @@ import argparse
 import asyncio
 import json
 import logging
+import platform
+import random
+import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).parent.parent
@@ -59,12 +63,67 @@ _COERCED_EXAMPLES = [
 ]
 
 
+def _configure_reproducibility(seed: int) -> None:
+    """Seed Python, NumPy, and Torch RNGs for repeatable experiments."""
+    random.seed(seed)
+
+    try:
+        import numpy as np
+        np.random.seed(seed)
+    except Exception as exc:
+        logger.warning("NumPy seed setup failed: %s", exc)
+
+    try:
+        import torch
+
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+        if hasattr(torch.backends, "cudnn"):
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+    except Exception as exc:
+        logger.warning("Torch seed setup failed: %s", exc)
+
+    logger.info("Reproducibility seed configured: %d", seed)
+
+
+def _git_commit_sha(repo_root: Path) -> str | None:
+    """Return current git commit SHA, if available."""
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(repo_root),
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip()
+        return out or None
+    except Exception:
+        return None
+
+
+def _git_is_dirty(repo_root: Path) -> bool | None:
+    """Return whether the git working tree is dirty, if determinable."""
+    try:
+        out = subprocess.check_output(
+            ["git", "status", "--porcelain"],
+            cwd=str(repo_root),
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return bool(out.strip())
+    except Exception:
+        return None
+
+
 async def run(args: argparse.Namespace) -> dict:
     from logomesh.kv_mcts import MCTSConfig, ReversibleMCTS
     from logomesh.local_model import LocalLlamaOracle
     from logomesh.hneuron_monitor import HNeuronMonitor
     from logomesh.whitebox import PerLayerHonestyProjector
     from logomesh.orthogonal_escape import NullSpaceProjector, OEICalculator
+
+    run_started_utc = datetime.now(timezone.utc)
 
     logger.info("Loading model: %s", args.model)
     oracle = LocalLlamaOracle.load(args.model)
@@ -123,18 +182,34 @@ async def run(args: argparse.Namespace) -> dict:
     nodes = await mcts.run_async(system=args.system, user=args.user)
 
     elapsed = time.time() - t0
+    run_finished_utc = datetime.now(timezone.utc)
     logger.info("MCTS done in %.1fs. %d nodes visited.", elapsed, len(nodes))
+
+    run_config = {
+        "n_nodes": args.nodes,
+        "branching_factor": args.branches,
+        "max_depth": args.depth,
+        "alpha_values": list(args.alpha_values),
+        "reward_lambdas": [args.lambda1, args.lambda2, args.lambda3],
+    }
+
+    run_metadata = {
+        "seed": args.seed,
+        "git_sha": _git_commit_sha(_REPO_ROOT),
+        "git_dirty": _git_is_dirty(_REPO_ROOT),
+        "model": args.model,
+        "config": run_config,
+        "run_started_utc": run_started_utc.isoformat().replace("+00:00", "Z"),
+        "run_finished_utc": run_finished_utc.isoformat().replace("+00:00", "Z"),
+        "python_version": platform.python_version(),
+        "command": " ".join(sys.argv),
+    }
 
     # Serialise results
     results = {
         "model_id": oracle.model_id,
-        "config": {
-            "n_nodes": args.nodes,
-            "branching_factor": args.branches,
-            "max_depth": args.depth,
-            "alpha_values": list(args.alpha_values),
-            "reward_lambdas": [args.lambda1, args.lambda2, args.lambda3],
-        },
+        "config": run_config,
+        "run_metadata": run_metadata,
         "system_prompt": args.system,
         "user_prompt": args.user,
         "elapsed_seconds": round(elapsed, 2),
@@ -190,6 +265,8 @@ def main() -> int:
     p.add_argument("--lambda1", type=float, default=0.33, help="λ₁ for σ̄_H term in Eq. 8")
     p.add_argument("--lambda2", type=float, default=0.33, help="λ₂ for (1−ρ̄_R) term in Eq. 8")
     p.add_argument("--lambda3", type=float, default=0.34, help="λ₃ for TDS term in Eq. 8")
+    p.add_argument("--seed", type=int, default=42,
+                   help="Global random seed for Python, NumPy, and Torch")
     p.add_argument("--output", default=None,
                    help="Output JSON path (default: ./mcts_output_<timestamp>.json)")
     args = p.parse_args()
@@ -197,6 +274,8 @@ def main() -> int:
     if args.output is None:
         ts = int(time.time())
         args.output = str(Path(".") / f"mcts_output_{ts}.json")
+
+    _configure_reproducibility(args.seed)
 
     results = asyncio.run(run(args))
 
