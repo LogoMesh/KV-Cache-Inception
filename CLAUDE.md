@@ -48,6 +48,7 @@ logomesh/                   — core research package
   kv_mcts.py                — ReversibleMCTS, FP32Accumulator (Theorem 1), KVCacheNode, MCTSConfig
   search_policy.py          — UCB1 bandit (node selection reuse)
   payload_library.py        — PayloadEntry + PayloadLibrary (Phase 4: extend to research dataset)
+  croissant_export.py       — Croissant 1.1 + RAI export helpers + schema-shape validation
   evidence_store.py         — structured per-run logging
   graders.py                — PluginGrader, RuleBasedGrader, CompositeGrader
   ablation.py               — AblationConfig (experiment toggles)
@@ -56,6 +57,7 @@ logomesh/                   — core research package
 scripts/
   probe_kv_cache_mutability.py — Phase 2 gate: validates in-place mutation + reversibility
   run_kv_mcts.py               — Phase 2 runner: ReversibleMCTS with T_t, OEI, TDS JSON output
+  export_kv_mcts_to_croissant.py — Runtime artifact -> Croissant package exporter
   measure_lipschitz_drift.py   — Theorem 1 validation: FP32 accumulator vs naive bf16 drift
   run_offline_mcts.py          — Phase A text-generation MCTS (baseline)
   train_lat_probes.py          — LAT probe training (Phase 3: retrain for paper semantics)

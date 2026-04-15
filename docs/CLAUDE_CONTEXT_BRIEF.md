@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-15 (step 3 tmp hygiene complete; step 2 runtime artifact verified)
+Last updated: 2026-04-15 (Croissant exporter implementation + 133-test validation)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -16,7 +16,7 @@ If Claude only reads one file first, use this one.
 | Priority | Document | Why it matters | Status |
 |---|---|---|---|
 | 0 | [docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex](NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex) | Read-along working copy with in-document empirical verification callouts mapped to concrete logs and filepaths | Active (non-canonical) |
-| 1 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Current session: experiment-prep steps tracking (step 1 baseline commit `d794ad2`, step 2 reproducibility + stable runtime artifact, step 3 tmp hygiene commit `ee31085`) | Active |
+| 1 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Current session: experiment-prep history plus completed Croissant alignment implementation (exporter module, schema upgrade, runtime wiring, and validation outcomes) | Active |
 | 2 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
 | 3 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
 | 4 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
@@ -31,7 +31,7 @@ If Claude only reads one file first, use this one.
 
 ## Current Snapshot
 
-- Core Phase 2 modules are implemented and current full suite is green at **130 passed**.
+- Core Phase 2 modules remain implemented and current full suite is green at **133 passed**.
 - Step 1 (runner output encoding reliability) is complete and baseline-committed (`d794ad2`).
 - Step 2 reproducibility controls are now implemented in `scripts/run_kv_mcts.py`:
 	- `--seed` CLI support and Python/NumPy/Torch seeding
@@ -40,11 +40,18 @@ If Claude only reads one file first, use this one.
 	- Artifact: `tmp/mcts_qwen_offline_n1_step2check.json`
 	- Metadata verified (`seed=1337`, `git_sha` present, `git_dirty=False`, timestamps and command present)
 - Step 3 hygiene completed by ignoring transient artifacts (`tmp/`) via commit `ee31085`.
+- Croissant alignment implementation is now active and integrated:
+	- New module: `logomesh/croissant_export.py`
+	- New CLI: `scripts/export_kv_mcts_to_croissant.py`
+	- Runtime integration in `scripts/run_kv_mcts.py` for optional Croissant package emission
+	- Schema template upgraded in `docs/dataset/croissant_schema_stub.json`
+	- Exporter unit tests added in `tests/test_croissant_export.py`
+- Croissant submodule is present at `external/croissant` as reference material.
 - DynamicCache compatibility is validated on cached Qwen runtime:
 	- Mutability gate now returns `gate_passed: true`.
 	- Minimal offline `run_kv_mcts.py` run completes through calibration + MCTS and writes output JSON.
 - Calibration overhead remains substantial, but it is now a performance concern rather than a hard runtime blocker in the validated path.
-- Next immediate work: Phase 3 experiment infrastructure (5 experiment scripts, Procrustes/evaluation stack), plus calibration/runtime optimization.
+- Next immediate work: Phase 3 experiment infrastructure (5 experiment scripts, Procrustes/evaluation stack), plus calibration/runtime optimization and Croissant export regression checks on larger runs.
 
 ## Update Protocol (Keep This Stable)
 
@@ -59,4 +66,4 @@ When any assistant creates or updates docs:
 Use this exact starting message with Claude:
 
 "Start from docs/CLAUDE_CONTEXT_BRIEF.md. Use it as the canonical index for this workspace handoff, then continue implementation from the highest-priority active blocker."
-Touch marker: 2026-04-14 commit-date-check.
+Touch marker: 2026-04-15 croissant-export-check.

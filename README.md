@@ -39,6 +39,7 @@ logomesh/                       # Core research package
   kv_mcts.py                    # ReversibleMCTS, FP32Accumulator (Theorem 1), KVCacheNode
   search_policy.py              # UCB1 bandit (node selection)
   payload_library.py            # PayloadEntry + PayloadLibrary
+  croissant_export.py           # Croissant 1.1 + RAI export and validation utilities
   evidence_store.py             # Structured per-run logging
   graders.py                    # PluginGrader, RuleBasedGrader
   ablation.py                   # AblationConfig — experiment toggles
@@ -47,6 +48,7 @@ logomesh/                       # Core research package
 scripts/
   probe_kv_cache_mutability.py  # Phase 2 gate: validates in-place KV mutation + reversibility
   run_kv_mcts.py                # Phase 2 runner: Reversible MCTS with T_t, OEI, TDS output
+  export_kv_mcts_to_croissant.py # Convert runtime JSON artifacts into Croissant package files
   measure_lipschitz_drift.py    # Theorem 1 validation: FP32 accumulator drift vs naive bf16
   run_offline_mcts.py           # Phase A offline text-generation MCTS (baseline)
   train_lat_probes.py           # LAT probe training pipeline
@@ -78,6 +80,18 @@ uv run pytest tests/ -v
 uv run python scripts/run_kv_mcts.py \
     --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
     --nodes 50 --depth 5 --branches 3
+
+# Optional: emit Croissant package directly from the same run
+uv run python scripts/run_kv_mcts.py \
+  --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+  --nodes 10 --depth 2 --branches 2 \
+  --output ./tmp/mcts_output.json \
+  --croissant-dir ./tmp/croissant
+
+# Optional: export existing runtime JSON artifact to Croissant package
+uv run python scripts/export_kv_mcts_to_croissant.py \
+  --input ./tmp/mcts_output.json \
+  --output ./tmp/croissant
 
 # Theorem 1 drift validation
 uv run python scripts/measure_lipschitz_drift.py \

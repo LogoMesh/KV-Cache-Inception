@@ -16,12 +16,46 @@ Session focus: Prepare the repository for first experiments with a controlled, r
 
 ---
 
+## Croissant Alignment TODOs (Requested Hold Before Execution)
+
+Status: On hold by request; do not execute until explicitly resumed.
+Historical note: this hold was later lifted in the same session. See "Croissant Alignment Execution (Resumed)" below for completion records.
+
+- [ ] TODO 1: Add explicit Croissant evidence-format language to the canonical paper draft (`docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal.tex`) so collection and release format are unambiguous.
+- [ ] TODO 2: Add a Croissant exporter path that maps runtime artifacts (for example `run_kv_mcts.py` JSON outputs and evidence records) into the schema defined in `docs/dataset/croissant_schema_stub.json`.
+- [ ] TODO 3: Add validation plumbing so runs can produce both raw JSON and Croissant-ready outputs with schema-shape checks for key fields.
+
+---
+
+## Croissant Submodule Consideration (Pre-implementation Snapshot)
+
+Historical note: this section records the pre-addition decision pass. Current state is covered in the resumed execution section below.
+
+Question: should `https://github.com/mlcommons/croissant.git` be pulled as a git submodule for local learning/reference?
+
+Findings:
+1. Upstream is reachable and active; current resolved HEAD during this check: `828034a45d5c536789c7f6311d4c4a68f7804129`.
+2. Repository appears to serve as both spec/examples and implementation (`python/mlcroissant`) with broad integrations.
+3. At time of this check, this workspace had no submodules configured (`.gitmodules` absent).
+
+Recommendation:
+1. Reasonable as an optional reference submodule if we want offline local spec/examples while implementing TODOs 1–3.
+2. Keep it isolated as a non-runtime dependency (for example `external/croissant`), pinned to a commit, and avoid coupling production code imports directly to submodule source.
+3. Alternative (lighter): rely on published package/docs (`mlcroissant`) and vendor only minimal schema examples.
+
+Decision status:
+- Initially pending explicit go-ahead before adding submodule to this repository.
+- Current state: submodule now present at `external/croissant`.
+
+---
+
 ## Status
 
 - Step 1: Completed.
 - Baseline commit after Step 1: Completed (`d794ad2`).
 - Step 2: Completed (code + validation).
 - Step 3 (tmp hygiene before push): Completed (`ee31085`).
+- Step 4 (Croissant alignment implementation): Completed (code + validation, commit pending).
 
 ---
 
@@ -108,3 +142,48 @@ Session focus: Prepare the repository for first experiments with a controlled, r
    - `model: Qwen/Qwen2.5-Coder-1.5B-Instruct`
    - `config`: present
    - `run_started_utc`, `run_finished_utc`, `python_version`, `command`: present
+
+---
+
+## Croissant Alignment Execution (Resumed)
+
+Resume context: Croissant hold was lifted and implementation proceeded with standards-first validation against Croissant 1.1 + Croissant RAI vocabulary and examples.
+
+### TODO resolution
+
+- [x] TODO 1: Added explicit Croissant evidence-format language to canonical paper draft (`docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal.tex`).
+- [x] TODO 2: Added exporter path from runtime artifact JSON to Croissant package structure.
+- [x] TODO 3: Added schema-shape validation plumbing and optional strict validation mode.
+
+### Code and data changes
+
+1. Added `logomesh/croissant_export.py`:
+   - Runtime artifact flattening to tabular records.
+   - Croissant metadata generation with Croissant 1.1 + RAI context.
+   - Internal CSV/metadata shape checks and optional strict validator hook.
+2. Added `scripts/export_kv_mcts_to_croissant.py`:
+   - Post-hoc CLI conversion from existing run JSON to Croissant package.
+3. Updated `scripts/run_kv_mcts.py`:
+   - Optional Croissant export flags for in-run dual output (raw JSON + Croissant package).
+   - Explicit export status/error handling.
+4. Updated `docs/dataset/croissant_schema_stub.json`:
+   - Converted planning stub into executable template shape with concrete `distribution` + `recordSet` mappings.
+5. Added example dataset backing files for the schema template:
+   - `docs/dataset/data/interventions.csv`
+   - `docs/dataset/data/source_run.json`
+6. Added test coverage in `tests/test_croissant_export.py`.
+7. Updated handoff/docs references (`README.md`, `CLAUDE.md`, `docs/CLAUDE_CONTEXT_BRIEF.md`) for exporter workflow visibility.
+
+### Validation results
+
+1. Targeted exporter tests:
+   - Command: `uv run pytest tests/test_croissant_export.py -v`
+   - Result: `3 passed`.
+2. Full test gate:
+   - Command: `uv run pytest tests/ -v`
+   - Result: `133 passed in 35.82s`.
+
+### Commit state
+
+1. Croissant implementation batch is currently uncommitted in working tree.
+2. Commit hash: pending (will be recorded here once commit is created).
