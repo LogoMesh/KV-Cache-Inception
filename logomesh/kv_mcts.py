@@ -664,3 +664,5 @@ class ReversibleMCTS:
             current.reward_sum += reward
             pid = current.parent_id
             current = self._nodes.get(pid) if pid else None
+
+# Touch marker: 2026-04-14 commit-date-check.

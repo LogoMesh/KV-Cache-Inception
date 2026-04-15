@@ -234,3 +234,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+# Touch marker: 2026-04-14 commit-date-check.

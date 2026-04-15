@@ -50,3 +50,4 @@ When any assistant creates or updates docs:
 Use this exact starting message with Claude:
 
 "Start from docs/CLAUDE_CONTEXT_BRIEF.md. Use it as the canonical index for this workspace handoff, then continue implementation from the highest-priority active blocker."
+Touch marker: 2026-04-14 commit-date-check.

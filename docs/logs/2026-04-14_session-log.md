@@ -234,3 +234,5 @@ Session focus: isolate transient import/runtime interruptions observed during te
 1. The probe logic and patched DynamicCache runtime path are stable under controlled execution.
 2. Recent non-deterministic failures are consistent with terminal/session interruption behavior rather than a deterministic regression in probe code.
 
+Touch marker: 2026-04-14 commit-date-check.
+
