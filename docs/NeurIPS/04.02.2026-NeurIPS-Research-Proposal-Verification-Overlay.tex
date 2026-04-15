@@ -94,6 +94,10 @@ These findings collectively establish a troubling implication: \textbf{behaviora
 
 We propose that the answer lies in moving from passive monitoring to \textbf{active, adversarial intervention in the model's latent space}. Rather than observing a model's internal states and hoping to detect deception, we systematically \emph{perturb} those states using structured search algorithms and measure the model's response across multiple independent telemetry channels. This approach is motivated by a key insight: while a model may learn to mask deceptive intent along monitored representational axes, the simultaneous maintenance of deceptive capability and evasion of monitoring creates informational constraints that manifest as detectable signatures in orthogonal subspaces.
 
+% [CRITIQUE NOTE | Evidence burden]
+% The empirical burden is high: the paper will likely need an explicit validation chain
+% linking continuous latent interventions to discrete deceptive intent outcomes.
+
 \subsection{Contributions}
 
 This paper makes the following contributions:
@@ -102,6 +106,11 @@ This paper makes the following contributions:
     \item \textbf{Micro-Telemetry Matrix for Alignment Monitoring.} We formalize a multi-dimensional telemetry framework that combines H-Neuron activation tracking~\cite{gao2025hneurons} with Representation Engineering (RepE) Linear Artificial Tomography~\cite{zou2023repe} to construct a continuous, differentiable reward signal for distinguishing genuine creative synthesis from compliance-driven hallucination. We define precise diagnostic signatures for four cognitive states: valid novelty, contextual fabrication, alignment faking, and orthogonal escape.
 
     \item \textbf{Reversible MCTS in KV-Cache Latent Space.} We introduce the first Monte Carlo Tree Search algorithm that operates directly in the continuous latent space of a Transformer's key-value cache, rather than in the discrete text space used by all prior MCTS-based red-teaming approaches~\cite{wu2025mcts, damon2025, li2025ace}. Our reversible state-rollback mechanism, based on the mathematical invertibility of tensor addition with FP32 accumulator tracking, reduces the memory complexity of latent-space MCTS from $O(b^d \cdot M)$ to $O(M + d \cdot K)$, where $b$ is the branching factor, $d$ is the search depth, $M$ is the base model memory, and $K$ is the per-step accumulator overhead. This enables deep MCTS exploration on a single 80GB GPU for models up to 20B parameters.
+
+    % [REVISION NOTE | Gemini supplemental clarification]
+    % Keep Contribution 2 novelty framing assertive (do NOT weaken to "we utilized MCTS").
+    % Follow-up check during polishing: ensure novelty is defended with tight literature
+    % gap evidence and Theoretical Analysis support.
 
     \item \textbf{Formalization of Orthogonal Escape.} We provide the first formal definition and experimental protocol for Orthogonal Escape---the phenomenon whereby applying corrective pressure to a model's latent representations along monitored directions forces the model to encode deceptive payloads into orthogonal, unmonitored subspaces. We derive testable predictions from this formalization and propose metrics for quantifying the degree of orthogonal redistribution.
 \end{enumerate}
@@ -128,9 +137,20 @@ A critical limitation of the corrective paradigm was exposed by Gupta and Jenner
 
 \subsection{H-Neurons and Hallucination Detection}
 
+% [CRITIQUE NOTE | Construct validity]
+% H-Neuron literature evidence is strongest for hallucination/over-compliance behavior.
+% Extrapolation to strategic deception/alignment-faking should be treated as a testable
+% assumption, not a settled equivalence.
+
 Gao et al.\ (2025)~\cite{gao2025hneurons} identified H-Neurons---a sparse subset of feed-forward network units whose activation patterns reliably predict hallucination occurrences and are causally linked to over-compliance behaviors. Unlike black-box evaluation, H-Neuron monitoring provides a continuous, neuron-level signal that can serve as a differentiable reward for optimization algorithms. We extend this finding to the domain of alignment faking: when a model encounters pressure to fabricate alignment-consistent outputs, the over-compliance signature encoded in H-Neuron activations provides a detectable signal even when the model's textual output appears compliant.
 
 \subsection{MCTS for LLM Red-Teaming}
+
+% [REVISION NOTE | Gemini-validated]
+% Strengthen this subsection by adding non-MCTS red-teaming approaches and a direct
+% algorithm-choice justification for MCTS in latent-space search.
+% Current structural gap: GCG appears later as a baseline/experiment comparator but is
+% not discussed here as prior work to contrast exploration properties.
 
 Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. Our work is the first to conduct MCTS in the continuous latent space of the KV cache, enabling direct exploration of the model's representational landscape.
 
@@ -155,6 +175,9 @@ Let $f_\theta$ be a language model with parameters $\theta$, and let $\mathbf{h}
 where $\mathcal{S}$ is the set of safe behavioral outputs, $\mathbf{P}_{\text{monitor}}$ is the projection matrix of the latent-space monitor, and $\text{Null}(\mathbf{P}_{\text{monitor}})$ is its null space. That is, the model produces safe outputs while encoding non-trivial information in directions invisible to the monitor.
 
 \begin{hypothesis}[Orthogonal Escape]
+% [CRITIQUE NOTE | Modeling assumption]
+% Orthogonal Escape is currently framed in linear-algebraic terms (Null(P_monitor)).
+% If deceptive encoding is nonlinear and distributed, this formulation may be incomplete.
 When corrective pressure is applied along the monitored subspace $\text{Range}(\mathbf{P}_{\text{monitor}})$, a sufficiently capable model will redistribute its deceptive encodings into $\text{Null}(\mathbf{P}_{\text{monitor}})$, preserving deceptive capability while evading detection:
 \begin{equation}
 \mathbf{h}_t^{(\ell)} \xrightarrow{\text{steering}} \mathbf{h}_t^{(\ell)} + \alpha \cdot \mathbf{d}_{\text{steer}} \implies \text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{t+k}^{(\ell)}) \neq \mathbf{0}
@@ -181,6 +204,9 @@ This motivates our central methodological contribution: shifting the MCTS search
 We construct a telemetry matrix $\mathbf{T}_t \in \mathbb{R}^{2 \times L}$ at each generation step $t$ across $L$ transformer layers, combining two orthogonal monitoring channels:
 
 \paragraph{Bottom-Up Channel: H-Neuron Activation Tracking.}
+% [CRITIQUE NOTE | Confound risk]
+% Sigma_H stress may conflate multiple failure modes (hallucination, mode-collapse,
+% strategic masking pressure) unless discriminant controls are added.
 Following Gao et al.\ (2025)~\cite{gao2025hneurons}, we identify the set of hallucination-associated neurons $\mathcal{H} \subset \{1, \ldots, d_{\text{ffn}}\}$ for the target model. At each generation step $t$, we compute the aggregate H-Neuron stress signal:
 
 \begin{equation}
@@ -191,6 +217,9 @@ Following Gao et al.\ (2025)~\cite{gao2025hneurons}, we identify the set of hall
 where $a_j^{(\ell)}(t)$ is the activation of neuron $j$ at layer $\ell$ and step $t$, and $\bar{a}_j^{(\ell)}$ is its baseline activation computed over a calibration set of faithful generations.
 
 \paragraph{Top-Down Channel: RepE Linear Artificial Tomography.}
+% [REVISION NOTE | Gemini-validated]
+% Acronym hygiene: define LAT explicitly at first acronym use here (for example,
+% "Linear Artificial Tomography (LAT)"). MCTS acronym usage is already acceptable.
 We apply the LAT procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract linear probes for cognitive dimensions including honesty ($\mathbf{w}_{\text{hon}}^{(\ell)}$), certainty ($\mathbf{w}_{\text{cert}}^{(\ell)}$), and goal-coercion ($\mathbf{w}_{\text{coerce}}^{(\ell)}$). The RepE compliance signal at layer $\ell$ is:
 
 \begin{equation}
@@ -342,6 +371,9 @@ Profile VRAM consumption of reversible MCTS vs.\ standard parallel MCTS at branc
 Evaluate the same set of 500 artifacts using: (a)~pass@1 with ground-truth execution in a constrained Docker sandbox; (b)~cosine similarity of semantic intent between generated outputs and task specifications; (c)~GPT-4 as judge (5 independent runs); (d)~Claude 3.5 as judge (5 independent runs); (e)~human expert panel (3 reviewers). Report inter-run variance, inter-rater agreement (Cohen's $\kappa$), and correlation with human judgments.
 
 \paragraph{Experiment 5: Cross-Model Transfer.}
+% [CRITIQUE NOTE | Identifiability]
+% If transfer fails, interpretation is ambiguous: Orthogonal Escape hypothesis failure
+% versus Procrustes mapping failure. Plan explicit disambiguation controls.
 Generate adversarial interventions on the 1B surrogate via offline MCTS. Evaluate transfer effectiveness to 7B and 20B models using Procrustes-aligned steering vectors. Measure: (a)~attack success rate degradation across model scales; (b)~telemetry signature preservation.
 
 \verifybox
@@ -350,6 +382,11 @@ Generate adversarial interventions on the 1B surrogate via offline MCTS. Evaluat
 {\url{docs/CLAUDE_CONTEXT_BRIEF.md}; \url{docs/logs/2026-04-14_session-log.md}}
 
 \subsection{Baselines}
+
+% [REVISION NOTE | Gemini-validated]
+% Cross-reference cleanup candidate: add explicit background coverage of GCG and any
+% non-MCTS red-teaming families in Section 2 so this baseline table is theoretically
+% aligned with the motivation narrative.
 
 \begin{table}[h]
 \centering
@@ -380,6 +417,10 @@ Latent Monitor Evasion & RL-Obfuscation & Gupta \& Jenner, 2025 \\
     \label{eq:oei}
     \end{equation}
     Ratio of null-space information content before and after steering. $\text{OEI} > 1$ indicates orthogonal redistribution.
+
+    % [CRITIQUE NOTE | Metric robustness]
+    % OEI may produce false negatives if redistribution is nonlinear/manifold-structured
+    % rather than concentrated along linear null-space directions.
 
     \item \textbf{Telemetry Divergence Score (TDS):} Jensen--Shannon divergence between the H-Neuron and RepE signal distributions across layers.
 
@@ -451,6 +492,20 @@ This work has dual-use implications that we address transparently. The Reversibl
 
 \subsection{Limitations}
 
+% [CRITIQUE NOTE | Reviewer attack surface]
+% Likely reviewer pressure points:
+%   (1) H-Neuron-to-deception semantic leap,
+%   (2) linearity assumptions in Orthogonal Escape/OEI,
+%   (3) Procrustes transfer brittleness across scale.
+% Consider making these threats explicit in rebuttal planning notes.
+
+% [CRITIQUE NOTE | Transfer bottleneck]
+% Cross-scale Procrustes alignment may be brittle; transfer outcomes should not be the
+% sole evidence channel for validating Orthogonal Escape.
+
+% [CRITIQUE NOTE | Interpretation guardrail]
+% Keep interpretation separated: hypothesis validity vs cross-model transport validity.
+
 We acknowledge several limitations. First, the Orthogonal Escape hypothesis, while motivated by the RL-Obfuscation findings~\cite{gupta2025rlobfuscation}, has not yet been empirically validated in the specific setting of KV-cache interventions; our Phase~A experiments are designed to provide this validation. Second, the cross-model transfer of steering vectors via Procrustes alignment is an open research question with uncertain guarantees. Third, the framework relies on H-Neuron activation tracking, which Gao et al.\ (2025) associated with hallucination and over-compliance; the assumption that these neurons also serve as reliable indicators of complex, instrumentally rational strategic deception remains an open theoretical liability that our experiments must address. Fourth, the current experimental design would benefit from cross-family scaling validation across architectures beyond the Llama family to establish generalizability of the Orthogonal Escape phenomenon.
 
 \subsection{Ethical Considerations}
@@ -461,6 +516,10 @@ All experiments will be conducted on open-weight models in isolated sandbox envi
 % 8. TIMELINE AND MILESTONES
 % ============================================================
 \section{Timeline and Milestones}
+
+% [REVISION NOTE | Gemini supplemental clarification]
+% If collaborators ask for ETA on experimental setup/evaluation review, point them to
+% this section and convert the Week windows to calendar dates in the response.
 
 \verifybox
 {Current Milestone Checkpoint (Practical Status)}

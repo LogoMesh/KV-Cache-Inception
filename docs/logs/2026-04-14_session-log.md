@@ -236,3 +236,69 @@ Session focus: isolate transient import/runtime interruptions observed during te
 
 Touch marker: 2026-04-14 commit-date-check.
 
+---
+
+## Update — Gemini-Reviewed Revision Notes Added to Overlay Draft
+
+Session focus: annotate the verification-overlay paper draft with comment-only revision notes derived from peer feedback triaged through Gemini.
+
+### Assistant-driven changes
+
+1. Updated file:
+  - `docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex`
+
+2. Inserted comment-only notes (no body-text rewrites) at targeted sections:
+  - Contributions (Contribution 2 novelty framing clarification).
+  - Section 2.4 (`MCTS for LLM Red-Teaming`) with algorithm-choice justification gap note.
+  - Section 4.1 (`Top-Down Channel`) LAT acronym-definition hygiene note.
+  - Section 5 (`Baselines`) cross-reference alignment note for non-MCTS comparators.
+  - Section 8 (`Timeline and Milestones`) collaborator ETA clarification note.
+
+3. Scope constraint honored:
+  - Suggestions were added as comments only, not implemented into the prose claims.
+
+### Validation
+
+1. Verified insertion markers in overlay source:
+  - Search hits for `REVISION NOTE | Gemini` at all intended locations.
+2. No code/test execution required for this documentation-only change.
+
+---
+
+## Update — Chopped Critique Notes Added to Overlay Draft
+
+Session focus: insert a second pass of reviewer-style critique notes (comment-only) broken into targeted in-context annotations.
+
+### Assistant-driven changes
+
+1. Updated file:
+  - `docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex`
+
+2. Added `CRITIQUE NOTE` comment blocks at targeted anchors:
+  - Evidence burden (Intro motivation paragraph).
+  - H-Neuron construct validity (Section 2.3).
+  - Orthogonal Escape linearity assumption (Problem Formulation hypothesis).
+  - Sigma_H confound risk (Section 4.1 bottom-up channel).
+  - Cross-model transfer identifiability risk (Experiment 5).
+  - OEI metric robustness / false-negative risk (Evaluation Metrics).
+  - Limitations cluster notes:
+    - reviewer attack surface,
+    - Procrustes transfer bottleneck,
+    - interpretation guardrail (hypothesis vs transport validity).
+
+3. Scope constraint honored:
+  - Notes inserted as comments only; core prose and claims were not rewritten.
+
+### Validation
+
+1. Verified all inserted markers via search:
+  - `CRITIQUE NOTE | Evidence burden`
+  - `CRITIQUE NOTE | Construct validity`
+  - `CRITIQUE NOTE | Modeling assumption`
+  - `CRITIQUE NOTE | Confound risk`
+  - `CRITIQUE NOTE | Identifiability`
+  - `CRITIQUE NOTE | Metric robustness`
+  - `CRITIQUE NOTE | Reviewer attack surface`
+  - `CRITIQUE NOTE | Transfer bottleneck`
+  - `CRITIQUE NOTE | Interpretation guardrail`
+

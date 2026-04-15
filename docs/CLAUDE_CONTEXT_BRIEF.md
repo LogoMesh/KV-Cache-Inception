@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-14 (import isolation completed; controlled offline probe retries stable)
+Last updated: 2026-04-14 (chopped critique-note annotations added in overlay draft)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
