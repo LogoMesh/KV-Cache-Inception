@@ -1,4 +1,4 @@
-# LogoMesh — KV-Cache Inception
+# KV-Cache Inception
 
 **Reversible Monte Carlo Tree Search in Latent Space for Detecting and Stress-Testing Alignment Faking in Large Language Models**
 
