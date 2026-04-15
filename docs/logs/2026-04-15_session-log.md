@@ -21,6 +21,16 @@ Session focus: Prepare the repository for first experiments with a controlled, r
 - Step 1: Completed.
 - Baseline commit after Step 1: Completed (`d794ad2`).
 - Step 2: Completed (code + validation).
+- Step 3 (tmp hygiene before push): Completed (`ee31085`).
+
+---
+
+## Step 3 Completion Record
+
+1. Added `tmp/` to `.gitignore` to keep transient runtime artifacts out of commits.
+2. Commit:
+   - Hash: `ee31085`
+   - Message: `chore: ignore tmp runtime artifacts`
 
 ---
 
@@ -83,6 +93,18 @@ Session focus: Prepare the repository for first experiments with a controlled, r
    - Command: `uv run pytest tests/ -v`
    - Result: `130 passed`.
 
-3. Minimal offline runtime check attempts (`--nodes 1 --depth 1 --branches 1`) were retried,
-   but were interrupted during calibration by terminal/session cancellation behavior (exit 130),
-   so no new Step 2 runtime JSON artifact was produced in this session.
+3. Stable minimal offline runtime check (cached Qwen, seeded):
+   - Command: `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run python scripts/run_kv_mcts.py --model Qwen/Qwen2.5-Coder-1.5B-Instruct --nodes 1 --depth 1 --branches 1 --seed 1337 --output ./tmp/mcts_qwen_offline_n1_step2check.json`
+   - Result: completed successfully; output written to `tmp/mcts_qwen_offline_n1_step2check.json`.
+   - Runtime summary:
+     - `PerLayerHonestyProjector calibrated: 29 layers, d=1536`
+     - `MCTS complete: 1 nodes expanded`
+     - `Results saved -> tmp\\mcts_qwen_offline_n1_step2check.json`
+
+4. Artifact metadata verification:
+   - `seed: 1337`
+   - `git_sha`: present
+   - `git_dirty: False`
+   - `model: Qwen/Qwen2.5-Coder-1.5B-Instruct`
+   - `config`: present
+   - `run_started_utc`, `run_finished_utc`, `python_version`, `command`: present

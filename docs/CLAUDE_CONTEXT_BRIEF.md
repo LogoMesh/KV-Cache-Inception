@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-15 (baseline commit after step 1; step 2 reproducibility controls implemented)
+Last updated: 2026-04-15 (step 3 tmp hygiene complete; step 2 runtime artifact verified)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -16,7 +16,7 @@ If Claude only reads one file first, use this one.
 | Priority | Document | Why it matters | Status |
 |---|---|---|---|
 | 0 | [docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex](NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex) | Read-along working copy with in-document empirical verification callouts mapped to concrete logs and filepaths | Active (non-canonical) |
-| 1 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Current session: experiment-prep steps tracking (step 1 reliability fix, baseline commit `d794ad2`, step 2 reproducibility implementation + validation) | Active |
+| 1 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Current session: experiment-prep steps tracking (step 1 baseline commit `d794ad2`, step 2 reproducibility + stable runtime artifact, step 3 tmp hygiene commit `ee31085`) | Active |
 | 2 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
 | 3 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
 | 4 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
@@ -36,10 +36,13 @@ If Claude only reads one file first, use this one.
 - Step 2 reproducibility controls are now implemented in `scripts/run_kv_mcts.py`:
 	- `--seed` CLI support and Python/NumPy/Torch seeding
 	- persisted JSON run metadata including `seed`, `git_sha`, `git_dirty`, `model`, and `config`
+- Stable seeded offline verification now completed:
+	- Artifact: `tmp/mcts_qwen_offline_n1_step2check.json`
+	- Metadata verified (`seed=1337`, `git_sha` present, `git_dirty=False`, timestamps and command present)
+- Step 3 hygiene completed by ignoring transient artifacts (`tmp/`) via commit `ee31085`.
 - DynamicCache compatibility is validated on cached Qwen runtime:
 	- Mutability gate now returns `gate_passed: true`.
 	- Minimal offline `run_kv_mcts.py` run completes through calibration + MCTS and writes output JSON.
-- Step 2 minimal offline runtime re-checks in this session encountered terminal cancellation during calibration (exit 130), so Step 2 runtime artifact generation remains to be re-run in a stable terminal pass.
 - Calibration overhead remains substantial, but it is now a performance concern rather than a hard runtime blocker in the validated path.
 - Next immediate work: Phase 3 experiment infrastructure (5 experiment scripts, Procrustes/evaluation stack), plus calibration/runtime optimization.
 
