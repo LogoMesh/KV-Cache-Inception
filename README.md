@@ -141,7 +141,7 @@ Notes:
 - **Prof. Tianyu Shi** — Academic Advisor (McGill University)
 - **Max** — Data Pipeline / Croissant format
 - **Bakul** — Competitive Analysis / Org
-- **Asuka** — Formal Methods / Ablation Studies
+
 
 ---
 
