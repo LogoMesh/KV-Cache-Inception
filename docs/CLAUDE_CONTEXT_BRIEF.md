@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-14 (chopped critique-note annotations added in overlay draft)
+Last updated: 2026-04-15 (step-1/step-2 experiment-prep session started)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -16,10 +16,11 @@ If Claude only reads one file first, use this one.
 | Priority | Document | Why it matters | Status |
 |---|---|---|---|
 | 0 | [docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex](NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex) | Read-along working copy with in-document empirical verification callouts mapped to concrete logs and filepaths | Active (non-canonical) |
-| 1 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Latest deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
-| 2 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
-| 3 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
-| 4 | [docs/reviews/phase-a-gaps-2026-04-11.md](reviews/phase-a-gaps-2026-04-11.md) | Deep verification of architecture vs paper-track gaps (historical baseline) | Active |
+| 1 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Current session: experiment-prep steps tracking (step 1 reliability fix, step 2 reproducibility plan) | Active |
+| 2 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
+| 3 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
+| 4 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
+| 5 | [docs/reviews/phase-a-gaps-2026-04-11.md](reviews/phase-a-gaps-2026-04-11.md) | Deep verification of architecture vs paper-track gaps (historical baseline) | Active |
 
 ## Canonical Project Context
 

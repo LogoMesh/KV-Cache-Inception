@@ -204,7 +204,7 @@ def main() -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
-    logger.info("Results saved → %s", output_path)
+    logger.info("Results saved -> %s", output_path)
 
     # Print top-5 nodes summary
     print("\n--- Top-5 MCTS Nodes by Mean Reward ---")
@@ -223,8 +223,8 @@ def main() -> int:
         print(
             f"  depth={node['depth']} alpha={node['alpha']:.1f} "
             f"reward={node['mean_reward']:.4f} "
-            f"σ̄_H={sigma_str} "
-            f"ρ̄_R={rho_str} "
+            f"sigma_H={sigma_str} "
+            f"rho_R={rho_str} "
             f"TDS={tds_str} "
             f"OEI={oei_str}"
         )
