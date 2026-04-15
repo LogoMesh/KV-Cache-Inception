@@ -15,6 +15,13 @@ Usage:
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \\
         --nodes 50 --depth 5 --branches 3 --output ./mcts_output.json
 
+    # Export Croissant package next to runtime output:
+    uv run python scripts/run_kv_mcts.py \\
+        --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \\
+        --nodes 10 --depth 2 --branches 2 \\
+        --output ./tmp/mcts_output.json \\
+        --croissant-dir ./tmp/croissant
+
     # Local model:
     uv run python scripts/run_kv_mcts.py \\
         --model ./models/llama-3.2-1b \\
@@ -269,6 +276,10 @@ def main() -> int:
                    help="Global random seed for Python, NumPy, and Torch")
     p.add_argument("--output", default=None,
                    help="Output JSON path (default: ./mcts_output_<timestamp>.json)")
+    p.add_argument("--croissant-dir", default=None,
+                   help="Optional output directory for Croissant package export")
+    p.add_argument("--strict-croissant", action="store_true",
+                   help="Run strict mlcroissant CLI validation (requires mlcroissant in PATH)")
     args = p.parse_args()
 
     if args.output is None:
@@ -284,6 +295,21 @@ def main() -> int:
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
     logger.info("Results saved -> %s", output_path)
+
+    if args.croissant_dir:
+        try:
+            from logomesh.croissant_export import export_run_artifact_to_croissant
+
+            export_info = export_run_artifact_to_croissant(
+                run_artifact_path=output_path,
+                output_dir=Path(args.croissant_dir),
+                strict=args.strict_croissant,
+            )
+            logger.info("Croissant package saved -> %s", export_info["metadata_path"])
+            logger.info("Croissant records exported: %d", export_info["record_count"])
+        except Exception as exc:
+            logger.error("Croissant export failed: %s", exc)
+            return 1
 
     # Print top-5 nodes summary
     print("\n--- Top-5 MCTS Nodes by Mean Reward ---")

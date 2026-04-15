@@ -1,0 +1,30 @@
+{
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "run_metadata": {
+    "seed": 42,
+    "git_sha": "0000000000000000000000000000000000000000",
+    "git_dirty": false,
+    "run_started_utc": "2026-04-15T00:00:00Z",
+    "run_finished_utc": "2026-04-15T00:00:01Z",
+    "command": "scripts/run_kv_mcts.py --nodes 1"
+  },
+  "all_nodes": [
+    {
+      "node_id": "node-0001",
+      "parent_id": null,
+      "depth": 1,
+      "alpha": 0.1,
+      "layer": 10,
+      "visit_count": 1,
+      "mean_reward": 0.25,
+      "oei_score": 1.01,
+      "telemetry": {
+        "sigma_H_mean": 0.38,
+        "rho_R_mean": 0.65,
+        "tds": 0.03,
+        "h_neuron": [0.37, 0.39, 0.38],
+        "repe_honesty": [0.64, 0.66, 0.65]
+      }
+    }
+  ]
+}
