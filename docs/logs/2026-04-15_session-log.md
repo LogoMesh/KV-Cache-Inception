@@ -244,3 +244,34 @@ Continuation context: after push completion, work proceeded to satisfy deep expl
 1. Standards-hardening implementation commit created:
    - `021310c` — `feat: harden Croissant export metadata checks`
 2. Documentation/guidance continuation commit: pending.
+
+---
+
+## NeurIPS Hardline Agent Contract (Planning + Enforcement)
+
+Objective: create a persistent, agent-facing hardline rules document to lock submission-critical constraints for NeurIPS readiness and keep future agent work aligned.
+
+### Created document
+
+1. Added:
+   - `docs/NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md`
+2. Reference linkage included explicitly in the new contract:
+   - `docs/NeurIPS/NeurIPS Submission Guide (KV-CAche-Inception).md`
+
+### Content scope implemented
+
+1. Non-negotiable rules for:
+   - E&D track framing lock
+   - formatting/anonymization constraints
+   - Croissant 1.1 + RAI compliance posture
+   - data hosting and dual-use mitigation controls
+   - reproducibility and validation gates
+   - visualization accessibility and deadline operations
+2. Agent execution checklists for:
+   - pre-change checks
+   - final submission-readiness checks
+3. Change-control policy requiring explicit conflict escalation before violating hardline constraints.
+
+### Index/handoff updates
+
+1. Updated `docs/CLAUDE_CONTEXT_BRIEF.md` to register this contract as an active high-priority handoff artifact.

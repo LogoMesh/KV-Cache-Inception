@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-15 (Croissant deep-dive guidance + 135-test validation)
+Last updated: 2026-04-15 (NeurIPS hardline agent contract added)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -17,11 +17,12 @@ If Claude only reads one file first, use this one.
 |---|---|---|---|
 | 0 | [docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex](NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex) | Read-along working copy with in-document empirical verification callouts mapped to concrete logs and filepaths | Active (non-canonical) |
 | 1 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Current session: experiment-prep history plus completed Croissant alignment implementation (exporter module, schema upgrade, runtime wiring, and validation outcomes) | Active |
-| 2 | [docs/reviews/croissant-implementation-guidance-2026-04-15.md](reviews/croissant-implementation-guidance-2026-04-15.md) | Standards-grounded Croissant 1.1/RAI implementation contract, validator expectations, and release checklist for runtime artifact export | Active |
-| 3 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
-| 4 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
-| 5 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
-| 6 | [docs/reviews/phase-a-gaps-2026-04-11.md](reviews/phase-a-gaps-2026-04-11.md) | Deep verification of architecture vs paper-track gaps (historical baseline) | Active |
+| 2 | [docs/NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md](NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md) | Persistent non-negotiable submission rules for agents; binds track framing, formatting, Croissant/RAI compliance, ethics posture, and validation discipline | Active |
+| 3 | [docs/reviews/croissant-implementation-guidance-2026-04-15.md](reviews/croissant-implementation-guidance-2026-04-15.md) | Standards-grounded Croissant 1.1/RAI implementation contract, validator expectations, and release checklist for runtime artifact export | Active |
+| 4 | [docs/logs/2026-04-14_session-log.md](logs/2026-04-14_session-log.md) | Deep runtime audit (live Qwen gate attempts, DynamicCache findings, calibration timing) | Active |
+| 5 | [docs/logs/2026-04-11_session-log.md](logs/2026-04-11_session-log.md) | Chronological record of Phase 2 implementation work and earlier validation outcomes | Active |
+| 6 | [docs/reviews/local-to-h100-transition-audit-2026-04-11.md](reviews/local-to-h100-transition-audit-2026-04-11.md) | Readiness verdict and migration runbook (historical baseline) | Active |
+| 7 | [docs/reviews/phase-a-gaps-2026-04-11.md](reviews/phase-a-gaps-2026-04-11.md) | Deep verification of architecture vs paper-track gaps (historical baseline) | Active |
 
 ## Canonical Project Context
 
@@ -45,6 +46,11 @@ If Claude only reads one file first, use this one.
 	- `ae0ee65` (submodule integration)
 	- `bd48285` (export pipeline + tests)
 	- `a531b29` (docs/paper updates)
+	- `021310c` (export metadata hardening)
+	- `e83b25d` (guidance contract docs)
+- NeurIPS hardline policy contract added for persistent agent discipline:
+	- `docs/NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md`
+	- explicitly anchored to `docs/NeurIPS/NeurIPS Submission Guide (KV-CAche-Inception).md`
 - Croissant alignment implementation is now active and integrated:
 	- New module: `logomesh/croissant_export.py`
 	- New CLI: `scripts/export_kv_mcts_to_croissant.py`
@@ -60,6 +66,7 @@ If Claude only reads one file first, use this one.
 	- Minimal offline `run_kv_mcts.py` run completes through calibration + MCTS and writes output JSON.
 - Calibration overhead remains substantial, but it is now a performance concern rather than a hard runtime blocker in the validated path.
 - Next immediate work: commit/push the standards-hardening continuation batch, then proceed to Phase 3 experiment infrastructure (5 experiment scripts, Procrustes/evaluation stack) plus larger-run Croissant export regression checks.
+- Next immediate work: enforce the new hardline contract during all submission-facing edits and continue Phase 3 experiment infrastructure with Croissant/RAI release-readiness preserved.
 
 ## Update Protocol (Keep This Stable)
 
@@ -74,4 +81,4 @@ When any assistant creates or updates docs:
 Use this exact starting message with Claude:
 
 "Start from docs/CLAUDE_CONTEXT_BRIEF.md. Use it as the canonical index for this workspace handoff, then continue implementation from the highest-priority active blocker."
-Touch marker: 2026-04-15 croissant-guidance-check.
+Touch marker: 2026-04-15 neurips-hardline-contract-check.
