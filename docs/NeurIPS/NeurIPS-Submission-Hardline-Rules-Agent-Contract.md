@@ -10,7 +10,26 @@ This contract is grounded in the following project-specific submission strategy 
 
 - docs/NeurIPS/NeurIPS Submission Guide (KV-CAche-Inception).md
 
-Agents must treat that file as the canonical strategic reference for track alignment, formatting constraints, metadata compliance, ethics posture, and submission logistics.
+Agents may use that file for strategic context (track selection rationale, experiment framing,
+ethics posture). **However, it is an AI-generated document that contains confirmed errors
+(wrong bibliography URLs, unverified platform size claims). It must NOT be treated as
+authoritative for specific formatting requirements or submission mechanics.**
+
+For authoritative requirements, the following sources take precedence in this order:
+
+1. **Live NeurIPS 2026 website** (fetch at time of use):
+   - E&D track: https://neurips.cc/Conferences/2026/CallForEvaluationsDatasets
+   - Main track / general: https://neurips.cc/Conferences/2026/CallForPapers
+   - Main Track Handbook: https://neurips.cc/Conferences/2026/MainTrackHandbook
+
+2. **Downloaded official template** (already in repo):
+   - `docs/NeurIPS/neurips_2026.sty` — the actual NeurIPS 2026 LaTeX style file
+   - Source ZIP: https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip
+
+3. **Main Track Handbook (saved copy)**:
+   - `docs/NeurIPS/Main Track Handbook 2026_files/`
+
+4. **KV-CAche-Inception guide** — for strategic framing only, not for formatting facts.
 
 ## Scope
 

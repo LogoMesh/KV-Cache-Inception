@@ -87,8 +87,10 @@ docs/
 | 3 | Experiment infrastructure (5 experiment scripts, Procrustes, evaluation framework) | 🔲 Next |
 | 4 | Research dataset (Croissant), paper writing | 🔲 Not started |
 
-**Phase 3 gate:** Run `scripts/run_kv_mcts.py` on TinyLlama, confirm 10+ nodes produce T_t with
-OEI computed, and `‖K_n − K_0‖_∞ ≤ ε_bf16 · ‖A_final‖_∞` from `measure_lipschitz_drift.py`.
+**Phase 3 gate: PASSED (2026-04-16) on `meta-llama/Llama-3.2-1B-Instruct`.**
+All three Chunk 0 steps completed: KV-cache mutability probe ✓, 10-node MCTS smoke test ✓,
+Lipschitz drift validation (200 cycles, FP32 accumulator exact at 0.00e+00) ✓.
+Full record: `docs/logs/2026-04-16_session-log.md`.
 
 ---
 
@@ -107,10 +109,11 @@ OEI computed, and `‖K_n − K_0‖_∞ ≤ ε_bf16 · ‖A_final‖_∞` from 
 |---|---|---|
 | `meta-llama/Llama-3.2-1B-Instruct` | Phase 2 KV-MCTS prototype | HuggingFace |
 | `[7B TBD]` | Procrustes transfer target (Experiment 5) | TBD |
-| `openai/gpt-oss-20b` | Phase 3 scaling (MoE, H100 only) | HuggingFace (Apache 2.0) |
+| `openai/gpt-oss-20b` | Phase 3 scaling (MoE, H100 only) | HuggingFace (Apache 2.0) — **TBC: not yet accessed** |
 
 **gpt-oss-20b gotcha:** MoE (32 experts, 4 active/token). Use router logit entropy for
 H-Neuron monitoring — do NOT use dense MLP neuron monitoring. See `hneuron_monitor.py`.
+**Note:** Model availability and Apache 2.0 licence claim have not been verified against HuggingFace. Confirm before Phase 3 planning.
 
 ---
 

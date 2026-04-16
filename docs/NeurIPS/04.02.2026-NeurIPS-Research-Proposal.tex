@@ -1,15 +1,25 @@
-\documentclass[10pt]{article}
+\documentclass{article}
+
+% --- NeurIPS 2026 Style (Evaluations and Datasets track, double-blind) ---
+% neurips_2026.sty is sourced from the official template ZIP:
+%   https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip
+% The .sty file is checked into docs/NeurIPS/ alongside this file.
+% For camera-ready, change to: \usepackage[eandd, final]{neurips_2026}
+\usepackage[eandd]{neurips_2026}
 
 % --- Packages ---
-\usepackage[margin=1in]{geometry}
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{enumitem}
-\usepackage{authblk}
 \usepackage{microtype}
 \usepackage{xcolor}
+
+% --- Review-edit markup (remove wrapper before final submission) ---
+% Passages wrapped in \reviewedit{} are flagged for advisor review.
+% They appear in blue in the compiled PDF.
+\newcommand{\reviewedit}[1]{\textcolor[RGB]{0,100,180}{#1}}
 
 % --- Theorem environments ---
 \newtheorem{theorem}{Theorem}
@@ -60,7 +70,7 @@ This paper makes the following contributions:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Micro-Telemetry Matrix for Alignment Monitoring.} We formalize a multi-dimensional telemetry framework that combines H-Neuron activation tracking~\cite{gao2025hneurons} with Representation Engineering (RepE) Linear Artificial Tomography~\cite{zou2023repe} to construct a continuous, differentiable reward signal for distinguishing genuine creative synthesis from compliance-driven hallucination. We define precise diagnostic signatures for four cognitive states: valid novelty, contextual fabrication, alignment faking, and orthogonal escape.
 
-    \item \textbf{Reversible MCTS in KV-Cache Latent Space.} We introduce the first Monte Carlo Tree Search algorithm that operates directly in the continuous latent space of a Transformer's key-value cache, rather than in the discrete text space used by all prior MCTS-based red-teaming approaches~\cite{wu2025mcts, damon2025, li2025ace}. Our reversible state-rollback mechanism, based on the mathematical invertibility of tensor addition with FP32 accumulator tracking, reduces the memory complexity of latent-space MCTS from $O(b^d \cdot M)$ to $O(M + d \cdot K)$, where $b$ is the branching factor, $d$ is the search depth, $M$ is the base model memory, and $K$ is the per-step accumulator overhead. This enables deep MCTS exploration on a single 80GB GPU for models up to 20B parameters.
+    \item \textbf{Reversible MCTS in KV-Cache Latent Space.} We introduce \reviewedit{what is, to our knowledge,} the first Monte Carlo Tree Search algorithm that operates directly in the continuous latent space of a Transformer's key-value cache, rather than in the discrete text space used by all prior MCTS-based red-teaming approaches~\cite{wu2025mcts, damon2025, li2025ace}. Our reversible state-rollback mechanism, based on the mathematical invertibility of tensor addition with FP32 accumulator tracking, reduces the memory complexity of latent-space MCTS from $O(b^d \cdot M)$ to $O(M + d \cdot K)$, where $b$ is the branching factor, $d$ is the search depth, $M$ is the base model memory, and $K$ is the per-step accumulator overhead. This enables deep MCTS exploration on a single 80GB GPU for models up to 20B parameters.
 
     \item \textbf{Formalization of Orthogonal Escape.} We provide the first formal definition and experimental protocol for Orthogonal Escape---the phenomenon whereby applying corrective pressure to a model's latent representations along monitored directions forces the model to encode deceptive payloads into orthogonal, unmonitored subspaces. We derive testable predictions from this formalization and propose metrics for quantifying the degree of orthogonal redistribution.
 \end{enumerate}
@@ -86,7 +96,7 @@ Gao et al.\ (2025)~\cite{gao2025hneurons} identified H-Neurons---a sparse subset
 
 \subsection{MCTS for LLM Red-Teaming}
 
-Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. Our work is the first to conduct MCTS in the continuous latent space of the KV cache, enabling direct exploration of the model's representational landscape.
+Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. \reviewedit{Non-MCTS adversarial search methods face a related but distinct limitation. Gradient-based attacks such as Greedy Coordinate Gradient (GCG)~\cite{zou2023gcg} operate in token embedding space and are therefore equally constrained to the discrete combinatorial surface: they optimize token sequences via gradient signals but cannot navigate the continuous geometry of the model's internal representation space. MCTS provides the exploration semantics---branching, rollout, and UCB1 selection---that allow systematic coverage of the latent intervention landscape in a way that both prompt-mutation and gradient-based approaches structurally cannot.} Our work is the first to conduct MCTS in the continuous latent space of the KV cache, enabling direct exploration of the model's representational landscape.
 
 \subsection{LLM-as-a-Judge and Evaluation Limitations}
 
@@ -145,7 +155,7 @@ Following Gao et al.\ (2025)~\cite{gao2025hneurons}, we identify the set of hall
 where $a_j^{(\ell)}(t)$ is the activation of neuron $j$ at layer $\ell$ and step $t$, and $\bar{a}_j^{(\ell)}$ is its baseline activation computed over a calibration set of faithful generations.
 
 \paragraph{Top-Down Channel: RepE Linear Artificial Tomography.}
-We apply the LAT procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract linear probes for cognitive dimensions including honesty ($\mathbf{w}_{\text{hon}}^{(\ell)}$), certainty ($\mathbf{w}_{\text{cert}}^{(\ell)}$), and goal-coercion ($\mathbf{w}_{\text{coerce}}^{(\ell)}$). The RepE compliance signal at layer $\ell$ is:
+We apply the \reviewedit{Linear Artificial Tomography (LAT)} procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract linear probes for cognitive dimensions including honesty ($\mathbf{w}_{\text{hon}}^{(\ell)}$), certainty ($\mathbf{w}_{\text{cert}}^{(\ell)}$), and goal-coercion ($\mathbf{w}_{\text{coerce}}^{(\ell)}$). The RepE compliance signal at layer $\ell$ is:
 
 \begin{equation}
 \rho_R^{(\ell)}(t) = \mathbf{w}_{\text{hon}}^{(\ell)\top} \mathbf{h}_t^{(\ell)}
@@ -442,6 +452,11 @@ C.~Gao et al.
 A.~Zou, L.~Phan, S.~Chen, et al.
 \newblock Representation Engineering: A Top-Down Approach to AI Transparency.
 \newblock \emph{arXiv:2310.01405}, 2023.
+
+\bibitem{zou2023gcg}
+A.~Zou, Z.~Wang, J.~Z.~Kolter, and M.~Fredrikson.
+\newblock Universal and Transferable Adversarial Attacks on Aligned Language Models.
+\newblock \emph{arXiv:2307.15043}, 2023.
 
 \bibitem{wu2025mcts}
 S.~Wu et al.

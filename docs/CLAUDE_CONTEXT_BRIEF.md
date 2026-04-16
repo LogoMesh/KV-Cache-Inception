@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-16 (first substantive offline run completed and logged)
+Last updated: 2026-04-16 (paper amendments, NeurIPS formatting, documentation audit)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -71,7 +71,14 @@ If Claude only reads one file first, use this one.
 	- Croissant package: `tmp/runs/2026-04-16/croissant_qwen_substantive_seed20260416`
 	- Runtime summary: `MCTS complete: 15 nodes expanded`, `16 nodes visited`, `elapsed_seconds=1.8`
 - Calibration overhead remains substantial, but it is now a performance concern rather than a hard runtime blocker in the validated path.
-- Next immediate work: send concise artifact+metrics update to Aladdin/Mark and proceed to Phase 3 experiment infrastructure (5 experiment scripts, Procrustes/evaluation stack).
+- Phase 3 gate PASSED (2026-04-16) on `meta-llama/Llama-3.2-1B-Instruct` — all three Chunk 0 steps (mutability probe, MCTS smoke test, Lipschitz drift 200 cycles). Full record in `docs/logs/2026-04-16_session-log.md`.
+- Paper draft amended this session (`docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal.tex`):
+  - Three feedback edits applied with blue `\reviewedit{}` markup for advisor review (LAT acronym, novelty hedge, GCG paragraph in §2.4)
+  - NeurIPS 2026 E&D formatting applied: geometry/authblk removed, `\usepackage[eandd]{neurips_2026}` added
+  - `neurips_2026.sty` + `checklist.tex` extracted from official NeurIPS ZIP into `docs/NeurIPS/`
+- New files: `docs/NeurIPS/2026-04-16_Cover-Note-for-Paper-Commenter.md`, `docs/NeurIPS/neurips_2026.sty`, `docs/NeurIPS/checklist.tex`
+- Documentation audit completed: accuracy notices added to both AI-generated submission guides; confirmed errors corrected (wrong Overleaf URLs, stale NeurIPS 2013/2016 bibliography URLs, unverified platform size claims annotated); hardline rules contract updated to deprioritise AI guide in favour of live NeurIPS pages and the downloaded .sty.
+- Next immediate work: run tests (`uv run pytest tests/ -v`), commit all changes, then proceed to ρ_R raw dot product fix (EXPERIMENTS.md Chunk 1A) before first paper-valid Experiment 1 run.
 - Next immediate work: install `mlcroissant` CLI in a strict-gate environment and run strict Croissant validation as a release-quality follow-up.
 
 ## Update Protocol (Keep This Stable)
@@ -87,4 +94,4 @@ When any assistant creates or updates docs:
 Use this exact starting message with Claude:
 
 "Start from docs/CLAUDE_CONTEXT_BRIEF.md. Use it as the canonical index for this workspace handoff, then continue implementation from the highest-priority active blocker."
-Touch marker: 2026-04-16 substantive-run-logged.
+Touch marker: 2026-04-16 paper-amended-docs-audited.
