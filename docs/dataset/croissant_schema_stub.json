@@ -55,7 +55,22 @@
   "license": "https://opensource.org/licenses/MIT",
   "url": "https://github.com/Logomesh/kv-cache-inception",
   "version": "0.1.0",
+  "sdVersion": "1.1",
+  "datePublished": "2026-04-15T00:00:00Z",
+  "dateCreated": "2026-04-15T00:00:00Z",
+  "dateModified": "2026-04-15T00:00:00Z",
+  "inLanguage": "en",
+  "keywords": [
+    "alignment-faking detection",
+    "kv-cache intervention",
+    "reversible mcts",
+    "latent telemetry"
+  ],
   "creator": {
+    "@type": "sc:Organization",
+    "name": "LogoMesh Research Team"
+  },
+  "publisher": {
     "@type": "sc:Organization",
     "name": "LogoMesh Research Team"
   },
@@ -81,6 +96,11 @@
       "@id": "interventions",
       "name": "interventions",
       "description": "Node-level telemetry evidence extracted from run_kv_mcts outputs.",
+      "key": [
+        {
+          "@id": "interventions/artifact_id"
+        }
+      ],
       "field": [
         {
           "@type": "cr:Field",

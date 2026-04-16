@@ -75,6 +75,13 @@ def test_export_run_artifact_to_croissant_creates_package(tmp_path: Path):
     assert metadata_path.exists()
     assert source_run_path.exists()
 
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    assert metadata["datePublished"]
+    assert metadata["inLanguage"] == "en"
+    assert isinstance(metadata.get("keywords"), list)
+    assert metadata.get("publisher", {}).get("name") == "LogoMesh Research Team"
+    assert metadata.get("recordSet", [{}])[0].get("key") == [{"@id": "interventions/artifact_id"}]
+
     with csv_path.open("r", newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         assert tuple(reader.fieldnames or []) == REQUIRED_COLUMNS
@@ -115,3 +122,32 @@ def test_validate_metadata_shape_reports_missing_required_key():
     errors = validate_metadata_shape(metadata)
     assert errors
     assert any("recordSet" in error for error in errors)
+
+
+def test_validate_metadata_shape_accepts_dct_conforms_to_alias():
+    metadata = build_metadata_document(
+        csv_file_name="interventions.csv",
+        csv_sha256="a" * 64,
+        source_artifact_name="source_run.json",
+        source_artifact_sha256="b" * 64,
+    )
+    metadata["dct:conformsTo"] = metadata.pop("conformsTo")
+
+    errors = validate_metadata_shape(metadata)
+
+    assert errors == []
+
+
+def test_validate_metadata_shape_reports_invalid_distribution_sha256():
+    metadata = build_metadata_document(
+        csv_file_name="interventions.csv",
+        csv_sha256="a" * 64,
+        source_artifact_name="source_run.json",
+        source_artifact_sha256="b" * 64,
+    )
+    metadata["distribution"][0]["sha256"] = "not-a-valid-sha"
+
+    errors = validate_metadata_shape(metadata)
+
+    assert errors
+    assert any("invalid sha256 format" in error for error in errors)

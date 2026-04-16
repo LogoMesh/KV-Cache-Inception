@@ -114,6 +114,10 @@ FIELD_SPECS: tuple[CroissantFieldSpec, ...] = (
 REQUIRED_COLUMNS: tuple[str, ...] = tuple(field.name for field in FIELD_SPECS)
 
 
+def _is_hex_sha256(value: Any) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(ch in "0123456789abcdefABCDEF" for ch in value)
+
+
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -285,9 +289,15 @@ def build_metadata_document(
         "diagnostic classification, OEI/TDS metrics, and reproducibility provenance."
     ),
     version: str = "0.1.0",
+    date_published: str | None = None,
 ) -> dict[str, Any]:
     """Create Croissant 1.1 + RAI 1.0 metadata JSON-LD document."""
     now_iso = _utc_now_iso()
+    published_iso = date_published or now_iso
+    creator = {
+        "@type": "sc:Organization",
+        "name": "LogoMesh Research Team",
+    }
 
     fields = []
     for spec in FIELD_SPECS:
@@ -314,12 +324,19 @@ def build_metadata_document(
         "license": "https://opensource.org/licenses/MIT",
         "url": "https://github.com/Logomesh/kv-cache-inception",
         "version": version,
+        "sdVersion": "1.1",
+        "datePublished": published_iso,
         "dateCreated": now_iso,
         "dateModified": now_iso,
-        "creator": {
-            "@type": "sc:Organization",
-            "name": "LogoMesh Research Team",
-        },
+        "inLanguage": "en",
+        "keywords": [
+            "alignment-faking detection",
+            "kv-cache intervention",
+            "reversible mcts",
+            "latent telemetry",
+        ],
+        "creator": creator,
+        "publisher": creator,
         "distribution": [
             {
                 "@type": "cr:FileObject",
@@ -347,6 +364,7 @@ def build_metadata_document(
                     "One record per MCTS node exported from run_kv_mcts runtime "
                     "artifacts, including telemetry, reward, OEI/TDS, and provenance."
                 ),
+                "key": [{"@id": "interventions/artifact_id"}],
                 "field": fields,
             }
         ],
@@ -403,12 +421,18 @@ def validate_metadata_shape(metadata: dict[str, Any]) -> list[str]:
     """Validate core Croissant top-level shape and field source mappings."""
     errors: list[str] = []
 
-    required_top_level = ("@context", "@type", "conformsTo", "distribution", "recordSet", "name", "description")
+    required_top_level = ("@context", "@type", "distribution", "recordSet", "name", "description", "datePublished")
     for key in required_top_level:
         if key not in metadata:
             errors.append(f"Metadata missing required top-level key: {key}")
 
     conforms_to = metadata.get("conformsTo")
+    if conforms_to is None:
+        conforms_to = metadata.get("dct:conformsTo")
+
+    if conforms_to is None:
+        errors.append("Metadata missing required top-level key: conformsTo")
+
     if isinstance(conforms_to, str):
         conforms_values = [conforms_to]
     elif isinstance(conforms_to, list):
@@ -418,6 +442,8 @@ def validate_metadata_shape(metadata: dict[str, Any]) -> list[str]:
 
     if CROISSANT_SPEC_URI not in conforms_values:
         errors.append(f"Metadata conformsTo must include {CROISSANT_SPEC_URI}")
+    if RAI_SPEC_URI not in conforms_values:
+        errors.append(f"Metadata conformsTo must include {RAI_SPEC_URI}")
 
     distribution = metadata.get("distribution")
     record_set = metadata.get("recordSet")
@@ -433,16 +459,29 @@ def validate_metadata_shape(metadata: dict[str, Any]) -> list[str]:
     }
 
     first_record_set = record_set[0] if isinstance(record_set[0], dict) else {}
+    key_spec = first_record_set.get("key")
+    if key_spec is None:
+        errors.append("First recordSet entry should define key for record uniqueness.")
+
     fields = first_record_set.get("field")
     if not isinstance(fields, list) or not fields:
         errors.append("First recordSet entry must include a non-empty field list.")
         return errors
 
+    for item in distribution:
+        if isinstance(item, dict) and "sha256" in item and not _is_hex_sha256(item.get("sha256")):
+            errors.append(f"distribution item {item.get('@id', '<unknown>')} has invalid sha256 format.")
+
     extracted_columns: list[str] = []
+    field_ids: set[str] = set()
     for field in fields:
         if not isinstance(field, dict):
             errors.append("recordSet.field entries must be objects.")
             continue
+
+        field_id = field.get("@id")
+        if isinstance(field_id, str) and field_id:
+            field_ids.add(field_id)
 
         source = field.get("source")
         if not isinstance(source, dict):
@@ -471,6 +510,28 @@ def validate_metadata_shape(metadata: dict[str, Any]) -> list[str]:
         errors.append(
             "Metadata field mappings missing required extracted columns: " + ", ".join(missing_required)
         )
+
+    if key_spec is not None:
+        key_ids: list[str] = []
+        if isinstance(key_spec, list):
+            for key_ref in key_spec:
+                if isinstance(key_ref, dict) and isinstance(key_ref.get("@id"), str):
+                    key_ids.append(key_ref["@id"])
+                elif isinstance(key_ref, str):
+                    key_ids.append(key_ref)
+        elif isinstance(key_spec, dict) and isinstance(key_spec.get("@id"), str):
+            key_ids = [key_spec["@id"]]
+        elif isinstance(key_spec, str):
+            key_ids = [key_spec]
+
+        if not key_ids:
+            errors.append("recordSet.key must reference one or more field @id values.")
+        else:
+            unknown_key_ids = [key_id for key_id in key_ids if key_id not in field_ids]
+            if unknown_key_ids:
+                errors.append(
+                    "recordSet.key references unknown field ids: " + ", ".join(unknown_key_ids)
+                )
 
     return errors
 
