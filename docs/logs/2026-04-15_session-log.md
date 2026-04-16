@@ -275,3 +275,22 @@ Objective: create a persistent, agent-facing hardline rules document to lock sub
 ### Index/handoff updates
 
 1. Updated `docs/CLAUDE_CONTEXT_BRIEF.md` to register this contract as an active high-priority handoff artifact.
+
+---
+
+## Communications Prep (Wednesday Night) — Recommendations + Copy-Ready Messages
+
+Objective: prepare teammate communications that are accurate, non-inflated, and directly tied to shipped work.
+
+### Promise-delivery status estimate (Aladdin)
+
+1. Estimated completion against commitments: ~70--75%.
+2. Delivered:
+   - repository and architecture are set up and functional,
+   - pilot offline runs completed,
+   - reproducibility controls and metadata persistence implemented,
+   - paper updated in multiple sections and track-aligned constraints documented.
+3. Remaining to fully close promise loop:
+   - run one substantive first experiment (beyond 1-node pilot),
+   - share artifact path + short quantitative note,
+   - finalize two paper edits from feedback (novelty phrasing decision + acronym hygiene pass).

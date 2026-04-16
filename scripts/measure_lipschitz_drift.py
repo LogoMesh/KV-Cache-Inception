@@ -124,16 +124,17 @@ def run_probe(args: argparse.Namespace) -> list[dict]:
         k_now = _extract_kv_tensors(past_kv_live)[0][0].float()
         acc_inf_norm = float((k_now - k_base_f32).abs().max().item())
 
-        # ── Naive path: simulate n cycles of raw bf16 add/subtract ──────
-        k_naive = k_base_f32.clone()
-        dk_t = torch.from_numpy(dk_raw).float()
+        # ── Naive path: apply `cycle` adds then `cycle` subtracts in bf16 ──
+        # This simulates N forward perturbations followed by N reversals without
+        # FP32 accumulation — rounding errors compound across steps, showing
+        # growing residual that the FP32 accumulator avoids.
+        dk_t = torch.from_numpy(dk_raw).to(device=k_base_f32.device, dtype=torch_dtype)
+        k_naive = k_base_f32.clone().to(torch_dtype)
         for _ in range(cycle):
-            # Add in model dtype (bf16 rounding applies)
-            k_native = k_naive.to(torch_dtype)
-            k_native.add_(args.alpha * dk_t.to(torch_dtype))
-            k_native.sub_(args.alpha * dk_t.to(torch_dtype))
-            k_naive = k_native.float()
-        naive_inf_norm = float((k_naive - k_base_f32).abs().max().item())
+            k_naive.add_(args.alpha * dk_t)
+        for _ in range(cycle):
+            k_naive.sub_(args.alpha * dk_t)
+        naive_inf_norm = float((k_naive.float() - k_base_f32).abs().max().item())
 
         records.append({
             "cycle": cycle,
@@ -176,9 +177,9 @@ def main() -> int:
     # Summary
     final = records[-1]
     print(f"\n--- Theorem 1 Drift Summary (n={args.n_cycles} cycles) ---")
-    print(f"  Naive bf16 subtraction:   ‖K_n − K_0‖_∞ = {final['naive_inf_norm']:.4e}")
-    print(f"  FP32 accumulator:         ‖K_n − K_0‖_∞ = {final['accumulator_inf_norm']:.4e}")
-    print(f"  ε_bf16 (theoretical):                      ~3.9e-03")
+    print(f"  Naive bf16 subtraction:   ||K_n - K_0||_inf = {final['naive_inf_norm']:.4e}")
+    print(f"  FP32 accumulator:         ||K_n - K_0||_inf = {final['accumulator_inf_norm']:.4e}")
+    print(f"  eps_bf16 (theoretical):                    ~3.9e-03")
     print(f"  Theorem 1 bound satisfied: {final['accumulator_inf_norm'] < 4e-3}")
 
     return 0
