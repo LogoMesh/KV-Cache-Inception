@@ -185,5 +185,62 @@ Resume context: Croissant hold was lifted and implementation proceeded with stan
 
 ### Commit state
 
-1. Croissant implementation batch is currently uncommitted in working tree.
-2. Commit hash: pending (will be recorded here once commit is created).
+1. Croissant implementation batches were committed and pushed in two explicit commits:
+   - `bd48285` — `feat: add Croissant export pipeline and validation tests`
+   - `a531b29` — `docs: update Croissant paper and handoff documentation`
+2. The submodule integration commit was also pushed:
+   - `ae0ee65` — `chore: add mlcommons croissant as reference submodule`
+
+---
+
+## Croissant Standards Deep-Dive + Hardening (Continuation)
+
+Continuation context: after push completion, work proceeded to satisfy deep exploration and rigorous guidance requirements against the embedded `external/croissant` reference source.
+
+### Deep exploration outcomes
+
+1. Verified Croissant 1.1 required/recommended dataset fields directly from `external/croissant/docs/croissant-spec-1.1.md`.
+2. Verified RAI property conventions from `external/croissant/docs/croissant-rai-spec.md`.
+3. Verified mlcroissant parser/validator behavior from:
+   - `external/croissant/python/mlcroissant/mlcroissant/_src/core/context.py`
+   - `external/croissant/python/mlcroissant/mlcroissant/_src/structure_graph/nodes/metadata.py`
+   - `external/croissant/python/mlcroissant/mlcroissant/_src/structure_graph/nodes/record_set.py`
+
+### Hardening code/doc changes
+
+1. Updated `logomesh/croissant_export.py`:
+   - Added required metadata field `datePublished` to generated metadata.
+   - Added repository baseline recommended metadata fields: `inLanguage`, `keywords`, `publisher`, `sdVersion`.
+   - Added explicit `recordSet.key` (`interventions/artifact_id`) for record identity.
+   - Strengthened metadata validation to enforce:
+     - Croissant and RAI `conformsTo` URIs,
+     - `datePublished` presence,
+     - `recordSet.key` references valid field IDs,
+     - distribution `sha256` values are valid hex SHA-256 strings.
+   - Added alias tolerance for `conformsTo` vs `dct:conformsTo` in internal validation.
+2. Updated `tests/test_croissant_export.py`:
+   - Added assertions for required/recommended dataset metadata defaults.
+   - Added regression test for `dct:conformsTo` alias acceptance.
+   - Added regression test for invalid distribution `sha256` detection.
+3. Updated `docs/dataset/croissant_schema_stub.json` to match hardened exporter defaults.
+4. Added rigorous standards guidance document:
+   - `docs/reviews/croissant-implementation-guidance-2026-04-15.md`
+
+### Validation results (post-hardening)
+
+1. Targeted Croissant tests:
+   - Command: `uv run pytest tests/test_croissant_export.py -v`
+   - Result: `5 passed`.
+2. Full repository gate:
+   - Command: `uv run pytest tests/ -v`
+   - Result: `135 passed in 27.12s`.
+3. Strict external validator gate (attempted):
+   - Command: `.venv/Scripts/python scripts/export_kv_mcts_to_croissant.py --input docs/dataset/data/source_run.json --output ./tmp/croissant_strict_check2 --strict`
+   - Result: failed with `RuntimeError: Strict mlcroissant validation failed (exit=127): mlcroissant CLI not found in PATH`.
+   - Interpretation: internal validation is green; strict external gate is blocked pending installation of `mlcroissant` CLI.
+
+### Current commit state
+
+1. Standards-hardening implementation commit created:
+   - `021310c` — `feat: harden Croissant export metadata checks`
+2. Documentation/guidance continuation commit: pending.
