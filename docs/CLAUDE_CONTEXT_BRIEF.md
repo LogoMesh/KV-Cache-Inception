@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-Last updated: 2026-04-16 (paper amendments, NeurIPS formatting, documentation audit)
+Last updated: 2026-04-16 (paper amendments, NeurIPS formatting, documentation audit, meeting prep docs)
 Owner: GitHub Copilot session
 Purpose: Single handoff index for Claude so you only need one filepath.
 
@@ -17,6 +17,9 @@ If Claude only reads one file first, use this one.
 |---|---|---|---|
 | 0 | [docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex](NeurIPS/04.02.2026-NeurIPS-Research-Proposal-Verification-Overlay.tex) | Read-along working copy with in-document empirical verification callouts mapped to concrete logs and filepaths | Active (non-canonical) |
 | 1 | [docs/logs/2026-04-16_session-log.md](logs/2026-04-16_session-log.md) | Latest execution log for first substantive offline run (15-node budget) with Croissant package export, artifact paths, and reproducibility metadata | Active |
+| 1a | [docs/NeurIPS/neurips-2026-submission-guidelines.md](NeurIPS/neurips-2026-submission-guidelines.md) | Verified-only NeurIPS 2026 E&D submission guidelines (replaces AI guides); living doc with ✅/⚠/❓ status markers | Active |
+| 1b | [docs/NeurIPS/neurips-2026-data-requirements.md](NeurIPS/neurips-2026-data-requirements.md) | E&D data/Croissant requirements mapped to current implementation state; hosting decision, roadmap, open questions | Active |
+| 1c | [docs/NeurIPS/paper-revision-claims-audit.md](NeurIPS/paper-revision-claims-audit.md) | All strong paper claims audited; three reviewedit items with decision framework; decision record table for meeting | Active |
 | 2 | [docs/logs/2026-04-15_session-log.md](logs/2026-04-15_session-log.md) | Experiment-prep history plus completed Croissant alignment implementation (exporter module, schema upgrade, runtime wiring, and validation outcomes) | Active |
 | 3 | [docs/NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md](NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md) | Persistent non-negotiable submission rules for agents; binds track framing, formatting, Croissant/RAI compliance, ethics posture, and validation discipline | Active |
 | 4 | [docs/reviews/croissant-implementation-guidance-2026-04-15.md](reviews/croissant-implementation-guidance-2026-04-15.md) | Standards-grounded Croissant 1.1/RAI implementation contract, validator expectations, and release checklist for runtime artifact export | Active |
@@ -78,8 +81,12 @@ If Claude only reads one file first, use this one.
   - `neurips_2026.sty` + `checklist.tex` extracted from official NeurIPS ZIP into `docs/NeurIPS/`
 - New files: `docs/NeurIPS/2026-04-16_Cover-Note-for-Paper-Commenter.md`, `docs/NeurIPS/neurips_2026.sty`, `docs/NeurIPS/checklist.tex`
 - Documentation audit completed: accuracy notices added to both AI-generated submission guides; confirmed errors corrected (wrong Overleaf URLs, stale NeurIPS 2013/2016 bibliography URLs, unverified platform size claims annotated); hardline rules contract updated to deprioritise AI guide in favour of live NeurIPS pages and the downloaded .sty.
-- Next immediate work: run tests (`uv run pytest tests/ -v`), commit all changes, then proceed to ρ_R raw dot product fix (EXPERIMENTS.md Chunk 1A) before first paper-valid Experiment 1 run.
-- Next immediate work: install `mlcroissant` CLI in a strict-gate environment and run strict Croissant validation as a release-quality follow-up.
+- Three meeting-prep documents created (2026-04-16) for Saturday Apr 18 team meeting:
+  - `docs/NeurIPS/neurips-2026-submission-guidelines.md` — verified NeurIPS 2026 E&D submission facts, living doc
+  - `docs/NeurIPS/neurips-2026-data-requirements.md` — Croissant compliance status table + hosting decision + data roadmap
+  - `docs/NeurIPS/paper-revision-claims-audit.md` — all paper claims audited; decision record table for meeting
+- Next immediate work after meeting: apply decided paper revisions (especially Edit B MCTS framing), then ρ_R raw dot product fix (EXPERIMENTS.md Chunk 1A).
+- Install `mlcroissant` CLI in a strict-gate environment and run strict Croissant validation as a release-quality follow-up.
 
 ## Update Protocol (Keep This Stable)
 
@@ -94,4 +101,4 @@ When any assistant creates or updates docs:
 Use this exact starting message with Claude:
 
 "Start from docs/CLAUDE_CONTEXT_BRIEF.md. Use it as the canonical index for this workspace handoff, then continue implementation from the highest-priority active blocker."
-Touch marker: 2026-04-16 paper-amended-docs-audited.
+Touch marker: 2026-04-16 paper-amended-docs-audited-meeting-prep-complete.
