@@ -141,7 +141,16 @@ downstream calculations verified. It is correctly the first item in the Chunk 1A
   - Qualified "no prior adversarial latent search" (false: Bailey et al., RL-Obfuscation precede it)
   - Fixed GCG rhetoric ("structurally cannot" → "are not designed to navigate")
   - Added new Section 2.5 citing and distinguishing COCONUT, CRSM, Okazaki-RAG
-  - Added 4 bibliography entries
+  - Added 4 bibliography entries (hao2025coconut, crsm2025, bailey2024obfuscated, okazakirag2025)
+- Removed all `\reviewedit{}` wrappers from paper body; hedged unverified capability claims — commit `ec7a897`:
+  - Edit A: LAT acronym definition kept, blue markup removed
+  - Contribution 2: "This enables..." → "Our framework is designed to enable... (Experiment 3)"
+  - Phase B: "we execute" → "we plan to execute"
+  - Paper files renamed 04.02 → 04.17 (author date update); literature review added to repo
+- Fixed `samplingRate` gap in Croissant `@context`; confirmed mlcroissant strict validation clean — commit `8722407`:
+  - `logomesh/croissant_export.py`: added `"samplingRate": "cr:samplingRate"` to `CROISSANT_CONTEXT`
+  - Re-exported gate run package; validation now returns single non-blocking warning (citeAs only)
+  - Updated `neurips-2026-data-requirements.md` compliance table (ρ_R ✅, mlcroissant CLI ✅)
 
 ---
 
@@ -268,11 +277,55 @@ Items from the opening assessment and ρ_R fix section, ordered by priority:
 | 2 | Create experiment-readiness + paper-revision doc | ✅ Done (commit f17b365) | `docs/NeurIPS/experiment-readiness-and-paper-revision.md` |
 | 3 | Apply Edit B to .tex — reframe Contribution 2; update related work with new citations | ✅ Done (commit e1df154) | Superseded Path 2: full related work rewrite based on literature survey |
 | 4 | Apply Edit C to .tex ("structurally cannot" → "are not designed to navigate") | ✅ Done (commit e1df154) | Applied as part of Section 2.4 rewrite |
-| 5 | Remove `\reviewedit{}` wrapper from Edit A (LAT acronym — keep text, drop color markup) | ❌ Pending | Team should confirm at meeting, but safe to pre-apply |
-| 6 | Convert present-tense experiment claims to future-tense (Sections 5.1–5.4 and Contributions) | ❌ Pending | Moderate scope; use experiment-readiness doc "Paper unlock" column as guide |
+| 5 | Remove `\reviewedit{}` wrapper from Edit A (LAT acronym — keep text, drop color markup) | ✅ Done (commit ec7a897) | LAT = Linear Artificial Tomography; text kept, markup removed |
+| 6 | Convert present-tense experiment claims to future-tense (Sections 5.1–5.4 and Contributions) | ✅ Done (commit ec7a897) | Two targeted changes: Contribution 2 capability claim hedged; Phase B "we execute" → "we plan to execute" |
 | 7 | Verify OpenReview profiles for all 4 co-authors | ❌ Pending | **Urgent: 2-week moderation window from Apr 18 = May 2, only 2 days before May 4 abstract deadline** |
 | 8 | Run gate smoke test on H100 with corrected ρ_R; re-calibrate `classify()` thresholds | ❌ Pending | Requires H100 access; first action of H100 session |
 | 9 | Install `mlcroissant` CLI in PATH; run strict Croissant validation on gate run artifacts | ✅ Done | CLI confirmed in venv; 1 warning fixed (`samplingRate` context gap in `croissant_export.py`); only `citeAs` remains (pending OpenReview ID) |
 | 10 | Implement T_t matrix-level export (2×L per node) in `croissant_export.py` | ❌ Pending | Design gap identified in data requirements doc |
 | 11 | Saturday meeting: fill Priority Decision table in experiment-readiness doc | ❌ Pending | Requires team; scope question drives all subsequent work |
+
+---
+
+## Session Close — Handoff for Next Context
+
+**All code-side and paper-side work that could be done before Saturday is complete.**
+
+### What was accomplished this session (commits in order)
+
+| Commit | What |
+|---|---|
+| `4bc8fa9` | ρ_R raw dot product fix (Chunk 1A) |
+| `f17b365` | Experiment-readiness + paper-revision combined doc |
+| `108df94` | Session log remaining suggestions tracker |
+| `f17b365` | Document index + memory pointer |
+| `e1df154` | Contribution 2 reframe + full related work rewrite (COCONUT, CRSM, Okazaki-RAG, Bailey et al.) |
+| `ec7a897` | All `\reviewedit{}` markers removed; capability claims hedged; files renamed 04.02→04.17; literature review added |
+| `8722407` | Croissant `samplingRate` context fix; mlcroissant validation clean |
+| `5adddde` | Session log actions updated |
+
+### Paper state as of session close
+
+- Canonical paper: `docs/NeurIPS/04.17.2026-NeurIPS-Research-Proposal.tex`
+- No `\reviewedit{}` wrappers remain in body text
+- All cited prior work (COCONUT, CRSM, Okazaki-RAG, Bailey et al.) now in bibliography
+- Present-tense unverified claims hedged to "designed to enable" / "we plan to execute"
+- Limitations section correctly retains OE empirical validation caveat
+
+### What requires action before next session
+
+| Item | Who | Urgency |
+|---|---|---|
+| OpenReview profiles verified for Josh, Max, Bakul, Asuka | Josh | **Critical — May 2 moderation deadline** |
+| Saturday Apr 18 meeting: assign experiment owners, fill Priority table in `experiment-readiness-and-paper-revision.md` | Team | Saturday |
+| H100 access confirmed with Tianyu's lab | Josh | Before any Phase B work |
+
+### What the next session should do first
+
+1. Check if Saturday meeting decisions have been made — if yes, populate the Priority table in
+   `docs/NeurIPS/experiment-readiness-and-paper-revision.md` and scope the paper's contribution
+   claims to match only the experiments confirmed to run before May 5.
+2. If H100 access is confirmed, begin Phase B: run gate smoke test with corrected ρ_R,
+   establish raw ρ_R distribution, re-calibrate `classify()` thresholds.
+3. Item 10 (T_t matrix-level export) can be implemented locally at any time without H100.
 
