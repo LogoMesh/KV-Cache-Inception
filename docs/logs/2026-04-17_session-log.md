@@ -131,7 +131,17 @@ downstream calculations verified. It is correctly the first item in the Chunk 1A
 - Created `docs/logs/2026-04-17_session-log.md` (this file)
 - Updated `docs/NeurIPS/paper-revision-claims-audit.md` with a new Section 0 covering
   structural concerns and scope options for the Saturday meeting
-- Committed and pushed
+- Fixed ρ_R raw dot product bug (Chunk 1A) — commit `4bc8fa9`
+- Created `docs/NeurIPS/experiment-readiness-and-paper-revision.md` — commit `f17b365`
+- Commissioned and reviewed external literature survey on prior latent-space MCTS work
+  (`docs/NeurIPS/LLM Latent Space Search Literature Review.md`)
+- Rewrote Contribution 2 framing and updated Related Work based on survey findings — commit `e1df154`:
+  - Removed "to our knowledge, the first MCTS in latent space" (false: COCONUT, CRSM precede it)
+  - Reframed as first MCTS via continuous arithmetic KV-cache mutations with FP32 rollback
+  - Qualified "no prior adversarial latent search" (false: Bailey et al., RL-Obfuscation precede it)
+  - Fixed GCG rhetoric ("structurally cannot" → "are not designed to navigate")
+  - Added new Section 2.5 citing and distinguishing COCONUT, CRSM, Okazaki-RAG
+  - Added 4 bibliography entries
 
 ---
 
@@ -256,8 +266,8 @@ Items from the opening assessment and ρ_R fix section, ordered by priority:
 |---|---|---|---|
 | 1 | Fix ρ_R raw dot product bug (Chunk 1A) | ✅ Done (commit 4bc8fa9) | `whitebox.py`, `kv_mcts.py`, `telemetry_matrix.py` |
 | 2 | Create experiment-readiness + paper-revision doc | ✅ Done (commit f17b365) | `docs/NeurIPS/experiment-readiness-and-paper-revision.md` |
-| 3 | Apply Edit B to .tex (drop "to our knowledge" hedge — use Path 2 comparative framing) | ❌ Pending | Low-risk, no experiment dependency; can do now |
-| 4 | Apply Edit C to .tex ("structurally cannot" → "are not designed to navigate") | ❌ Pending | Same — no experiment dependency; can do now |
+| 3 | Apply Edit B to .tex — reframe Contribution 2; update related work with new citations | ✅ Done (commit e1df154) | Superseded Path 2: full related work rewrite based on literature survey |
+| 4 | Apply Edit C to .tex ("structurally cannot" → "are not designed to navigate") | ✅ Done (commit e1df154) | Applied as part of Section 2.4 rewrite |
 | 5 | Remove `\reviewedit{}` wrapper from Edit A (LAT acronym — keep text, drop color markup) | ❌ Pending | Team should confirm at meeting, but safe to pre-apply |
 | 6 | Convert present-tense experiment claims to future-tense (Sections 5.1–5.4 and Contributions) | ❌ Pending | Moderate scope; use experiment-readiness doc "Paper unlock" column as guide |
 | 7 | Verify OpenReview profiles for all 4 co-authors | ❌ Pending | **Urgent: 2-week moderation window from Apr 18 = May 2, only 2 days before May 4 abstract deadline** |
