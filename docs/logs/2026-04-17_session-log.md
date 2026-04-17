@@ -175,3 +175,48 @@ they are not affected by the raw dot product change.
 
 Run gate smoke test on H100 with corrected implementation to establish what the actual raw
 ρ_R distribution looks like, then re-calibrate classify() thresholds accordingly.
+
+---
+
+## Suggested Next Steps (Post-Compact)
+
+### Combined Pre-flight + Paper Revision Document
+
+**Problem:** Two related issues identified this session:
+1. The paper reads in present tense as if experiments are already complete — they are not.
+2. There is no pre-flight checklist to ensure experiments are set up correctly before H100 runs.
+
+**Insight:** These are the same problem from different angles. Each experiment, when it passes,
+unlocks specific present-tense claims in the paper. The right solution is one combined document
+that chains implementation readiness → experiment execution → paper revision in a single
+trackable artifact.
+
+**Proposed document:** `docs/NeurIPS/experiment-readiness-and-paper-revision.md`
+
+Structure for each of the 5 experiments:
+1. **Pre-flight gate** — what must be true in the implementation before running (e.g., ρ_R
+   corrected, α calibrated, LAT probes trained)
+2. **What it produces** — the artifact, metric, and expected output shape
+3. **Paper unlock** — exact quoted text from the .tex that converts from projected/future-tense
+   to confirmed/past-tense once results are in hand
+
+**How to use:**
+- Saturday meeting: review structure, assign owners, confirm experiment priority order
+- H100 session: open doc, work down the pre-flight column, then run the experiment
+- After results: make exactly the paper edits listed in the unlock column for that experiment
+
+**Why combined is better than separate docs:**
+- Prevents pre-flight checks from being skipped ("we'll do that later")
+- Prevents paper edits from being forgotten after experiments run
+- Creates a direct chain: passing implementation gate → running experiment → specific .tex lines change
+- Single document the team can work through end-to-end rather than context-switching between docs
+
+**Action plan (execute after context compact):**
+1. Create `docs/NeurIPS/experiment-readiness-and-paper-revision.md` with the above structure,
+   populated from the claims in `paper-revision-claims-audit.md` and the implementation gaps
+   in `neurips-2026-data-requirements.md`
+2. Add it to the Document Index in `docs/CLAUDE_CONTEXT_BRIEF.md` at high priority
+3. Save a memory pointer to it
+4. Commit and push
+5. Then proceed to obey the remaining suggestions in this session log in order
+
