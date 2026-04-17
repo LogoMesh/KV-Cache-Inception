@@ -70,7 +70,7 @@ This paper makes the following contributions:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Micro-Telemetry Matrix for Alignment Monitoring.} We formalize a multi-dimensional telemetry framework that combines H-Neuron activation tracking~\cite{gao2025hneurons} with Representation Engineering (RepE) Linear Artificial Tomography~\cite{zou2023repe} to construct a continuous, differentiable reward signal for distinguishing genuine creative synthesis from compliance-driven hallucination. We define precise diagnostic signatures for four cognitive states: valid novelty, contextual fabrication, alignment faking, and orthogonal escape.
 
-    \item \textbf{Reversible MCTS in KV-Cache Latent Space.} We introduce \reviewedit{what is, to our knowledge,} the first Monte Carlo Tree Search algorithm that operates directly in the continuous latent space of a Transformer's key-value cache, rather than in the discrete text space used by all prior MCTS-based red-teaming approaches~\cite{wu2025mcts, damon2025, li2025ace}. Our reversible state-rollback mechanism, based on the mathematical invertibility of tensor addition with FP32 accumulator tracking, reduces the memory complexity of latent-space MCTS from $O(b^d \cdot M)$ to $O(M + d \cdot K)$, where $b$ is the branching factor, $d$ is the search depth, $M$ is the base model memory, and $K$ is the per-step accumulator overhead. This enables deep MCTS exploration on a single 80GB GPU for models up to 20B parameters.
+    \item \textbf{Reversible MCTS in KV-Cache Latent Space.} We introduce a Monte Carlo Tree Search algorithm that navigates the continuous latent space of a Transformer's key-value cache via direct, in-place arithmetic mutations ($K_t \leftarrow K_t + \alpha \cdot \mathbf{d}_K$)---rather than the discrete token sequences used by MCTS-based red-teaming approaches~\cite{wu2025mcts, damon2025, li2025ace}, or the recurrent hidden-state traversal used by continuous latent reasoning frameworks~\cite{hao2025coconut, crsm2025}. A novel exact-rollback mechanism, based on the mathematical invertibility of tensor addition with FP32 accumulator tracking, eliminates the memory scaling barrier of KV-cache duplication across branches, reducing complexity from $O(b^d \cdot M)$ to $O(M + d \cdot K)$, where $b$ is the branching factor, $d$ is the search depth, $M$ is the base model memory, and $K$ is the per-step accumulator overhead. This enables deep MCTS exploration on a single 80GB GPU for models up to 20B parameters.
 
     \item \textbf{Formalization of Orthogonal Escape.} We provide the first formal definition and experimental protocol for Orthogonal Escape---the phenomenon whereby applying corrective pressure to a model's latent representations along monitored directions forces the model to encode deceptive payloads into orthogonal, unmonitored subspaces. We derive testable predictions from this formalization and propose metrics for quantifying the degree of orthogonal redistribution.
 \end{enumerate}
@@ -86,7 +86,7 @@ The possibility that advanced AI systems might strategically misrepresent their 
 
 \subsection{Representation Engineering and Activation Steering}
 
-Representation Engineering (RepE), introduced by Zou et al.\ (2023)~\cite{zou2023repe}, established that high-level cognitive states---including honesty, truthfulness, and compliance---are linearly decodable from a model's latent representation space. This finding enabled \emph{activation steering}, wherein targeted vector additions to intermediate representations can modify model behavior without weight updates~\cite{turner2023steering}. Belitsky et al.\ (2025)~\cite{belitsky2025kvcache} extended this to \emph{cache steering}, demonstrating that a single, one-shot modification to the KV cache can steer model behavior more stably than continuous activation interventions. However, all existing steering work operates in a \emph{corrective} paradigm---applying fixed vectors to induce desired behaviors. No prior work has used structured search algorithms to \emph{explore} the intervention space adversarially.
+Representation Engineering (RepE), introduced by Zou et al.\ (2023)~\cite{zou2023repe}, established that high-level cognitive states---including honesty, truthfulness, and compliance---are linearly decodable from a model's latent representation space. This finding enabled \emph{activation steering}, wherein targeted vector additions to intermediate representations can modify model behavior without weight updates~\cite{turner2023steering}. Belitsky et al.\ (2025)~\cite{belitsky2025kvcache} extended this to \emph{cache steering}, demonstrating that a single, one-shot modification to the KV cache can steer model behavior more stably than continuous activation interventions. However, all existing steering work operates in a \emph{corrective} paradigm---applying fixed vectors to induce desired behaviors. Prior work has explored the latent intervention space via gradient ascent~\cite{bailey2024obfuscated} and reinforcement learning~\cite{gupta2025rlobfuscation}, but no prior work has deployed a heuristic tree-search algorithm to \emph{explore} the KV-cache intervention space at inference time, without gradient access or model finetuning.
 
 A critical limitation of the corrective paradigm was exposed by Gupta and Jenner (2025)~\cite{gupta2025rlobfuscation}, who showed that models can learn to evade latent-space monitors via RL, with token-level monitors being particularly vulnerable. Their finding that models learn to repurpose tokens to have different internal representations provides direct empirical motivation for our Orthogonal Escape hypothesis.
 
@@ -96,7 +96,13 @@ Gao et al.\ (2025)~\cite{gao2025hneurons} identified H-Neurons---a sparse subset
 
 \subsection{MCTS for LLM Red-Teaming}
 
-Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. \reviewedit{Non-MCTS adversarial search methods face a related but distinct limitation. Gradient-based attacks such as Greedy Coordinate Gradient (GCG)~\cite{zou2023gcg} operate in token embedding space and are therefore equally constrained to the discrete combinatorial surface: they optimize token sequences via gradient signals but cannot navigate the continuous geometry of the model's internal representation space. MCTS provides the exploration semantics---branching, rollout, and UCB1 selection---that allow systematic coverage of the latent intervention landscape in a way that both prompt-mutation and gradient-based approaches structurally cannot.} Our work is the first to conduct MCTS in the continuous latent space of the KV cache, enabling direct exploration of the model's representational landscape.
+Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. Non-MCTS adversarial search methods face a related but distinct limitation. Gradient-based attacks such as Greedy Coordinate Gradient (GCG)~\cite{zou2023gcg} operate in token embedding space and are therefore equally constrained to the discrete combinatorial surface: they optimize token sequences via gradient signals but are not designed to navigate the continuous geometry of the model's internal representation space. MCTS provides the exploration semantics---branching, rollout, and UCB1 selection---that allow systematic coverage of the latent intervention landscape in a way that both prompt-mutation and gradient-based approaches are not designed to navigate. Our work is the first to conduct MCTS via continuous arithmetic mutations of the KV cache with an exact FP32 rollback mechanism, enabling gradient-free, inference-time exploration of the model's representational landscape.
+
+\subsection{Continuous Latent Reasoning and KV-Cache Search}
+
+Recent work has moved beyond discrete token generation to perform search and reasoning directly in continuous representation spaces. COCONUT~\cite{hao2025coconut} bypasses discrete token decoding by feeding final-layer hidden states back as input embeddings, enabling emergent breadth-first latent tree search. CRSM~\cite{crsm2025} employs an asynchronous MCTS planner to directly edit the internal hidden states of a Mamba state-space model during generation. Both validate the viability of continuous latent search, but operate via recurrent hidden-state traversal rather than direct arithmetic mutation of a frozen transformer's KV-cache tensors.
+
+Most directly analogous to our architectural approach, the Okazaki-RAG framework~\cite{okazakirag2025} implements a tree search whose nodes are KV-cache assemblies, with explicit rollback when heuristic scores deteriorate. However, Okazaki-RAG constructs its search tree by swapping pre-computed, discrete cache blocks rather than executing continuous arithmetic mutations across the differentiable tensor space. Discrete block swapping requires a precomputed library of fixed states; arithmetic KV-cache mutation enables gradient-free exploration of a continuous intervention landscape at inference time. Our FP32 accumulator mechanism provides mathematically exact rollback without the VRAM overhead of duplicating multi-gigabyte cache states across branches---a barrier that block-swapping architectures do not resolve in the same form.
 
 \subsection{LLM-as-a-Judge and Evaluation Limitations}
 
@@ -416,7 +422,7 @@ Submission & Week 18 & NeurIPS 2026 deadline & Camera-ready paper + code + datas
 % ============================================================
 % REFERENCES
 % ============================================================
-\begin{thebibliography}{18}
+\begin{thebibliography}{22}
 
 \bibitem{zheng2023judging}
 L.~Zheng, W.-L.~Chiang, Y.~Sheng, et al.
@@ -503,6 +509,25 @@ Contextual Residual Inversion in Transformer-Based Large Language Models: A Reve
 N.~Oozeer et al.
 \newblock Activation Space Interventions Can Be Transferred Between Large Language Models.
 \newblock \emph{arXiv:2503.04429}, 2025.
+
+\bibitem{hao2025coconut}
+S.~Hao, B.~Suber, Z.~Wang, et al.
+\newblock Training Large Language Models to Reason in a Continuous Latent Space.
+\newblock In \emph{ICLR}, 2025. \emph{arXiv:2412.06769}.
+
+\bibitem{crsm2025}
+Pomilon Intelligence Lab.
+\newblock CRSM: Continuous Reasoning State Manipulation.
+\newblock GitHub, 2025. \url{https://github.com/Pomilon-Intelligence-Lab/CRSM}.
+
+\bibitem{bailey2024obfuscated}
+J.~Bailey et al.
+\newblock Obfuscated Activations Bypass LLM Latent-Space Defenses.
+\newblock In \emph{NeurIPS}, 2024.
+
+\bibitem{okazakirag2025}
+System 2 through Okazaki-RAG: Capacity-Bounded Inline Fragment Manipulation for Deliberative Reasoning.
+\newblock ResearchGate, 2025.
 
 \end{thebibliography}
 
