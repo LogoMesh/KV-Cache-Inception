@@ -9,9 +9,97 @@ confirm claims the team has already decided on — not generate post-hoc justifi
 assertions added under uncertainty. Every claim in the submitted paper will be checked by
 reviewers. Decide the posture here, then the paper is edited to match, then experiments run.
 
-**How to use at the meeting:** Work through Sections 1–3. Fill in the "Team decision" column
-in each table. Assign owners. Section 4 is a blank decision record to keep as the authoritative
-output of the meeting.
+**How to use at the meeting:** Start with Section 0 (structural concerns — read before anything
+else). Then work through Sections 1–3. Fill in the "Team decision" column in each table. Assign
+owners. Section 4 is the blank decision record.
+
+---
+
+## 0. Structural Concerns (Read Before Claim-by-Claim Review)
+
+*Added 2026-04-17. These are upstream of individual claim decisions — they frame what the
+claim-by-claim review is actually deciding.*
+
+### 0.1 The experiment-claim mismatch
+
+The paper is written as if experiments are done or nearly done. They are not. Five experiments
+are described in careful detail in Sections 5.1–5.4; none have been run at scale. The only
+empirical evidence currently in hand is a 15-node smoke test on Qwen 1.5B and a 10-node gate
+run on Llama 1B confirming prototype functionality. Every performance claim in the paper
+(detection rates, OEI/TDS curves, ablation breakdowns, calibration overhead at 20B, cross-model
+transfer success) is projected, not measured.
+
+This is not just a hedging problem for individual claims — it is a structural question about
+what the paper can honestly assert as of May 6. If the H100 experiments run and produce clean
+results, the present-tense claims become true and the paper is strong. If they don't — due to
+timeline, access delays, signal quality, or unexpected findings — the mismatch becomes visible
+to reviewers in the worst possible way.
+
+**Proposed resolution:** At the meeting, explicitly decide which experiments will definitely run
+before May 6 (given H100 access timeline) and scope the paper's claims to match only those.
+Convert claims for unrun experiments to future-tense framing now. Do not assume experiments
+will run and then scramble to hedge if they don't.
+
+### 0.2 The OEI signal quality issue
+
+The Qwen gate run showed OEI saturating at ~0.996 across all non-root nodes. A diagnostic
+metric that returns ~1.0 for every node is not discriminating between alignment-faking and
+non-faking states — it is responding to the perturbation magnitude itself. Three interpretations:
+
+1. **α is too large** — perturbation overwhelms the representation regardless of content.
+2. **1.5B model is too small** — at this scale, KV-cache interventions produce chaotic rather
+   than structured orthogonal redistribution.
+3. **OEI is correctly measuring that all perturbed states escape to null spaces** — which would
+   be a finding, but requires a baseline comparison to distinguish from interpretation 1 or 2.
+
+The Llama gate run showed OEI = 0.883, which is better. Before the H100 experiments,
+**determine the α range where OEI varies meaningfully across nodes** — otherwise the paper's
+core diagnostic metric is not functioning as claimed in the abstract and contributions.
+
+**Proposed resolution:** Add an α sweep as a precursor to Experiment 1. Treat OEI calibration
+as a prerequisite, not an assumption.
+
+### 0.3 The ρ_R bug affects more than the data
+
+The current ρ_R implementation returns a normalized [0,1] value instead of the raw dot product
+per Eq. 4. This flows through to the T_t matrix, the diagnostic state classifier, the MCTS
+reward function (Eq. 8), and the OEI/TDS calculations — all of which consume ρ_R as an input.
+The telemetry matrix T_t is not currently implemented as specified in the paper. This is not a
+data quality issue only; it is an implementation correctness issue. All current gate run results
+are produced by a system that deviates from the paper's equations.
+
+**Proposed resolution:** Fix ρ_R (Chunk 1A) before any other experiment work. Re-run the gate
+smoke test with the corrected implementation and confirm the signal is qualitatively different
+before treating any existing results as paper-valid.
+
+### 0.4 Orthogonal Escape: formalization without validation
+
+The paper's third contribution is the "first formal definition and experimental protocol for
+Orthogonal Escape." The Limitations section honestly states it "has not yet been empirically
+validated in the specific setting of KV-cache interventions." This is good faith. But the
+tension is: if Experiment 2 (OE characterization) does not run before May 6, then the third
+contribution is a formalization of a hypothesis — math without confirmation. NeurIPS reviewers
+for the E&D track, who are specifically evaluating whether the submission enables meaningful
+evaluation, will ask: where is the evidence that this phenomenon exists and that the proposed
+metrics capture it?
+
+**Three options for the meeting to decide:**
+
+| Option | What it means | Risk | Strength |
+|---|---|---|---|
+| **A. Run Experiment 2 before May 6** | OE becomes a validated contribution | Timeline pressure; depends on H100 and signal quality | Paper has all three contributions grounded |
+| **B. Reframe OE as "emerging observation"** | Demote to preliminary evidence + future work; describe observations consistent with OE in gate run data | Smaller contribution claim | Honest; still novel; doesn't collapse under reviewer scrutiny |
+| **C. Drop OE from contributions, keep as related observation** | Two-contribution paper (T_t + Reversible MCTS); OE in discussion section | Loses the most ambitious claim | Cleanest scope; strongest submission if H100 time is tight |
+
+### 0.5 Scope question for the meeting
+
+Given the May 6 deadline and the constraints above, the team should explicitly answer:
+
+> **"Which of the five experiments will definitely produce results before May 5?"**
+
+The answer to that question determines the paper. Everything else follows from it. A two-experiment
+paper that delivers on its claims is stronger than a five-experiment paper where three results are
+projected. E&D reviewers have seen overscoped proposals before.
 
 ---
 
