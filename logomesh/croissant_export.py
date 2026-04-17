@@ -66,6 +66,7 @@ CROISSANT_CONTEXT: dict[str, Any] = {
     "sc": "https://schema.org/",
     "separator": "cr:separator",
     "source": "cr:source",
+    "samplingRate": "cr:samplingRate",
     "subField": "cr:subField",
     "transform": "cr:transform",
 }

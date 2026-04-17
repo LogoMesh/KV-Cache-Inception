@@ -70,7 +70,7 @@ produces Croissant 1.1 + RAI 1.0 JSON-LD from MCTS run artifacts.
 | `datePublished`, `license`, `creator` | ✅ Done | `logomesh/croissant_export.py` |
 | `inLanguage`, `keywords`, `publisher`, `sdVersion` | ✅ Done | `logomesh/croissant_export.py` |
 | Explicit field-to-column source mappings | ✅ Done | All 30 fields mapped in recordSet |
-| mlcroissant validation | ✅ Pass | 1 warning (citeAs — non-blocking) |
+| mlcroissant validation | ✅ Pass | 1 warning (citeAs — non-blocking; samplingRate gap fixed 2026-04-17) |
 | Unit tests | ✅ 5/5 pass | `tests/test_croissant_export.py` |
 | `rai:dataUseCases` | ✅ Done | Exported metadata.json |
 | `rai:dataLimitations` | ✅ Done | Exported metadata.json |
@@ -79,13 +79,13 @@ produces Croissant 1.1 + RAI 1.0 JSON-LD from MCTS run artifacts.
 | `rai:dataReleaseMaintenancePlan` | ✅ Done | Exported metadata.json |
 | `citeAs` (paper citation) | ⚠ Pending | Add after OpenReview submission ID is assigned |
 | `ground_truth_label` field | ❌ Empty | Reserved in schema; no human annotations yet |
-| ρ_R signal (raw dot product per Eq. 4) | ❌ Known bug | Currently exports normalized value; fix queued as Chunk 1A in EXPERIMENTS.md |
+| ρ_R signal (raw dot product per Eq. 4) | ✅ Fixed | Raw dot product per Eq. 4 — commit 4bc8fa9 (2026-04-17) |
 | LAT probe integration | ❌ Phase B | Placeholder value 0.5 hardcoded; needs probe training |
 | Multi-model coverage | ❌ Phase B | Only Qwen2.5-Coder-1.5B and Llama-3.2-1B so far |
 | Statistically significant scale | ❌ Phase B | H100 required for production runs |
 | T_t matrix-level export (2×L per node) | ❌ Design gap | Currently exports per-node scalar aggregates; paper requires per-layer matrix |
 | Golden fixture snapshot test | ⚠ Recommended | Would catch metadata drift; not yet implemented |
-| CI gate with mlcroissant in clean env | ⚠ Recommended | mlcroissant not yet in PATH on dev machine |
+| CI gate with mlcroissant in clean env | ✅ Available | `uv run mlcroissant validate` confirmed working in venv (2026-04-17) |
 
 ### What the current dataset contains (real data)
 
@@ -199,3 +199,4 @@ Ordered by dependency — each step gates the next.
 | Date | What changed | Source |
 |---|---|---|
 | 2026-04-16 | Initial version; based on gate run artifacts and handbook | Handbook, mlcroissant validation, croissant_export.py |
+| 2026-04-17 | ρ_R status updated (fixed); samplingRate gap fixed; mlcroissant CLI confirmed working | commit 4bc8fa9, this session |

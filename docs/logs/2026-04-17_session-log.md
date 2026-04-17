@@ -272,7 +272,7 @@ Items from the opening assessment and ρ_R fix section, ordered by priority:
 | 6 | Convert present-tense experiment claims to future-tense (Sections 5.1–5.4 and Contributions) | ❌ Pending | Moderate scope; use experiment-readiness doc "Paper unlock" column as guide |
 | 7 | Verify OpenReview profiles for all 4 co-authors | ❌ Pending | **Urgent: 2-week moderation window from Apr 18 = May 2, only 2 days before May 4 abstract deadline** |
 | 8 | Run gate smoke test on H100 with corrected ρ_R; re-calibrate `classify()` thresholds | ❌ Pending | Requires H100 access; first action of H100 session |
-| 9 | Install `mlcroissant` CLI in PATH; run strict Croissant validation on gate run artifacts | ❌ Pending | Can do locally; blocked only by env setup |
+| 9 | Install `mlcroissant` CLI in PATH; run strict Croissant validation on gate run artifacts | ✅ Done | CLI confirmed in venv; 1 warning fixed (`samplingRate` context gap in `croissant_export.py`); only `citeAs` remains (pending OpenReview ID) |
 | 10 | Implement T_t matrix-level export (2×L per node) in `croissant_export.py` | ❌ Pending | Design gap identified in data requirements doc |
 | 11 | Saturday meeting: fill Priority Decision table in experiment-readiness doc | ❌ Pending | Requires team; scope question drives all subsequent work |
 
