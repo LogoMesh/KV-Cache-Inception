@@ -376,3 +376,41 @@ All tests green before commit: 135 passed (no code changes this session).
 ### Commit
 
 All three documents committed and pushed as part of meeting-prep batch.
+
+---
+
+## Session Continuation — NeurIPS Formatting and Overleaf Prep
+
+### Context
+
+User asked whether the `.tex` file could be compiled to PDF in this environment.
+No LaTeX compiler is installed in the shell (no `pdflatex`, `xelatex`, or `lualatex` in PATH).
+Advised uploading `docs/NeurIPS/` to Overleaf (`.tex` + `neurips_2026.sty` + `checklist.tex`)
+or installing MiKTeX/TeX Live locally.
+
+### Meeting Prep — Saturday April 18, 8–9 PM
+
+Three verified briefing documents created for the team meeting and committed as `0876120`:
+
+- `docs/NeurIPS/neurips-2026-submission-guidelines.md` — verified NeurIPS 2026 E&D submission
+  facts; replaces AI-generated guides as canonical reference; living doc with ✅/⚠/❓ markers
+- `docs/NeurIPS/neurips-2026-data-requirements.md` — Croissant compliance status, hosting
+  decision framework, 10-step pre-submission data roadmap
+- `docs/NeurIPS/paper-revision-claims-audit.md` — all paper claims audited; three `\reviewedit{}`
+  items with decision frameworks; 11-row broader claims inventory; blank decision record for meeting
+
+Key finding surfaced for meeting: **OpenReview profile activation takes up to 2 weeks for
+non-institutional emails.** Two weeks from April 18 = May 2, which is only 2 days before the
+May 4 abstract deadline. All four co-authors (Josh, Max, Bakul, Asuka) should verify or create
+OpenReview profiles immediately.
+
+Key recommendation for Edit B (MCTS novelty hedge): drop "to our knowledge" AND the "first"
+frame — replace with comparative contrast against text-space MCTS prior work. This is cleaner
+and more defensible than either the hedge or an unverified priority claim.
+
+### All changes pushed
+
+Commit `041087b` — paper amendments, NeurIPS formatting, documentation audit
+Commit `0876120` — three meeting-prep briefing documents
+
+### Session status: complete for 2026-04-16
