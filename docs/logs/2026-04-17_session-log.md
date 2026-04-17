@@ -134,3 +134,44 @@ downstream calculations verified. It is correctly the first item in the Chunk 1A
 - Committed and pushed
 
 ---
+
+---
+
+## ρ_R Bug Fix — Chunk 1A (commit 4bc8fa9)
+
+### Problem
+
+`PerLayerHonestyProjector.project()` in `logomesh/whitebox.py` was returning a normalized
+[0,1] value via `(proj + 1.0) / 2.0` clipped to [0,1]. This assumed the hidden state `h`
+was unit-normalised (i.e., computing cosine similarity). Hidden states from LLaMA/Qwen are
+NOT unit-normalised, so the transformation was semantically wrong and produced arbitrary values
+in [0,1] that did not correspond to the paper's Eq. 4.
+
+The T_t matrix, diagnostic state classifier, MCTS reward function (Eq. 8), OEI, and TDS were
+all computed using this incorrect ρ_R signal. All gate run data (seed 20260416 and the Phase 3
+gate run) was produced with the incorrect implementation.
+
+### Fix
+
+Three files changed:
+- `logomesh/whitebox.py`: return `float(np.dot(w, h_np))` directly; fallbacks `0.5 → 0.0`
+- `logomesh/kv_mcts.py`: fallbacks `0.5 → 0.0` for rho_R padding
+- `logomesh/telemetry_matrix.py`: docstring updated (repe_honesty no longer [0,1]); note
+  added to `classify()` that rho thresholds need re-calibration on real H100 data
+
+### Implication
+
+The existing gate run artifacts in `tmp/runs/2026-04-16/` were produced with the wrong
+implementation. They should not be cited as paper-valid ρ_R results. The fix must be applied
+before any experiment run that will appear in the paper. A re-run of the gate smoke test
+with the corrected implementation should be done at the start of the H100 session.
+
+### Tests
+
+135 passed (no regressions). The existing tests use fake projectors with dummy [0,1] values;
+they are not affected by the raw dot product change.
+
+### Next step
+
+Run gate smoke test on H100 with corrected implementation to establish what the actual raw
+ρ_R distribution looks like, then re-calibrate classify() thresholds accordingly.
