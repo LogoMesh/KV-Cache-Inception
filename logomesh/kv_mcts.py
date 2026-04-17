@@ -629,13 +629,13 @@ class ReversibleMCTS:
 
         sigma_H = self._hneuron.score_per_layer()
         hs = self._oracle.get_hidden_states()
-        rho_R = self._repe.project(hs) if hs else ([0.5] * len(sigma_H))
+        rho_R = self._repe.project(hs) if hs else ([0.0] * len(sigma_H))
 
         n = max(len(sigma_H), len(rho_R))
         if len(sigma_H) < n:
             sigma_H = list(sigma_H) + [0.5] * (n - len(sigma_H))
         if len(rho_R) < n:
-            rho_R = list(rho_R) + [0.5] * (n - len(rho_R))
+            rho_R = list(rho_R) + [0.0] * (n - len(rho_R))
 
         return TelemetryMatrix(
             h_neuron=np.array(sigma_H, dtype=np.float32),

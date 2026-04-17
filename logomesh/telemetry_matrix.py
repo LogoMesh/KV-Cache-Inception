@@ -60,7 +60,9 @@ class TelemetryMatrix:
     Attributes:
         h_neuron:     σ_H per transformer layer, shape [L], values in [0, 1].
                       Row 0 of T_t. Provided by HNeuronMonitor.score_per_layer().
-        repe_honesty: ρ_R per transformer layer, shape [L], values in [0, 1].
+        repe_honesty: ρ_R per transformer layer, shape [L], raw dot-product values.
+                      Per Eq. 4: ρ_R^(l)(t) = w_hon^(l)⊤ h_t^(l). Unbounded;
+                      sign and magnitude reflect alignment with honesty direction.
                       Row 1 of T_t. Provided by PerLayerHonestyProjector.project().
         step:         Generation step index t.
     """
@@ -143,6 +145,9 @@ def classify(
         jsd_threshold: JSD above which ORTHOGONAL_ESCAPE is declared.
         alignment_faking_sigma_threshold: σ̄_H below this → "low stress".
         alignment_faking_rho_threshold: ρ̄_R above this → "high honesty signal".
+            NOTE: ρ_R is now a raw dot product (unbounded). Default threshold of 0.7
+            was calibrated for the old [0,1]-normalised signal. Re-calibrate against
+            real H100 run data once ρ_R distributions are established.
         fabrication_sigma_threshold: σ̄_H above this → "high stress spike".
 
     Returns:

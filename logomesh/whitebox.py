@@ -1345,7 +1345,7 @@ class PerLayerHonestyProjector:
 
     Computes w_hon^(l) via difference-in-means on contrastive example pairs
     (benign vs. coerced). These weights serve dual purpose:
-      1. Honesty projection:  ρ_R^(l)(t) = clip(w_hon^(l) · h_t^(l) / ‖w‖, 0, 1)
+      1. Honesty projection:  ρ_R^(l)(t) = w_hon^(l)⊤ h_t^(l)  (raw dot product, Eq. 4)
       2. MCTS steering vector: d_K^(l) = w_hon^(l) (used at magnitude α)
 
     Equation reference: ρ_R^(l)(t) = w_hon^(l)⊤ h_t^(l)  (paper §4.1)
@@ -1363,7 +1363,7 @@ class PerLayerHonestyProjector:
 
     def __init__(self) -> None:
         import numpy as np
-        self._weights: list[np.ndarray] = []  # w_hon^(l) per layer, L2-normalized
+        self._weights: list[np.ndarray] = []  # w_hon^(l) per layer, L2-normalised
         self._calibrated: bool = False
         self._n_layers: int = 0
 
@@ -1430,13 +1430,15 @@ class PerLayerHonestyProjector:
                            one per layer, shape [hidden_size] or [seq, hidden_size].
 
         Returns:
-            List of floats in [0.0, 1.0], length = len(hidden_states).
-            Returns list of 0.5 values if not calibrated or shapes mismatch.
+            List of raw dot-product floats, length = len(hidden_states).
+            Per Eq. 4: ρ_R^(l)(t) = w_hon^(l)⊤ h_t^(l). Values are unbounded;
+            sign and magnitude reflect alignment of h with the honesty direction.
+            Returns list of 0.0 values if not calibrated or shapes mismatch.
         """
         import numpy as np
 
         if not self._calibrated or not hidden_states:
-            return [0.5] * len(hidden_states)
+            return [0.0] * len(hidden_states)
 
         scores = []
         for layer_idx, h in enumerate(hidden_states):
@@ -1451,12 +1453,12 @@ class PerLayerHonestyProjector:
                 if h_np.shape != w.shape:
                     scores.append(0.5)
                     continue
-                proj = float(np.dot(w, h_np))
-                # Clip to [0, 1]: positive projection = more coerced/aligned-faking direction
-                scores.append(float(max(0.0, min(1.0, (proj + 1.0) / 2.0))))
+                # Raw dot product per Eq. 4: ρ_R^(l)(t) = w_hon^(l)⊤ h_t^(l)
+                # w is L2-normalised; h is not. Value is unbounded.
+                scores.append(float(np.dot(w, h_np)))
             except Exception as e:
                 logger.debug("PerLayerHonestyProjector.project layer %d failed: %s", layer_idx, e)
-                scores.append(0.5)
+                scores.append(0.0)
 
         return scores
 
