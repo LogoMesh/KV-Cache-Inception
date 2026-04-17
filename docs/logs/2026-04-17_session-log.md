@@ -220,3 +220,29 @@ Structure for each of the 5 experiments:
 4. Commit and push
 5. Then proceed to obey the remaining suggestions in this session log in order
 
+---
+
+## Post-Compact Execution (commit TBD)
+
+### Experiment Readiness + Paper Revision document created
+
+`docs/NeurIPS/experiment-readiness-and-paper-revision.md` created as planned.
+
+Structure for each of the 5 experiments:
+- **Pre-flight gate** — what must be true before running
+- **What it produces** — artifact, metric, expected output shape
+- **Paper unlock** — exact quoted .tex text that converts from projected/future-tense to
+  past-tense confirmed once results are in hand
+
+Key additions beyond the plan outline:
+- Global pre-flight checklist (applies before any H100 run): ρ_R fix done ✅; 8 other items pending
+- α calibration note for Experiment 1: Qwen gate run showed OEI ~0.996 (saturated); must find
+  discriminative α range before committing to Experiment 1 α values
+- Dependency chain made explicit: Exp 1 → {Exp 2, Exp 5}; Exp 3 independent; Exp 4 gated on
+  large dataset (only exists after Exp 1 or 2 at scale)
+- Priority decision table for Saturday meeting ("which experiments will definitely run before May 5?")
+- Claim-to-experiment mapping appendix
+
+Document added to Document Index in `docs/CLAUDE_CONTEXT_BRIEF.md` at priority 1a.
+Memory pointer saved: `reference_experiment_readiness.md`.
+
