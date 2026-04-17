@@ -246,3 +246,23 @@ Key additions beyond the plan outline:
 Document added to Document Index in `docs/CLAUDE_CONTEXT_BRIEF.md` at priority 1a.
 Memory pointer saved: `reference_experiment_readiness.md`.
 
+---
+
+## Remaining Suggestions — Status Tracker
+
+Items from the opening assessment and ρ_R fix section, ordered by priority:
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | Fix ρ_R raw dot product bug (Chunk 1A) | ✅ Done (commit 4bc8fa9) | `whitebox.py`, `kv_mcts.py`, `telemetry_matrix.py` |
+| 2 | Create experiment-readiness + paper-revision doc | ✅ Done (commit f17b365) | `docs/NeurIPS/experiment-readiness-and-paper-revision.md` |
+| 3 | Apply Edit B to .tex (drop "to our knowledge" hedge — use Path 2 comparative framing) | ❌ Pending | Low-risk, no experiment dependency; can do now |
+| 4 | Apply Edit C to .tex ("structurally cannot" → "are not designed to navigate") | ❌ Pending | Same — no experiment dependency; can do now |
+| 5 | Remove `\reviewedit{}` wrapper from Edit A (LAT acronym — keep text, drop color markup) | ❌ Pending | Team should confirm at meeting, but safe to pre-apply |
+| 6 | Convert present-tense experiment claims to future-tense (Sections 5.1–5.4 and Contributions) | ❌ Pending | Moderate scope; use experiment-readiness doc "Paper unlock" column as guide |
+| 7 | Verify OpenReview profiles for all 4 co-authors | ❌ Pending | **Urgent: 2-week moderation window from Apr 18 = May 2, only 2 days before May 4 abstract deadline** |
+| 8 | Run gate smoke test on H100 with corrected ρ_R; re-calibrate `classify()` thresholds | ❌ Pending | Requires H100 access; first action of H100 session |
+| 9 | Install `mlcroissant` CLI in PATH; run strict Croissant validation on gate run artifacts | ❌ Pending | Can do locally; blocked only by env setup |
+| 10 | Implement T_t matrix-level export (2×L per node) in `croissant_export.py` | ❌ Pending | Design gap identified in data requirements doc |
+| 11 | Saturday meeting: fill Priority Decision table in experiment-readiness doc | ❌ Pending | Requires team; scope question drives all subsequent work |
+
