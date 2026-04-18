@@ -67,6 +67,9 @@ confirm decided claims rather than generating post-hoc justifications.
 | 7 | LLM-as-Judge divergences 0.10–0.20 on normalized scales | 2.5 | Quantitative cited claim | Citation [llmasjudge2025limitations] given | ❓ Verify cited paper states this figure |
 | 8 | "FP32 accumulator achieves zero semantic degradation" | 4.2 | Empirical | Unhedged | ✅ Confirmed — Lipschitz drift = 0.00e+00 over 200 cycles (gate run seed 20260416) |
 | 9 | "Orthogonal Escape has not yet been empirically validated" | Limitations | Honest limitation | Present in draft | ✅ Keep — required for reviewer credibility |
+| 12 | σ_H confound risk: stress signal may conflate hallucination, mode-collapse, and strategic masking unless discriminant controls added | Limitations | Reviewer attack surface | **Not in current draft** | ❓ Add to Limitations before submission |
+| 13 | OEI false negative risk: may miss nonlinear/manifold-structured redistribution not concentrated along linear null-space directions | Limitations | Reviewer attack surface | **Not in current draft** | ❓ Add to Limitations before submission |
+| 14 | Evidence burden: paper needs explicit validation chain linking continuous latent interventions to discrete deceptive intent outcomes | Limitations | Reviewer attack surface | **Not in current draft** | ❓ Add to Limitations before submission |
 | 10 | "20B model KV cache ≈ 40GB in bf16" | 4.2 | Specification | Unhedged | ✅ Calculable from architecture; keep |
 | 11 | "accumulators add ~50MB overhead for 20B model with S'=10 positions" | 4.2 | Memory claim | Unhedged | ❓ Verify calculation |
 
@@ -83,6 +86,9 @@ confirm decided claims rather than generating post-hoc justifications.
 | Claim 7: LLM-as-Judge figure — citation verified? | | | |
 | Claim 11: accumulator memory calculation — verified? | | | |
 | Experiment priority order (which run before May 5?) | | | Drives all claim framing; see experiment-readiness doc |
+| Claim 12: σ_H confound risk — add to Limitations? | | | |
+| Claim 13: OEI false negative risk — add to Limitations? | | | |
+| Claim 14: Evidence burden — add validation chain to Limitations? | | | |
 
 ---
 
