@@ -6,14 +6,10 @@ Intended use: Persistent, agent-facing constraints for all planning and implemen
 
 ## Reference Source (Must Be Used)
 
-This contract is grounded in the following project-specific submission strategy document:
+This contract is grounded in the following verified submission guidance documents:
 
-- docs/NeurIPS/NeurIPS Submission Guide (KV-CAche-Inception).md
-
-Agents may use that file for strategic context (track selection rationale, experiment framing,
-ethics posture). **However, it is an AI-generated document that contains confirmed errors
-(wrong bibliography URLs, unverified platform size claims). It must NOT be treated as
-authoritative for specific formatting requirements or submission mechanics.**
+- `docs/NeurIPS/neurips-2026-submission-guidelines.md` — verified E&D track rules (deadlines, formatting, anonymization, checklist); replaces the former AI-generated guides which contained confirmed errors and have been archived.
+- `docs/NeurIPS/neurips-2026-data-requirements.md` — Croissant/RAI compliance state and hosting decision.
 
 For authoritative requirements, the following sources take precedence in this order:
 
@@ -27,9 +23,7 @@ For authoritative requirements, the following sources take precedence in this or
    - Source ZIP: https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip
 
 3. **Main Track Handbook (saved copy)**:
-   - `docs/NeurIPS/Main Track Handbook 2026_files/`
-
-4. **KV-CAche-Inception guide** — for strategic framing only, not for formatting facts.
+   - `docs/NeurIPS/Main Track Handbook 2026.html`
 
 ## Scope
 
