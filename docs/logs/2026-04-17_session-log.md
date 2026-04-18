@@ -326,6 +326,56 @@ Items from the opening assessment and ρ_R fix section, ordered by priority:
    `docs/NeurIPS/experiment-readiness-and-paper-revision.md` and scope the paper's contribution
    claims to match only the experiments confirmed to run before May 5.
 2. If H100 access is confirmed, begin Phase B: run gate smoke test with corrected ρ_R,
-   establish raw ρ_R distribution, re-calibrate `classify()` thresholds.
-3. Item 10 (T_t matrix-level export) can be implemented locally at any time without H100.
+   establish raw ρ_R distribution, re-calibrate `classify()` thresholds via `ClassifyConfig`
+   and `report_telemetry_distribution()`.
+
+---
+
+## Post-Context-Compact Continuation (commit b7944bc)
+
+Items 8 and 10 implemented.
+
+### Item 10 — T_t matrix-level export
+
+Added `t_matrix_json` as a first-class column in every Croissant export package.
+Serializes `[[σ_H^(1),...,σ_H^(L)],[ρ_R^(1),...,ρ_R^(L)]]` — the full T_t ∈ ℝ^{2×L}
+matrix per MCTS node. Reviewers no longer need to parse two separate JSON blobs
+and manually reconstruct the paper's core data structure.
+
+Also updated:
+- `h_neuron_json` description: labeled as "Row 0 of T_t (Eq. 3)"
+- `repe_honesty_json` description: labeled as "Row 1 of T_t (Eq. 3)"
+- `neurips-2026-data-requirements.md`: T_t row updated ✅
+- `experiment-readiness-and-paper-revision.md`: T_t pre-flight gate updated ✅
+
+### Item 8 — ClassifyConfig and distribution helper (local prep)
+
+Added to `logomesh/telemetry_matrix.py`:
+- `ClassifyConfig` dataclass: holds all four `classify()` thresholds with
+  H100 recalibration notes; `TODO(H100)` marker on `alignment_faking_rho_threshold=0.7`
+- `classify()` updated: accepts optional `config: ClassifyConfig | None` argument;
+  individual keyword params retained for backward compatibility
+- `report_telemetry_distribution()`: pass a list of `TelemetryMatrix` objects,
+  returns `rho_r_min/max/mean/std` + `sigma_h_*` stats for threshold calibration
+
+Actual recalibration still requires H100 data; prep makes it a 5-minute job once
+the first corrected run arrives.
+
+### Tests
+
+139/139 passed. 4 new tests added:
+- `TestClassifyConfig::test_config_overrides_defaults`
+- `TestClassifyConfig::test_config_jsd_threshold`
+- `TestClassifyConfig::test_report_telemetry_distribution_empty`
+- `TestClassifyConfig::test_report_telemetry_distribution_stats`
+
+### Updated checklist
+
+| # | Task | Status |
+|---|---|---|
+| 7 | OpenReview profiles | In progress |
+| 8 | H100 smoke test + recalibrate thresholds | Prep ✅ (`ClassifyConfig`, `report_telemetry_distribution`); recalibration needs H100 |
+| 9 | mlcroissant strict validation | ✅ Done |
+| 10 | T_t matrix-level export | ✅ Done (`t_matrix_json`) |
+| 11 | Saturday meeting: fill Priority table | Needs team |
 
