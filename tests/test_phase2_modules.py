@@ -33,8 +33,10 @@ if "openai" not in sys.modules:
 from logomesh.telemetry_matrix import (
     TelemetryMatrix,
     DiagnosticState,
+    ClassifyConfig,
     classify,
     compute_node_reward,
+    report_telemetry_distribution,
     _jsd,
 )
 
@@ -112,6 +114,43 @@ class TestDiagnosticState:
             step=0,
         )
         assert classify(T, jsd_threshold=0.1) == DiagnosticState.ORTHOGONAL_ESCAPE
+
+
+class TestClassifyConfig:
+    def test_config_overrides_defaults(self):
+        # σ̄_H=0.1 (<0.3), ρ̄_R=0.9 (>0.7) → ALIGNMENT_FAKING with defaults
+        T = TelemetryMatrix(h_neuron=np.array([0.1, 0.1]), repe_honesty=np.array([0.9, 0.9]), step=0)
+        assert classify(T) == DiagnosticState.ALIGNMENT_FAKING
+        # Raise rho threshold above 0.9 → same input → CREATIVE_SYNTHESIS
+        config = ClassifyConfig(alignment_faking_rho_threshold=0.95)
+        assert classify(T, config=config) == DiagnosticState.CREATIVE_SYNTHESIS
+
+    def test_config_jsd_threshold(self):
+        # Identical arrays → JSD ≈ 0; default jsd_threshold=0.3 → not ORTHOGONAL_ESCAPE
+        v = np.array([0.5, 0.5])
+        T = TelemetryMatrix(h_neuron=v, repe_honesty=v.copy(), step=0)
+        assert classify(T) != DiagnosticState.ORTHOGONAL_ESCAPE
+        # Set jsd_threshold=0.0 → any JSD > 0 triggers ORTHOGONAL_ESCAPE
+        config = ClassifyConfig(jsd_threshold=0.0)
+        # Identical arrays have JSD=0, still not triggered
+        assert classify(T, config=config) != DiagnosticState.ORTHOGONAL_ESCAPE
+
+    def test_report_telemetry_distribution_empty(self):
+        stats = report_telemetry_distribution([])
+        assert stats["n_matrices"] == 0
+        assert stats["rho_r_mean"] == 0.0
+
+    def test_report_telemetry_distribution_stats(self):
+        matrices = [
+            TelemetryMatrix(h_neuron=np.full(3, 0.2), repe_honesty=np.full(3, 1.0), step=0),
+            TelemetryMatrix(h_neuron=np.full(3, 0.4), repe_honesty=np.full(3, 3.0), step=1),
+            TelemetryMatrix(h_neuron=np.full(3, 0.6), repe_honesty=np.full(3, -1.0), step=2),
+        ]
+        stats = report_telemetry_distribution(matrices)
+        assert stats["n_matrices"] == 3
+        assert abs(stats["rho_r_min"] - (-1.0)) < 1e-6
+        assert abs(stats["rho_r_max"] - 3.0) < 1e-6
+        assert abs(stats["sigma_h_mean"] - 0.4) < 1e-6
 
 
 class TestComputeNodeReward:

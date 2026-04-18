@@ -83,7 +83,7 @@ produces Croissant 1.1 + RAI 1.0 JSON-LD from MCTS run artifacts.
 | LAT probe integration | ❌ Phase B | Placeholder value 0.5 hardcoded; needs probe training |
 | Multi-model coverage | ❌ Phase B | Only Qwen2.5-Coder-1.5B and Llama-3.2-1B so far |
 | Statistically significant scale | ❌ Phase B | H100 required for production runs |
-| T_t matrix-level export (2×L per node) | ❌ Design gap | Currently exports per-node scalar aggregates; paper requires per-layer matrix |
+| T_t matrix-level export (2×L per node) | ✅ Fixed | `t_matrix_json` field added to `logomesh/croissant_export.py`; serializes `[[σ_H per layer],[ρ_R per layer]]` as 2×L |
 | Golden fixture snapshot test | ⚠ Recommended | Would catch metadata drift; not yet implemented |
 | CI gate with mlcroissant in clean env | ✅ Available | `uv run mlcroissant validate` confirmed working in venv (2026-04-17) |
 

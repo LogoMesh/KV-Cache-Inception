@@ -100,6 +100,13 @@ def test_export_run_artifact_to_croissant_creates_package(tmp_path: Path):
     }
     assert child["audit_hash"]
 
+    # t_matrix_json must be a 2×L matrix matching the two per-layer vectors
+    t_matrix = json.loads(child["t_matrix_json"])
+    assert isinstance(t_matrix, list) and len(t_matrix) == 2
+    assert len(t_matrix[0]) == len(t_matrix[1])  # both rows same length (L layers)
+    assert t_matrix[0] == json.loads(child["h_neuron_json"])
+    assert t_matrix[1] == json.loads(child["repe_honesty_json"])
+
 
 def test_validate_csv_shape_reports_missing_columns(tmp_path: Path):
     broken_csv = tmp_path / "broken.csv"

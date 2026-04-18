@@ -27,12 +27,12 @@ These must be true before ANY experiment runs on H100. Check once, not per-exper
 |---|---|---|
 | ρ_R raw dot product fix applied | ✅ Done (commit 4bc8fa9) | `whitebox.py`, `kv_mcts.py` — returns unbounded dot product per Eq. 4 |
 | Gate smoke test re-run with corrected ρ_R | ❌ Pending | Run on H100 at session start; confirm ρ_R distribution is qualitatively different from old [0,1] values |
-| `classify()` thresholds re-calibrated | ❌ Pending | Current defaults (e.g. `alignment_faking_rho_threshold=0.7`) were tuned for normalised signal; re-calibrate after first corrected H100 run |
+| `classify()` thresholds re-calibrated | ❌ Pending | Use `ClassifyConfig` (added `telemetry_matrix.py`) + `report_telemetry_distribution()` after first H100 run to get empirical ρ_R range; set `alignment_faking_rho_threshold ≈ mean + 0.5·std` |
 | H100 access confirmed from Tianyu's lab | ❌ Pending | Required for all Phase B experiments |
-| T_t matrix-level export (2×L per node) | ❌ Pending | Currently exports per-node scalar aggregates; paper requires per-layer matrix (see data requirements doc) |
+| T_t matrix-level export (2×L per node) | ✅ Done | `t_matrix_json` field added — serializes `[[σ_H per layer],[ρ_R per layer]]` as 2×L first-class column |
 | LAT probes trained on target model | ❌ Pending | `scripts/train_lat_probes.py`; placeholder 0.5 in export until done |
 | Target model (`gpt-oss-20b` or 7B TBD) loaded and verified | ❌ Pending | gpt-oss-20b licence/availability unconfirmed; may need fallback |
-| `uv run pytest tests/ -v` green (135 passed) | ✅ Green | Confirm again before H100 session |
+| `uv run pytest tests/ -v` green (139 passed) | ✅ Green | Confirm again before H100 session |
 
 **Note on ρ_R recalibration:** The gate smoke test on H100 should include a deliberate diagnostic
 pass: run the same prompt at α=0 (baseline) and α=1.0 (perturbed) and check that ρ_R values are

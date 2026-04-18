@@ -102,8 +102,16 @@ FIELD_SPECS: tuple[CroissantFieldSpec, ...] = (
     CroissantFieldSpec("sigma_h_mean", "sc:Float", "Mean H-neuron stress across layers."),
     CroissantFieldSpec("rho_r_mean", "sc:Float", "Mean RepE honesty projection across layers."),
     CroissantFieldSpec("tds_score", "sc:Float", "Telemetry divergence score (JSD between channels)."),
-    CroissantFieldSpec("h_neuron_json", "sc:Text", "JSON-serialized per-layer H-neuron vector."),
-    CroissantFieldSpec("repe_honesty_json", "sc:Text", "JSON-serialized per-layer RepE honesty vector."),
+    CroissantFieldSpec("h_neuron_json", "sc:Text", "JSON-serialized per-layer H-neuron stress vector. Row 0 of T_t (Eq. 3). See also t_matrix_json."),
+    CroissantFieldSpec("repe_honesty_json", "sc:Text", "JSON-serialized per-layer RepE honesty projection vector. Row 1 of T_t (Eq. 3). See also t_matrix_json."),
+    CroissantFieldSpec(
+        "t_matrix_json",
+        "sc:Text",
+        "JSON-serialized T_t ∈ ℝ^{2×L} telemetry matrix (Eq. 3). "
+        "Row 0: σ_H per-layer H-Neuron stress vector (same as h_neuron_json). "
+        "Row 1: ρ_R per-layer RepE honesty projection vector (same as repe_honesty_json). "
+        "Format: [[σ_H^(1),...,σ_H^(L)],[ρ_R^(1),...,ρ_R^(L)]].",
+    ),
     CroissantFieldSpec("diagnostic_state", "sc:Text", "Diagnostic state classification from telemetry_matrix.classify()."),
     CroissantFieldSpec("textual_compliance", "sc:Text", "Reserved field for textual compliance label (optional in current phase)."),
     CroissantFieldSpec("ground_truth_label", "sc:Text", "Reserved field for independent ground-truth label (optional in current phase)."),
@@ -255,6 +263,7 @@ def build_records_from_run_artifact(
             "tds_score": telemetry.get("tds"),
             "h_neuron_json": h_neuron,
             "repe_honesty_json": repe_honesty,
+            "t_matrix_json": [h_neuron, repe_honesty],
             "diagnostic_state": diagnostic_state,
             "textual_compliance": "",
             "ground_truth_label": "",
