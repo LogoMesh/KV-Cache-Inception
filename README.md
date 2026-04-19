@@ -60,7 +60,7 @@ tests/
   test_phase2_modules.py        # TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke tests
 
 docs/
-  NeurIPS/                      # Paper drafts (canonical: 04.02.2026-NeurIPS-Research-Proposal.tex)
+  NeurIPS/                      # Paper drafts (canonical: 04.17.2026-NeurIPS-Research-Proposal.tex)
   reviews/                      # Gap analysis and transition audit
   dataset/                      # Croissant schema stub (Phase 4)
 ```
@@ -146,16 +146,6 @@ Notes:
 | 2 | Reversible KV-MCTS — `kv_mcts.py`, `telemetry_matrix.py`, `orthogonal_escape.py`, per-layer telemetry | ✅ Complete |
 | 3 | Experiments 1–5 + Procrustes transfer + evaluation framework | 🔲 Next |
 | 4 | Research dataset (Croissant format) + paper writing | 🔲 Not started |
-
----
-
-## Team
-
-- **Josh** — Team Lead / Data Scientist
-- **Prof. Tianyu Shi** — Academic Advisor (McGill University)
-- **Max** — Data Pipeline / Croissant format
-- **Bakul** — Competitive Analysis / Org
-
 
 ---
 
