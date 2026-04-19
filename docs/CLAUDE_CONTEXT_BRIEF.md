@@ -1,6 +1,6 @@
 # Claude Context Brief
 
-**Last updated:** 2026-04-18
+**Last updated:** 2026-04-18 (session 2)
 **Owner:** Josh / Claude sessions
 **Purpose:** Single handoff index. Read this file first, then go directly to Priority 1.
 
@@ -24,7 +24,8 @@
 | 3 | [neurips-2026-data-requirements.md](NeurIPS/neurips-2026-data-requirements.md) | Croissant 1.1/RAI compliance state + hosting decision + data roadmap. |
 | 4 | [paper-revision-claims-audit.md](NeurIPS/paper-revision-claims-audit.md) | Paper claims inventory and decision record. May overlap with Priority 1 — review for consolidation. |
 | 5 | [NeurIPS-Submission-Hardline-Rules-Agent-Contract.md](NeurIPS/NeurIPS-Submission-Hardline-Rules-Agent-Contract.md) | Non-negotiable submission rules binding all agents. |
-| 6 | [docs/logs/2026-04-17_session-log.md](logs/2026-04-17_session-log.md) | Most recent session record. |
+| 6 | [2026-04-18_Meeting-Briefing.md](NeurIPS/2026-04-18_Meeting-Briefing.md) | Apr 18 team meeting agenda: OE scope decision, experiment priority table, operational items. |
+| 7 | [docs/logs/2026-04-18_session-log.md](logs/2026-04-18_session-log.md) | Most recent session record. |
 
 ---
 
