@@ -280,6 +280,10 @@ def main() -> int:
                    help="Optional output directory for Croissant package export")
     p.add_argument("--strict-croissant", action="store_true",
                    help="Run strict mlcroissant CLI validation (requires mlcroissant in PATH)")
+    p.add_argument("--auto-collect", action="store_true",
+                   help="After writing the artifact, run the batch collector in append mode")
+    p.add_argument("--dataset-dir", default="./dataset", type=Path,
+                   help="Output directory for the batch Croissant dataset (used with --auto-collect)")
     args = p.parse_args()
 
     if args.output is None:
@@ -309,6 +313,28 @@ def main() -> int:
             logger.info("Croissant records exported: %d", export_info["record_count"])
         except Exception as exc:
             logger.error("Croissant export failed: %s", exc)
+            return 1
+
+    # --- Auto-collect into batch dataset ---
+    if args.auto_collect:
+        try:
+            from scripts.collect_dataset import collect_dataset
+
+            collect_result = collect_dataset(
+                input_dir=output_path.parent,
+                output_dir=Path(args.dataset_dir),
+                experiment_id="run_kv_mcts",
+            )
+            if collect_result.get("status") == "ok":
+                logger.info(
+                    "Auto-collect: %d new records added (%d total sources)",
+                    collect_result["record_count"],
+                    collect_result["total_source_artifacts"],
+                )
+            else:
+                logger.info("Auto-collect status: %s", collect_result.get("status"))
+        except Exception as exc:
+            logger.error("Auto-collect failed: %s", exc)
             return 1
 
     # Print top-5 nodes summary

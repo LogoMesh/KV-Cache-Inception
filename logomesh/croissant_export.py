@@ -624,3 +624,70 @@ def export_run_artifact_to_croissant(
         "strict_validation_return_code": strict_validation_return_code,
         "strict_validation_output": strict_validation_output,
     }
+
+
+def build_batch_metadata_document(
+    *,
+    csv_file_name: str,
+    csv_sha256: str,
+    source_artifacts: list[dict[str, str]],
+    dataset_name: str = "KV-Cache Inception Runtime Interventions (Batch)",
+    dataset_description: str = (
+        "Merged runtime evidence from multiple Reversible MCTS runs in KV-cache "
+        "latent space. Each record is one MCTS node with telemetry channels, "
+        "diagnostic classification, OEI/TDS metrics, and reproducibility provenance."
+    ),
+    version: str = "0.1.0",
+    date_published: str | None = None,
+) -> dict[str, Any]:
+    """Create Croissant 1.1 + RAI 1.0 metadata for a batch of merged run artifacts.
+
+    Builds on ``build_metadata_document`` for the skeleton (context, fields, RAI
+    annotations) and replaces the distribution list with one CSV entry plus one
+    FileObject per source artifact.
+
+    Parameters
+    ----------
+    source_artifacts:
+        List of dicts, each with ``"name"`` (relative path inside the package,
+        e.g. ``"data/sources/source_run_001.json"``) and ``"sha256"`` (hex digest).
+    """
+    if not source_artifacts:
+        raise ValueError("source_artifacts must contain at least one entry")
+
+    first = source_artifacts[0]
+    skeleton = build_metadata_document(
+        csv_file_name=csv_file_name,
+        csv_sha256=csv_sha256,
+        source_artifact_name=first["name"],
+        source_artifact_sha256=first["sha256"],
+        dataset_name=dataset_name,
+        dataset_description=dataset_description,
+        version=version,
+        date_published=date_published,
+    )
+
+    distribution: list[dict[str, Any]] = [
+        {
+            "@type": "cr:FileObject",
+            "@id": "interventions-csv",
+            "name": csv_file_name,
+            "contentUrl": csv_file_name,
+            "encodingFormat": "text/csv",
+            "sha256": csv_sha256,
+        },
+    ]
+    for index, artifact in enumerate(source_artifacts, start=1):
+        distribution.append(
+            {
+                "@type": "cr:FileObject",
+                "@id": f"source-run-{index:03d}",
+                "name": artifact["name"],
+                "contentUrl": artifact["name"],
+                "encodingFormat": "application/json",
+                "sha256": artifact["sha256"],
+            }
+        )
+
+    skeleton["distribution"] = distribution
+    return skeleton
