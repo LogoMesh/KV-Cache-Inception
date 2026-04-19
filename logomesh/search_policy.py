@@ -1,5 +1,5 @@
 """
-SAGE Search Policy — Decoupled bandit + branch scoring + pruning.
+LogoMesh Search Policy — UCB1 bandit for strategy selection in Phase A/B offline MCTS.
 
 Extracts all search/selection logic from the monolithic Attacker class
 into a testable, configurable module with explicit exploration-exploitation

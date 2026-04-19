@@ -1,5 +1,5 @@
 """
-SAGE Threat Model — Structured scenario encoding with taxonomy-driven classification.
+LogoMesh Threat Model — Structured scenario encoding for Phase A game types.
 
 Replaces ad-hoc keyword matching with typed representations derived from
 NIST adversarial ML taxonomy and SoK prompt security taxonomy.

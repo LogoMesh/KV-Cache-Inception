@@ -1,5 +1,5 @@
 """
-SAGE Evidence Store — Structured per-round logging and replay.
+LogoMesh Evidence Store — Structured per-round logging for Phase A offline MCTS runs.
 
 Replaces ad-hoc dict[int, dict] with typed records supporting
 serialization, queries, and offline analysis.

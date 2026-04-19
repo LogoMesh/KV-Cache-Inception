@@ -1,5 +1,5 @@
 """
-SAGE Graders — Pluggable outcome evaluation.
+LogoMesh Graders — Pluggable binary outcome evaluation for offline MCTS episodes.
 
 Separates grading from the orchestration/attack loop (Anthropic eval guide).
 Supports programmatic, LLM-based, and composite graders.
