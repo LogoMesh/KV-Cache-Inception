@@ -26,126 +26,126 @@ We propose **KV-Cache Inception**, a framework combining three novel contributio
 
 ---
 
-## Repo Structure
+## Script Reference
 
-```
-logomesh/                       # Core research package
-  oracle.py                     # BaseModelClient ABC + OpenAIModelClient
-  local_model.py                # LocalLlamaOracle — HF transformers, hidden states, KV cache API
-  hneuron_monitor.py            # H-Neuron stress σ_H (bottom-up channel); score_per_layer()
-  whitebox.py                   # RepE probes + PerLayerHonestyProjector ρ_R (top-down channel)
-  telemetry_matrix.py           # T_t ∈ ℝ^{2×L}, DiagnosticState, compute_node_reward (Eq. 8)
-  orthogonal_escape.py          # NullSpaceProjector, OEICalculator (Eq. 10), TDSCalculator
-  kv_mcts.py                    # ReversibleMCTS, FP32Accumulator (Theorem 1), KVCacheNode
-  search_policy.py              # UCB1 bandit (node selection)
-  payload_library.py            # PayloadEntry + PayloadLibrary
-  croissant_export.py           # Croissant 1.1 + RAI export and validation utilities
-  evidence_store.py             # Structured per-run logging
-  graders.py                    # PluginGrader, RuleBasedGrader
-  ablation.py                   # AblationConfig — experiment toggles
-  threat_model.py               # ThreatModel, GoalTaxonomy
+### Entry-point scripts (`scripts/`)
 
-scripts/
-  probe_kv_cache_mutability.py  # Phase 2 gate: validates in-place KV mutation + reversibility
-  run_kv_mcts.py                # Phase 2 runner: Reversible MCTS with T_t, OEI, TDS output
-  export_kv_mcts_to_croissant.py # Convert runtime JSON artifacts into Croissant package files
-  measure_lipschitz_drift.py    # Theorem 1 validation: FP32 accumulator drift vs naive bf16
-  run_offline_mcts.py           # Phase A offline text-generation MCTS (baseline)
-  train_lat_probes.py           # LAT probe training pipeline
+| Script | Paper section | What it does | Hardware | Status |
+|---|---|---|---|---|
+| `probe_kv_cache_mutability.py` | §4.2 precondition | KV-cache in-place mutation + reversibility gate | Any (CPU/GPU) | ✅ Complete |
+| `measure_lipschitz_drift.py` | §4.2 Theorem 1 | FP32 accumulator drift validation (n cycles) | Any | ✅ Complete |
+| `run_kv_mcts.py` | §4.2–4.3, Exp 1 | Reversible MCTS + T_t + OEI + TDS; Exp 1 α sweep | RTX (1B) / H100 (20B) | ✅ Implemented; H100 scale pending |
+| `run_offline_mcts.py` | §5 Phase A/B, Exp 2 baseline | Offline text-space MCTS on defender simulacrum | RTX (1B) / H100 (20B) | ✅ Implemented; H100 scale pending |
+| `train_lat_probes.py` | §5 Phase A prereq | LAT probe training for RepE ρ_R calibration | RTX (1B) | ✅ Implemented |
+| `export_kv_mcts_to_croissant.py` | §6 dataset | Single artifact → Croissant 1.1 + RAI 1.0 package | Any | ✅ Complete |
+| `collect_dataset.py` | §6 dataset | Batch N artifacts → NeurIPS submission package | Any | ✅ Complete |
 
-tests/
-  test_sage.py                  # logomesh module unit tests
-  test_whitebox.py              # RepE / WhiteBoxEvaluator tests
-  test_local_model_interface.py # Phase 2 LocalLlamaOracle interface tests
-  test_phase2_modules.py        # TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke tests
+### Core library (`logomesh/`)
 
-docs/
-  NeurIPS/                      # Paper drafts (canonical: 04.17.2026-NeurIPS-Research-Proposal.tex)
-  reviews/                      # Gap analysis and transition audit
-  dataset/                      # Croissant schema stub (Phase 4)
-```
+| Module | Paper equation | Role |
+|---|---|---|
+| `telemetry_matrix.py` | Eq. 3, 8; Table 1 | `T_t ∈ ℝ^{2×L}`, `DiagnosticState`, MCTS reward |
+| `kv_mcts.py` | Eq. 5–6; §4.2 | `ReversibleMCTS`, `FP32Accumulator` (Theorem 1) |
+| `orthogonal_escape.py` | Eq. 10 | `OEICalculator`, `TDSCalculator` |
+| `hneuron_monitor.py` | Eq. 3 row 0 | H-Neuron stress σ_H per layer (bottom-up) |
+| `whitebox.py` | Eq. 3 row 1, Eq. 4 | RepE honesty ρ_R per layer — `PerLayerHonestyProjector` |
+| `local_model.py` | Infrastructure | HuggingFace wrapper with KV-cache telemetry access |
+| `croissant_export.py` | §6 | Croissant 1.1 + RAI 1.0 export and schema validation |
 
 ---
 
-## Quickstart
+## Quick Start
 
 ```bash
 # Install dependencies
 uv sync
 
-# Run tests (no model required)
+# Run tests (no model required — must be 100% green before any experiment)
 uv run pytest tests/ -v
+```
 
-# Phase 2 KV-MCTS (auto-downloads TinyLlama ~2GB)
+### What you can run today (consumer GPU, RTX 3060+)
+
+Run these in order. First run auto-downloads TinyLlama (~1GB, ~2GB VRAM).
+
+```bash
+# 1. Validate KV-cache mutability on your hardware (paper §4.2 precondition)
+#    Must pass before running run_kv_mcts.py. Exit 0 = passed.
+uv run python scripts/probe_kv_cache_mutability.py --device auto
+
+# 2. Validate Theorem 1: FP32 accumulator drift is bounded independent of rollback count
+#    Paper §4.2, Theorem 1. Expected result: accumulator_inf_norm stays at 0.00e+00.
+uv run python scripts/measure_lipschitz_drift.py \
+    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --n-cycles 200
+
+# 3. Reversible MCTS smoke test — Experiment 1 α sweep on 1B surrogate (paper §4.2–4.3, §5)
+#    Outputs a JSON artifact with T_t telemetry, OEI scores, and TDS per node.
 uv run python scripts/run_kv_mcts.py \
     --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
     --nodes 50 --depth 5 --branches 3
 
-# Optional: emit Croissant package directly from the same run
-uv run python scripts/run_kv_mcts.py \
-  --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
-  --nodes 10 --depth 2 --branches 2 \
-  --output ./tmp/mcts_output.json \
-  --croissant-dir ./tmp/croissant
+# 4. Offline MCTS baseline — Experiment 2 comparator (paper §5 Phase A/B)
+#    Download model first: huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir ./models/llama-3.2-1b
+uv run python scripts/run_offline_mcts.py \
+    --model ./models/llama-3.2-1b --episodes 20
+```
 
-# Optional: export existing runtime JSON artifact to Croissant package
+**Notes:**
+- `--device auto` resolves: `cuda` → `mps` → `cpu`.
+- For gated HuggingFace models, run `huggingface-cli login` first.
+- `probe_kv_cache_mutability.py` exit code 0 = gate passed; non-zero = failed.
+
+### What requires H100 access (not yet run)
+
+- Experiments 1–2 at scale (requires `openai/gpt-oss-20b`, ~16GB VRAM floor)
+- Experiments 3–5: scripts not yet built (see Experiment Status table below)
+
+### Dataset packaging (after H100 runs)
+
+```bash
+# Export a single run artifact to Croissant format
 uv run python scripts/export_kv_mcts_to_croissant.py \
-  --input ./tmp/mcts_output.json \
-  --output ./tmp/croissant
+  --input ./tmp/mcts_output.json --output ./tmp/croissant
 
-# Theorem 1 drift validation
-uv run python scripts/measure_lipschitz_drift.py \
-    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --n-cycles 200
+# Or emit Croissant directly from a run
+uv run python scripts/run_kv_mcts.py \
+  --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --nodes 10 \
+  --output ./tmp/mcts_output.json --croissant-dir ./tmp/croissant
 
-# Phase A offline MCTS (download model first)
-huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir ./models/llama-3.2-1b
-uv run python scripts/run_offline_mcts.py --model ./models/llama-3.2-1b --episodes 100
+# Batch-assemble all artifacts into the NeurIPS submission package
+uv run python scripts/collect_dataset.py \
+  --input-dir ./tmp/runs --output-dir ./docs/dataset
 ```
-
-## Phase 2 Gate (Portable)
-
-Run the KV-cache mutability gate before building KV-MCTS internals.
-
-Cross-platform probe (auto model download/cache + auto device):
-
-```bash
-uv run python scripts/probe_kv_cache_mutability.py --device auto
-```
-
-Use a local model folder if present:
-
-```bash
-uv run python scripts/probe_kv_cache_mutability.py --model ./models/llama-3.2-1b --device auto --use-chat-template
-```
-
-Use a specific HuggingFace model id (works on Windows/macOS/Linux):
-
-```bash
-uv run python scripts/probe_kv_cache_mutability.py --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --device auto
-```
-
-H100-specific run (prefer bf16):
-
-```bash
-uv run python scripts/probe_kv_cache_mutability.py --model meta-llama/Llama-3.2-1B-Instruct --device cuda --dtype bfloat16 --use-chat-template
-```
-
-Notes:
-- `--model` accepts either a local path or a HuggingFace model id.
-- `--device auto` resolves in order: `cuda` -> `mps` -> `cpu`.
-- For gated model ids (for example Llama family), run `huggingface-cli login` first.
-- Exit code `0` means gate passed; non-zero means mutable/revert checks did not pass or model access failed.
 
 ---
 
 ## Phase Roadmap
 
-| Phase | Description | Status |
+**Naming note:** This README uses development milestone numbering (Phase 1–4). The paper (§5) uses scientific execution sequence (Phase 0 / A / B).
+
+| README | Paper | Description |
 |---|---|---|
-| 1 | Repo cleanup — `logomesh/` package, research-oriented structure | ✅ Complete |
-| 2 | Reversible KV-MCTS — `kv_mcts.py`, `telemetry_matrix.py`, `orthogonal_escape.py`, per-layer telemetry | ✅ Complete |
-| 3 | Experiments 1–5 + Procrustes transfer + evaluation framework | 🔲 Next |
-| 4 | Research dataset (Croissant format) + paper writing | 🔲 Not started |
+| Phase 1 | Phase 0 | Repo cleanup, `BaseModelClient` interface, modular architecture |
+| Phase 2 | Phase A + Phase B setup | Reversible KV-MCTS, T_t telemetry, OEI, FP32 reversibility |
+| Phase 3 | Phase B | Experiments 1–5 on H100 |
+| Phase 4 | (implicit in Phase B) | Research dataset (Croissant), paper writing |
+
+| Phase | Status |
+|---|---|
+| 1 — Repo cleanup | ✅ Complete |
+| 2 — Reversible KV-MCTS + telemetry | ✅ Complete |
+| 3 — Experiments (Phase B, H100) | 🔲 In progress |
+| 4 — Dataset + paper | 🔲 Not started |
+
+### Experiment Status
+
+| Experiment | What it tests | Script | Hardware | Status |
+|---|---|---|---|---|
+| 1 — Orthogonal Escape Detection | α sweep: compliance rate vs. OEI / ρ_R divergence | `run_kv_mcts.py --alpha-values` | H100 (20B) | 1B prototype ✅; H100 scale ⏳ |
+| 2 — MCTS vs. Text-Space | Attack success: latent MCTS vs. text MCTS vs. GCG vs. random | `run_kv_mcts.py` + `run_offline_mcts.py` baseline | H100 (20B) | 1B prototype ✅; H100 scale ⏳ |
+| 3 — Memory Efficiency | VRAM: reversible MCTS vs. parallel MCTS at b×d | **Not yet built** | H100 | ❌ No script |
+| 4 — Evaluation Reproducibility | Inter-rater agreement (Cohen's κ) across judge types | **Not yet built** | Any | ❌ No script |
+| 5 — Cross-Model Transfer | Procrustes transfer of steering vectors: 1B → 7B → 20B | **Not yet built** | H100 | ❌ No script |
 
 ---
 
