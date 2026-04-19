@@ -11,7 +11,7 @@
 | Role | Path |
 |---|---|
 | Session rules, phases, hard constraints | [CLAUDE.md](../CLAUDE.md) |
-| Canonical paper draft | [docs/NeurIPS/04.17.2026-NeurIPS-Research-Proposal.tex](NeurIPS/04.17.2026-NeurIPS-Research-Proposal.tex) |
+| Canonical paper draft | [docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex](NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex) |
 
 ---
 
@@ -34,7 +34,7 @@
 - **Tests:** 139/139 green (as of commit `b7944bc`)
 - **Phase 3 gate:** passed 2026-04-16 on `meta-llama/Llama-3.2-1B-Instruct`
 - **ρ_R fix:** done — commit `4bc8fa9`; thresholds in `classify()` need H100 recalibration (`ClassifyConfig` ready)
-- **Paper:** `04.17.2026-NeurIPS-Research-Proposal.tex` — no `\reviewedit{}` remaining; related work rewritten with 4 new citations; capability claims hedged to future tense
+- **Paper:** `04.18.2026-NeurIPS-Research-Proposal-2.tex` — no `\reviewedit{}` remaining; related work rewritten with 4 new citations; capability claims hedged to future tense
 - **Croissant:** mlcroissant validates clean (1 non-blocking warning: `citeAs` pending OpenReview ID)
 
 **Open blockers (nothing can proceed without these):**

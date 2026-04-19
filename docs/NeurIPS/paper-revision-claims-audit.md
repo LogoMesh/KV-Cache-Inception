@@ -1,6 +1,6 @@
 # Paper Revision Claims Audit
 
-**Based on:** `docs/NeurIPS/04.17.2026-NeurIPS-Research-Proposal.tex`
+**Based on:** `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
 **Review session:** Saturday April 18, 2026 — LogoMesh Weekly Meeting
 **Last updated:** 2026-04-18 (pruned resolved sections; updated claims table)
 

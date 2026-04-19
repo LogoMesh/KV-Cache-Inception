@@ -1,7 +1,7 @@
 # LogoMesh — Research Session Guide
 
 > **Read this file at the start of every session.**
-> Then check `docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal.tex` for the current paper state
+> Then check `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex` for the current paper state
 > and `docs/reviews/phase-a-gaps-2026-04-11.md` for the verified gap analysis.
 
 ---
@@ -69,7 +69,7 @@ tests/
   test_phase2_modules.py       — TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke
 
 docs/
-  NeurIPS/                  — paper drafts (canonical: 04.02.2026-NeurIPS-Research-Proposal.tex)
+  NeurIPS/                  — paper drafts (canonical: 04.18.2026-NeurIPS-Research-Proposal-2.tex)
   reviews/                  — gap analysis + transition audit
   logs/                     — session logs
   dataset/                  — Croissant schema stub (Phase 4)
