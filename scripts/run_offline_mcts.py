@@ -2,6 +2,11 @@
 """
 Offline MCTS Episode Runner — Phase A/B payload library generation.
 
+Paper: §5 Phase A/B. Implements text-space MCTS on the defender simulacrum.
+       This is the baseline comparator for Experiment 2 (MCTS vs. Text-Space
+       Red-Teaming). Also generates Phase A payload libraries.
+Runnable: Consumer GPU (RTX 3060+) with 1B model.
+
 Architecture (corrected 2026-03-21):
   Each episode runs TWO oracle calls:
     Call 1 — oracle AS ATTACKER generates a payload using a strategy+mutation prompt

@@ -2,6 +2,10 @@
 """
 LAT Probe Training Script — Phase A (corrected defender simulacrum architecture).
 
+Paper: §5 Phase A prerequisite. Calibrates LAT probes used to compute RepE
+       honesty projection ρ_R (Eq. 3, row 1). Run before offline MCTS on a new model.
+Runnable: Consumer GPU (RTX 3060+) with 1B–7B HuggingFace model.
+
 Generates bootstrap training data using the defender simulacrum, then trains
 one sklearn LogisticRegression probe per game type on the DEFENDER's last-layer
 hidden states.

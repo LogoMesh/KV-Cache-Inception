@@ -2,6 +2,10 @@
 """
 Export a run_kv_mcts JSON artifact to a self-contained Croissant package.
 
+Paper: §6 (dataset). Converts one run_kv_mcts.py output into a self-contained
+       Croissant 1.1 + RAI 1.0 package. For NeurIPS batch submission, use
+       collect_dataset.py instead.
+
 Produces, under the output directory:
 - metadata.json      (Croissant 1.1 + RAI 1.0 JSON-LD)
 - interventions.csv  (one row per MCTS node)

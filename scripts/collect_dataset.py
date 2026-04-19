@@ -2,6 +2,10 @@
 """
 Batch dataset collector — merge multiple MCTS run artifacts into one Croissant package.
 
+Paper: §6 (dataset). Assembles the NeurIPS submission-ready Croissant 1.1 +
+       RAI 1.0 dataset package from all MCTS run artifacts. Run after H100
+       experiments to build the final research dataset.
+
 Scans an input directory for run artifact JSONs produced by run_kv_mcts.py,
 flattens them into a single interventions.csv, copies source artifacts with
 sequential naming, and generates Croissant 1.1 + RAI 1.0 metadata.

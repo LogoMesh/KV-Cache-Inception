@@ -6,6 +6,10 @@ This probe verifies the required precondition for Reversible MCTS:
   2) That mutation changes downstream logits.
   3) Restoring the original tensor restores baseline logits.
 
+Paper: §4.2 (Theorem 1 precondition). Must pass before running run_kv_mcts.py.
+       Validates that KV tensors support in-place mutation and exact restoration.
+Runnable: Any hardware (CPU/GPU). Run first when setting up a new machine.
+
 Expected usage:
   uv run python scripts/probe_kv_cache_mutability.py \
       --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
