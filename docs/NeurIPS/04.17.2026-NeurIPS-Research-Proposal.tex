@@ -278,10 +278,14 @@ where $\bar{r}_i$ is the mean reward of node $i$, $N$ is the total number of vis
 \section{Experimental Design}
 
 \subsection{Phase 0: Architectural Decoupling}
+% [IMPL: DONE — logomesh/ package: BaseModelClient, LocalLlamaOracle, modular architecture complete]
 
 Before deploying telemetry hooks, the monolithic MCTS orchestrator must be refactored to support: (a)~a model abstraction layer replacing hardcoded API calls with a \texttt{BaseModelClient} interface supporting local HuggingFace models; (b)~a state serialization pipeline enabling MCTS tree persistence across environments; and (c)~a continuous reward interface processing neuronal activation tensors directly as MCTS node valuations.
 
 \subsection{Phase A: Local Prototyping on Lightweight Surrogates}
+% [IMPL: DONE — Phase 3 gate passed 2026-04-16 on Llama-3.2-1B-Instruct]
+% [IMPL: Theorem 1 validated: measure_lipschitz_drift.py, 200 cycles, FP32 drift = 0.00e+00]
+% [IMPL: MCTS smoke test: run_kv_mcts.py --nodes 10, all T_t / OEI / TDS fields populated]
 
 We establish the offline execution environment using Llama-3.2-1B-Instruct (hidden dimension 2048, 22 layers, ${\sim}2$GB RAM) on consumer CPU hardware. This phase validates:
 
@@ -298,18 +302,23 @@ Using open-weight models on a single H100 (80GB), we plan to execute the identic
 
 \paragraph{Experiment 1: Orthogonal Escape Detection.}
 Apply RepE steering vectors of increasing magnitude $\alpha \in \{0.1, 0.5, 1.0, 2.0, 5.0\}$ along the ``honesty'' direction. For each $\alpha$, measure: (a)~the textual compliance rate (behavioral metric); (b)~the H-Neuron stress distribution; (c)~the RepE honesty projection; (d)~the information content in the null space of the honesty probe via $\|\text{Proj}_{\text{Null}(\mathbf{w}_{\text{hon}})}(\mathbf{h}_t^{(\ell)})\|_2$. The Orthogonal Escape hypothesis predicts that (a) and (c) will improve with increasing $\alpha$ while (d) will simultaneously increase, indicating redistribution of deceptive encodings.
+% [IMPL: PARTIAL — run_kv_mcts.py --alpha-values implements the alpha sweep on 1B surrogate; H100 scale pending]
 
 \paragraph{Experiment 2: MCTS vs.\ Text-Space Red-Teaming.}
 Compare the attack success rate and diversity of: (a)~standard text-space MCTS (prompt mutation); (b)~KV-cache latent-space MCTS (our method); (c)~gradient-based adversarial attacks (GCG); (d)~random search in KV-cache space. Metrics: attack success rate, mean number of MCTS rollouts to first success, diversity of discovered attack vectors (measured by pairwise cosine distance in intervention space).
+% [IMPL: PARTIAL — run_kv_mcts.py (latent MCTS) + run_offline_mcts.py (text baseline) exist; H100 scale pending]
 
 \paragraph{Experiment 3: Memory Efficiency.}
 Profile VRAM consumption of reversible MCTS vs.\ standard parallel MCTS at branching factors $b \in \{2, 3, 5\}$ and depths $d \in \{3, 5, 10, 20\}$. Measure wall-clock time overhead of the rollback mechanism. Quantify Lipschitz drift (perplexity deviation from baseline) with and without FP32 accumulators over extended search trajectories.
+% [IMPL: TODO — no memory benchmarking script yet; measure_lipschitz_drift.py validates Theorem 1 drift, not this experiment]
 
 \paragraph{Experiment 4: Evaluation Reproducibility.}
 Evaluate the same set of 500 artifacts using: (a)~pass@1 with ground-truth execution in a constrained Docker sandbox; (b)~cosine similarity of semantic intent between generated outputs and task specifications; (c)~GPT-4 as judge (5 independent runs); (d)~Claude 3.5 as judge (5 independent runs); (e)~human expert panel (3 reviewers). Report inter-run variance, inter-rater agreement (Cohen's $\kappa$), and correlation with human judgments.
+% [IMPL: TODO — no evaluation reproducibility script yet]
 
 \paragraph{Experiment 5: Cross-Model Transfer.}
 Generate adversarial interventions on the 1B surrogate via offline MCTS. Evaluate transfer effectiveness to 7B and 20B models using Procrustes-aligned steering vectors. Measure: (a)~attack success rate degradation across model scales; (b)~telemetry signature preservation.
+% [IMPL: TODO — Procrustes transfer not yet implemented; no script exists]
 
 \subsection{Baselines}
 
@@ -369,6 +378,7 @@ Latent Monitor Evasion & RL-Obfuscation & Gupta \& Jenner, 2025 \\
 
 \subsection{Reversibility Guarantee}
 
+% [IMPL: EMPIRICALLY VALIDATED — measure_lipschitz_drift.py, n=200 cycles, FP32 accumulator_inf_norm = 0.00e+00]
 \begin{theorem}[Exact Reversibility with FP32 Accumulator]
 Let $\mathbf{K}_0 \in \mathbb{R}^{S \times d}$ be the baseline KV cache in bf16. Let $\{\delta_1, \ldots, \delta_n\}$ be a sequence of steering interventions applied and reversed via the FP32 accumulator. Then after $n$ complete apply-reverse cycles:
 
