@@ -4,9 +4,164 @@ Session focus: PR #1 review (Max's batch dataset collector) + meeting debrief.
 
 ---
 
-## Meeting Debrief
+## Meeting Debrief — April 18, 2026
 
-*(To be filled in — Josh to debrief after this log is created.)*
+Source: `docs/04-18-2026 KV Cache Inception Meeting.srt`
+
+### What happened
+
+Max demonstrated the batch collector script live. The meeting's main substantive moment was
+when a new contributor (the person being referred to as "Mark" — real name Kuan, website:
+https://kuanzhou.online/) joined, said he wanted to run the experiments, and asked Josh for
+a repo tour. Mark has an RTX 5090, so he can run everything locally.
+
+Josh walked him through the repo on screen. Mid-tour, Josh said:
+
+> "I think the naming of the scripts is a little confusing."
+
+He then made a direct commitment to Mark before ending the meeting:
+
+> "I'll make sure that all the scripts are very clear about how they tie to the specific
+> sections of the paper and where to look in the paper for each script. And then I will
+> give you the go ahead Mark — that should be done tonight."
+
+That commitment was not yet fulfilled. This log records what needs to happen before
+the go-ahead is given.
+
+---
+
+### The core problem confirmed by the meeting
+
+Mark's first question after the tour was: "If I want to run the experiments, where should
+I start?" Josh could not answer directly. He tried to find `run_kv_mcts.py` in the paper
+and couldn't locate a clear mapping. The naming confusion is real and was confirmed live.
+
+Two separate problems compound each other:
+
+**Problem 1 — Naming system mismatch: repo phases vs. paper phases**
+
+The README uses a Phase 1 / Phase 2 / Phase 3 / Phase 4 numbering system. The paper uses
+Phase 0 / Phase A / Phase B. There is no bridge between them anywhere in the repo. A new
+contributor reading the README and the paper simultaneously is immediately disoriented.
+
+| README | Paper |
+|---|---|
+| Phase 1 (repo cleanup) | Phase 0 (architectural decoupling) |
+| Phase 2 (Reversible KV-MCTS) | Phase A partial + Phase B setup |
+| Phase 3 (Experiments 1-5) | Phase B (Experiments 1-5 on H100) |
+| Phase 4 (dataset) | implicit in Phase B output |
+
+These are not the same system. The README uses a dev milestone numbering; the paper uses a
+scientific execution sequence. A reader of the README cannot find where they are in the paper.
+
+**Problem 2 — Scripts have no paper anchors**
+
+Every script in the repo calls itself something from the dev lifecycle, not from the paper:
+
+| Script | Dev label in README | Paper section / experiment |
+|---|---|---|
+| `probe_kv_cache_mutability.py` | "Phase 2 gate" | Phase A: KV-cache mutability validation (Section 5.2 prerequisite) |
+| `run_kv_mcts.py` | "Phase 2 runner" | Phase A smoke test + Phase B Experiments 1, 2, 5 (inputs vary) |
+| `measure_lipschitz_drift.py` | "Theorem 1 validation" | Phase A: FP32 reversibility proof (Theorem 1); also feeds Exp 3 |
+| `train_lat_probes.py` | — (no label in README) | Phase A prerequisite: LAT probe training for RepE (Section 5.2) |
+| `run_offline_mcts.py` | "Phase A offline MCTS" | Phase A baseline; Experiment 2 comparison baseline |
+| `export_kv_mcts_to_croissant.py` | "Convert runtime JSON artifacts" | Dataset packaging (Section 6) |
+| `collect_dataset.py` | (new, no README entry yet) | Dataset assembly for NeurIPS submission (Section 6) |
+
+No script has a docstring or comment pointing to a paper section. A new contributor cannot
+tell whether to run `run_kv_mcts.py` for Experiment 1 or Experiment 2.
+
+**Problem 3 — Missing scripts for paper experiments**
+
+Two experiments named in the paper have no corresponding script:
+
+- **Experiment 3 (Memory Efficiency):** "We measure KV-cache memory footprint as a function
+  of search depth, branching factor, and model size." `measure_lipschitz_drift.py` validates
+  FP32 accumulator drift, which is related but different. There is no memory benchmarking
+  script.
+- **Experiment 5 (Cross-Model Transfer):** "Procrustes alignment of steering vectors across
+  model scales." There is no Procrustes script. CLAUDE.md mentions it as "Phase 3" work
+  not yet built.
+
+Both gaps are known (they are in the experiment-readiness doc as pending). But they need
+to be clearly called out before handing over the repo.
+
+**Problem 4 — README has teammate names**
+
+The README `## Team` section lists teammates by name. Per the handover policy: docs going
+to a new contributor must not name other teammates. This section needs to be removed or
+anonymized before the repo is handed over.
+
+**Problem 5 — README canonical paper path is stale**
+
+README points to `docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal.tex`. The canonical
+paper has been `04.17.2026-NeurIPS-Research-Proposal.tex` since the April 17 session.
+
+**Problem 6 — Meeting transcript must be removed before handover**
+
+`docs/04-18-2026 KV Cache Inception Meeting.srt` is now tracked in the repo. It contains
+informal team conversation including internal uncertainty about project state. This must be
+removed from the repo before Mark is given access.
+
+---
+
+### What Mark offered / what he needs from us
+
+Mark said he would read the docs and the paper. He offered citation validation and wants to
+run experiments. He did not express frustration at the meeting — he was patient and
+constructive. He is a good-faith contributor who will arrive at the repo cold, with no
+context beyond what is documented.
+
+What he needs to be productive on day one:
+1. A clear map: which script runs which experiment, with paper section references
+2. Know which experiments are runnable now (Phase A on his RTX 5090) vs. H100-only
+3. Know what experiments are not yet implemented (Exps 3 and 5 in Phase B)
+4. Know the current experimental state: "we are still at step one" — 1B model only,
+   no H100 data yet, thresholds uncalibrated
+5. No teammate names anywhere; no transcript
+
+---
+
+### Plan of action (multiple passes, not yet executing)
+
+This log records the problems. We are not yet fixing them. Awaiting Max's briefing document
+which covers the same ground from his perspective. After that, several passes in order:
+
+**Pass 1 — Transcript removal + README names**
+Remove or git-rm the .srt file. Remove `## Team` section from README. Fix canonical paper
+path in README. These are the only changes that need to happen before any other pass.
+Do not hand over the repo until these are done.
+
+**Pass 2 — Script-to-paper mapping**
+For each script, add a header comment block pointing to the relevant paper section and
+experiment number. Alternatively, add a `## Script Index` section to the README that
+provides this mapping in one place. This was the specific commitment made at the meeting.
+
+**Pass 3 — Phase naming reconciliation**
+Either: rename README phases to match paper phases (Phase 0/A/B), or add an explicit
+cross-reference table that bridges the two systems. Do not silently maintain two parallel
+naming conventions.
+
+**Pass 4 — Experiment status table**
+Add a section (likely to the README or experiment-readiness doc) that states plainly for
+each experiment: what script runs it, what hardware it requires, whether it is implemented,
+and what its current status is.
+
+**Pass 5 — Paper-repo consistency audit**
+A careful reading of the paper's experimental design sections against the current scripts
+to verify that the scripts actually measure what the paper claims they measure. This was
+Josh's concern at the meeting: "I just want to make sure that the scripts do everything
+that the paper says the scripts will do if you catch my drift."
+
+---
+
+### One other thing from the meeting
+
+Josh mentioned at the end that he is also juggling the Agent Beats Phase 2 competition
+(sprint 2 and 3 deadline May 3rd, conflicts with NeurIPS May 4th abstract + May 6th
+submission). Decision made: drop multi-track ambition, focus on cybersecurity track only
+and the paper. This is relevant context — resources are constrained and the paper is
+the priority.
 
 ---
 
