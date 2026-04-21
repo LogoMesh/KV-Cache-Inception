@@ -6,13 +6,18 @@
 
 **Paper Outline Here:** *https://www.overleaf.com/read/gcfjswwqwkhq#1ac1ec*
 
+**In-Repo Outline Here:** *docs\NeurIPS\04.18.2026-NeurIPS-Research-Proposal-2.tex*
+
 ---
 
 ## Abstract
 
 Current approaches to evaluating the safety and alignment of large language models (LLMs) rely predominantly on black-box behavioral testing. These methods are fundamentally blind to *alignment faking* — wherein a model strategically complies with safety constraints during evaluation while preserving misaligned capabilities in its latent representations.
 
-We propose **KV-Cache Inception**, a framework combining three novel contributions: (1) a **multi-dimensional micro-telemetry matrix** fusing H-Neuron activation tracking with Representation Engineering (RepE) projections to provide a continuous signal for distinguishing genuine reasoning from compliance-driven fabrication; (2) a **Reversible MCTS algorithm** conducting Monte Carlo Tree Search directly in the model's KV-cache latent space using a mathematically reversible FP32 accumulator rollback mechanism; and (3) the formalization of **Orthogonal Escape** — the phenomenon whereby corrective pressure applied to monitored latent subspaces forces deceptive encodings into unmonitored orthogonal null spaces.
+We propose **KV-Cache Inception**, a framework combining three novel contributions: 
+(1) a **multi-dimensional micro-telemetry matrix** fusing H-Neuron activation tracking with Representation Engineering (RepE) projections to provide a continuous signal for distinguishing genuine reasoning from compliance-driven fabrication; 
+(2) a **Reversible MCTS algorithm** conducting Monte Carlo Tree Search directly in the model's KV-cache latent space using a mathematically reversible FP32 accumulator rollback mechanism; and 
+(3) the formalization of **Orthogonal Escape** — the phenomenon whereby corrective pressure applied to monitored latent subspaces forces deceptive encodings into unmonitored orthogonal null spaces.
 
 ---
 

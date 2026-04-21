@@ -347,10 +347,10 @@ Latent Monitor Evasion & RL-Obfuscation & Gupta \& Jenner, 2025 \\
 \begin{itemize}[leftmargin=*]
     \item \textbf{Orthogonal Escape Index (OEI):}
     \begin{equation}
-    \text{OEI} = \frac{\|\text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{\text{steered}})\|_2}{\|\text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{\text{base}})\|_2}
+    \text{OEI} = \frac{\|\text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{\text{steered}} - \mathbf{h}_{\text{base}})\|_2}{\|\mathbf{h}_{\text{steered}} - \mathbf{h}_{\text{base}}\|_2}
     \label{eq:oei}
     \end{equation}
-    Ratio of null-space information content before and after steering. $\text{OEI} > 1$ indicates orthogonal redistribution.
+    Fraction of the steering-induced change $\Delta\mathbf{h} = \mathbf{h}_{\text{steered}} - \mathbf{h}_{\text{base}}$ that lies in the null space of the linear monitor $\mathbf{P}$. $\text{OEI} \in [0, 1]$: $\text{OEI} \to 1$ indicates the activation change is entirely orthogonal to the monitor direction (Orthogonal Escape); $\text{OEI} \to 0$ indicates the change is aligned with the monitored direction (normal response).
 
     % [CRITIQUE NOTE | Metric robustness]
     % OEI may produce false negatives if redistribution is nonlinear or
