@@ -209,29 +209,31 @@ class TestNullSpaceProjector:
 
 
 class TestOEICalculator:
-    def test_identical_inputs_oei_is_one(self):
+    def test_identical_inputs_oei_is_zero(self):
+        # No change → no escape, OEI = 0.0
         w = np.array([1.0, 0.0, 0.0])
         h = np.array([3.0, 2.0, 1.0])
         proj = NullSpaceProjector(w)
         calc = OEICalculator(proj)
-        assert abs(calc.compute(h, h.copy()) - 1.0) < 1e-10
+        assert abs(calc.compute(h, h.copy()) - 0.0) < 1e-10
 
-    def test_steered_increases_null_space_content(self):
-        # Steering adds purely null-space component → OEI > 1
+    def test_fully_orthogonal_change_oei_is_one(self):
+        # Delta entirely in null space (orthogonal to w) → OEI = 1.0
         w = np.array([1.0, 0.0, 0.0])
         h_base = np.array([3.0, 1.0, 0.0])
-        h_steered = np.array([3.0, 5.0, 0.0])  # more energy in null space
+        h_steered = np.array([3.0, 5.0, 0.0])  # delta = [0, 4, 0], orthogonal to w
         proj = NullSpaceProjector(w)
         calc = OEICalculator(proj)
-        assert calc.compute(h_base, h_steered) > 1.0
+        assert abs(calc.compute(h_base, h_steered) - 1.0) < 1e-10
 
-    def test_zero_baseline_norm_returns_one(self):
-        w = np.array([0.0, 0.0, 1.0])
-        h_base = np.array([0.0, 0.0, 1.0])   # entirely along w → null projection = 0
-        h_steered = np.array([1.0, 1.0, 0.0])
+    def test_fully_aligned_change_oei_is_zero(self):
+        # Delta entirely along w → null projection of delta = 0 → OEI = 0.0
+        w = np.array([1.0, 0.0, 0.0])
+        h_base = np.array([2.0, 1.0, 0.0])
+        h_steered = np.array([5.0, 1.0, 0.0])  # delta = [3, 0, 0], along w
         proj = NullSpaceProjector(w)
         calc = OEICalculator(proj)
-        assert calc.compute(h_base, h_steered) == 1.0
+        assert abs(calc.compute(h_base, h_steered) - 0.0) < 1e-10
 
 
 class TestTDSCalculator:
