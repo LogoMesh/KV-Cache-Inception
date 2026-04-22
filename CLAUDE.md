@@ -149,14 +149,14 @@ H-Neuron monitoring — do NOT use dense MLP neuron monitoring. See `hneuron_mon
 uv run pytest tests/ -v                           # must be 100% green before every commit
 uv sync                                            # install/update deps
 
-# Phase 2 runners (auto-download TinyLlama ~2GB on first run)
+# Phase 2 runners — model must match paper (Llama-3.2-1B-Instruct, hidden dim 2048, 22 layers)
 uv run python scripts/run_kv_mcts.py \
-    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+    --model meta-llama/Llama-3.2-1B-Instruct \
     --nodes 50 --depth 5 --branches 3
 uv run python scripts/measure_lipschitz_drift.py \
-    --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --n-cycles 200
+    --model meta-llama/Llama-3.2-1B-Instruct --n-cycles 200
 uv run python scripts/probe_kv_cache_mutability.py --device auto
 
-# Phase A model download (for run_offline_mcts.py)
+# Phase A model download (for run_offline_mcts.py and gate re-runs)
 huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir ./models/llama-3.2-1b
 ```
