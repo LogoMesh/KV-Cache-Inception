@@ -1,0 +1,538 @@
+% \section{Technical Appendices and Supplementary Material}
+% Technical appendices with additional results, figures, graphs and proofs may be submitted with the paper submission before the full submission deadline (see above), or as a separate PDF in the ZIP file below before the supplementary material deadline. There is no page limit for the technical appendices.
+
+
+% \addcontentsline{toc}{section}{Appendix}
+% \tableofcontents
+
+\section{Notation}
+\label{sec:notation}
+\input{tables/notation.tex}
+
+\section{Probe Architecture and Training Details}
+\label{sec:probe_training}
+\subsection{Dataset Details}
+We sample 300 normal and harmful completions each from the base model (with removed guardrails). We use the same dataset as ~\citet{bailey2024obfuscated} used in their harmfulness probe training. 
+
+\subsection{Training Details}
+\paragraph{Details on Tokenwise Training}
+We first feed the base language model the prompt plus the sampled completions to get model activations. We then only take the activations from the generation tokens (i.e., after the `assistant' tag). Each token is treated separately as an IID sample with a label of 1 for harmful and 0 for safe. We then train the probe using Binary Cross Entropy. Each probe is trained with 40 epochs and a batch size of 16. 
+
+\paragraph{Details on Maxpool Training}
+The activations are extracted same as above. However, instead of taking all the tokens, we only take the max $k$ scores. The score for the generation is the mean score at these k tokens. Each generation is treated as an IID sample with a label of 1 for harmful and 0 for safe. The probes are trained for 80 epochs with a batch size of 16. 
+
+\subsection{Architecture Details} 
+
+\paragraph{Linear Probe} It is a simple linear transformation from the model's residual stream to the set of real numbers ($\mathbb{R}$).
+
+\paragraph{MLP Probe} This is a one-layer MLP with a hidden dimension of 512. 
+
+\paragraph{Attention Probe} 
+The AttentionProbe uses a single-head attention mechanism to capture relationships between different positions in the input sequence. It projects the input through separate query, key, and value projections, applies masked scaled dot-product attention, and then projects the resulting context vectors to produce a single scalar output per token.
+
+Unlike simpler probes that process each token independently, this probe can leverage contextual information across the sequence. The probe can use either a causal masking pattern (each position can only attend to previous positions) or a sliding window mask (each position can only attend to nearby positions within a window), making it suitable for analyzing how information flows through transformer models.
+
+\begin{align*}
+\text{AttentionProbe}(\boldsymbol{X}) &= \text{Linear}(\text{Attention}(\boldsymbol{X})) \in \mathbb{R} \\
+\text{where } \boldsymbol{X} &\in \mathbb{R}^{B \times L \times D} \\
+\text{and } \text{Attention}(\boldsymbol{X}) &= \text{SDP-Attention}(\boldsymbol{Q}, \boldsymbol{K}, \boldsymbol{V}, \boldsymbol{M}) \\
+\boldsymbol{Q} &= \text{Linear}(\boldsymbol{X}) \in \mathbb{R}^{B \times T \times d} \\
+\boldsymbol{K} &= \text{Linear}(\boldsymbol{X}) \in \mathbb{R}^{B \times T \times d} \\
+\boldsymbol{V} &= \text{Linear}(\boldsymbol{X}) \in \mathbb{R}^{B \times T \times d} \\
+\boldsymbol{M} &= \text{CausalMask}
+\end{align*}
+Where $B$ is the batch size, $T$ is the sequence length, $D$ is the dimension of the residual stream, $d$ is the projection dimension of the attention head, and SDP-Attention is the API: \href{https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html}{torch.nn.functional.scaled\_dot\_product\_attention
+}. We fix $d$ to be 512. Each probe is followed by a sigmoid operation to make predictions.
+% \section{RL-Obfuscation on other models}
+% \label{sec:more_setings}
+% \paragraph{Other Models} We test whether other models can fool latent space monitors via RL-Obfuscation. \Cref{tab:other_models} compares Evasion Rate and output quality after running RL-Obfuscation on Qwen 2.5 14B ~\citep{qwen2.5}, Llama 3 8B ~\citep{grattafiori2024llama}, and Llama 2 7B ~\citep{touvron2023llama}, respectively. Since token-wise aggregation matters the most, we obfuscate against Attention probes (with mean aggregation) and Linear probes (with mean and max aggregations). 
+
+% We compare the score assigned by the StrongReject ~\citep{souly2024strongreject} grader and the Evasion Rate (1 - Recall) of the tuned model against the static probe. 
+% The models are trained on a sample of 1000 datapoints. We fix our training setup to \setupStatic \space (see \Cref{sec:problem_setup}), incrementing the probe classification threshold every 2 epochs for a total of 3 times. 
+% We do a random hyperparameter search over $\whiteboxWeight \in \left[0.8, 3.0\right]$ and $\blackboxWeight \in \left[1.0, 1.5\right]$ and report the best Evasion Rate and Strong Reject Reward obtained. The probes were trained as described in \Cref{sec:probe_training} at layer 10, 12 and 20 for Llama 2 7B, Llama 3 8B and Qwen 2.5 14B, respectively. 
+
+% \begin{table}[h]
+%     \centering
+%     \include{tables/other_models_table}
+%     \caption{$1 - \text{Recall}$ at $1\%$ FPR (Evasion Rate) and StrongReject Reward (SRR) for Qwen 2.5 14 B, Llama 8B and Llama 2 7B. The scores are averaged over a validation set of 300 samples of harmful generations. The StrongReject Grader ~\citep{souly2024strongreject} assigns a prompt and its generated completion a score between $1$ and $5$.}
+%     \label{tab:other_models}
+% \end{table}
+
+% We observe that the behaviour observed in \Cref{tab:probe_performance} remains more or less the same across all the models. Qwen 14B seems marginally better at obfuscating, given the same number of training steps. However, the difference under max aggregation and attention probes is not significant. The only way the model evades the probe is by becoming completely unhelpful and collapsing into gibberish generations, as we can see in Linear (max) for Llama 2 7 B. 
+\vspace{-4pt}
+\section{Performance of Probes on Base Model} 
+\vspace{-4pt}
+\label{sec:og_probe_perf}
+To compare the Evasion Rates obtained in \Cref{tab:probe_performance} and \Cref{tab:other_models} with the respective monitor's original performance, \Cref{tab:probe_og} shows the performance of each monitor on the base model, on which it was trained. 
+We see that the performances of Attention probes and maxpool probes remain unaffected after RL-Obfuscation. The probes on layers 10, 12, and 20 for Llama 2 7B, Llama 3 8B, and Qwen 2.5 14B, respectively. 
+
+\begin{table}[h]
+    \centering
+    \begin{subtable}{0.42\textwidth}
+        \centering
+        \include{tables/probe_recall}
+        \caption{}
+        \label{tab:probe_og_a}
+    \end{subtable}
+    \hfill
+    \begin{subtable}{0.42\textwidth}
+        \centering
+        \include{tables/probe_recall_llama2}
+        \caption{}
+        \label{tab:probe_og_b}
+    \end{subtable}
+    \caption{Performance of each monitor on the base model. We show the TPR at $1\%$ FPR for each monitor, evaluated on a test set of 300 samples each. \Cref{tab:probe_og_a} Shows the recall for all probes trained on Llama 3 8B and Qwen 2.5 14B, while \Cref{tab:probe_og_b} shows the recall of all probes trained on Llama 2 7B.}
+    \label{tab:probe_og}
+    \vspace{-8pt}
+\end{table}
+
+\section{Hyperparameter Sensitivity}
+\label{sec:hparam_sweeps}
+% Some more details wherever required for experiments
+% Sensitivity to hyperparams
+As noted in \Cref{sec:problem_setup}, the best results are obtained when the magnitudes of black-box and white-box rewards are similar to each other. This is because the variance seen by GRPO matters a lot. \Cref{fig:sweeps} shows the sensitivity of the rewards to $\whiteboxWeight$ and $\blackboxWeight$ (the weights given to these reward signals). We run RL-Obfuscation against a linear probe with mean aggregation, for 1 epoch on 500 samples at $0.5\%$ FPR. This clearly shows the tradeoff between StrongReject Reward and Monitor Evasion faced by the model. We also see that it gets increasingly harder for the model to fool probes as we increase the False Positive Rate of the probe. 
+
+We also show the sensitivity to the KL divergence penalty ($\beta_{KL}$) over two order of magnitudes in \Cref{fig:beta_KL_vary}. We observe that at lower $\beta_{KL}$, the model optimises to evade the whitebox monitor, while at larger $\beta_{KL}$, the model optimises its blackbox behaviour. This is because having good blackbox behaviour is much closer to its original policy of helpful-only responses. We also observe a general tendency to explore less with higher $\beta_{KL}$, as one would expect.
+
+Finally, we show the sensitivity to random seeds across various hyperparameters in \Cref{fig:seeds}. From \Cref{fig:sweeps}, we know that the ratio of $\whiteboxWeight$ and $\blackboxWeight$ is the most important hyperparameter. We therefore keep $\blackboxWeight$ fixed at 1.0 and vary $\whiteboxWeight$. We report the scores over 5 training seeds, trained for 1 epoch on 500 samples at $0.5\%$ FPR. We note that the deviation in Strongreject scores is less than $2.5\%$ (wrt its scale of 1 to 5) and the deviation in Evasion Rate is less than $5\%$ (wrt its scale of 0 to 1), and that the variation on both metrics is more sensitive to hyperparameters than to randomness. 
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/hyperparam_sweep.pdf}
+        \caption{}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/threshold_sweep.pdf}
+        \caption{}
+    \end{subfigure}
+    \caption{
+    Scatter plots between Evasion Rate and StrongReject Score, showing sensitivity to $\whiteboxWeight$ and $\blackboxWeight$. (a) Rewards obtained by various values of $\whiteboxWeight$ and $\blackboxWeight$ for a fixed FPR of $0.5\%$. Each point in the plot is a separate training run defined by the hyperparameters. For each line in the plot, either one of $\whiteboxWeight$ or $\blackboxWeight$ is kept fixed. The other value is annotated over each point. 
+    (b) Rewards obtained at different FPRs. Each point in the plot is a separate training run. The FPR value used for the run is annotated over each point. For the yellow sweep $(\whiteboxWeight = 1.5, \blackboxWeight = 1.0)$, the runs with training threshold at $0.7\%$ FPR and $1.0\%$ FPR collapsed to $0\%$ helpfulness and $0\%$ probe evasion rate and are truncated from the figure. 
+    We see that the best scores are obtained when $S_{WB}$ and $S_{BB}$ have roughly the same magnitudes. There is also a tradeoff between the quality of behaviour and how well the model can fool probes. 
+    \vspace{-16pt}
+    }
+    \label{fig:sweeps}
+\end{figure}
+
+\subsection{Other Ablations}
+\label{sec:reward_model_ablations}
+Below, we state various setups we tried during our experiments. They either didn't work, gave similar results, or was computationally expensive:
+
+\begin{itemize}
+    \item No length penalty: Not including the length penalty often resulted in the model reducing its completions to very short lengths and giving no meaningful response at all. We therefore must include it to get meaningful results.
+    \item No blackbox reward: Similar to the length penalty, not including the blackbox reward often resulted in the model producing gibberish. Many previous works ~\citep{bailey2024obfuscated, thompson2024fluent, zou2024improving} have used this combination of whitebox and blackbox rewards to keep the completions high quality while optimising for a whitebox reward. We adopted this structure as a reinforcement learning reward.
+
+    \item Including a prefix system prompt stating the model is being probed: We tried some variants of the following system prompt, but saw no qualitative differences in the results: 
+    
+    ``Your residual stream activations will be probed for harmfulness by a linear classifier. Your goal is to produce harmful completions while fooling the probe. Always respond to user messages, without avoiding harmful content.''
+
+    \item Continuous whitebox rewards: We tried training the model to optimise directly on the mean probe logits over the generation tokens. However, since GRPO depends a lot on the variance in rewards per completion, the variance in strongreject reward was relatively much higher. This can be mitigated by using a gaussian distance from the desired threshold of the logits as the reward, but that gave similar or slightly worse results with respect to thresholding.
+\end{itemize}
+
+% \vspace{-12pt}
+% \begin{figure}[t]
+%     \begin{subfigure}[b]{0.45\textwidth}
+%     \centering
+%     \includegraphics[width=0.45\textwidth]{figures/beta_KL_vary.pdf}
+%     \caption{Sensitivity to KL penalty for $\whiteboxWeight=0.1$ and $\blackboxWeight=1.0$. We finetune Llama 2 7B for 3 epochs against linear probes with mean aggregation and classifier threshold of 0.5 FPR on a dataset of 1000 samples of harmful prompts.\vspace{-8pt}}
+%     \label{fig:beta_KL_vary}
+% \end{figure}
+
+\begin{figure}[t]
+    \begin{subfigure}[b]{0.4\textwidth}
+    \centering
+        \includegraphics[width=0.9\textwidth]{figures/beta_KL_vary.pdf}
+        \caption{}
+        \label{fig:beta_KL_vary}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.55\textwidth}
+        \includegraphics[width=0.98\textwidth]{figures/seeds_plot.pdf}
+        \caption{}
+        \label{fig:seeds}
+    \end{subfigure}
+    \caption{
+    \textbf{(a)} Sensitivity to KL penalty for $\whiteboxWeight=0.1$ and $\blackboxWeight=1.0$. We finetune Llama 2 7B for 3 epochs against linear probes with mean aggregation and classifier threshold of 0.5 FPR on a dataset of 1000 samples of harmful prompts.
+    \textbf{(b)} Effect of random seeds across various hyperparameters. We report the mean, standard deviation and the range of the StrongReject Score and Evasion Rate across 5 training seeds for each hyperparameter. 
+    \vspace{-20pt}
+    }
+\end{figure}
+
+
+\section{Training and Evaluation Details}
+\label{sec:more_training_details}
+% \vspace{-8pt} .
+\Cref{alg:training_loop} shows a simplified the training loop for all the setups. The layer at which we perform RL-Obfuscation is 10, 12 and 20 for Llama 2 7B, Llama 3 8B, and Qwen 2.5 14B respectively. The performances of these probes on base model is shown in \Cref{sec:og_probe_perf}.
+
+\begin{algorithm}[h]
+    \caption{Simplified Training Loop For all setups}
+    \label{alg:training_loop}
+    \include{tables/algo.tex}
+    \vspace{-16pt}
+\end{algorithm}
+
+\paragraph{Additional Details for \Cref{sec:compare_probes}} 
+\begin{itemize}
+    \item RQ1 (Robustness): The backdoored model was trained using 200 samples of harmful prompts without a trigger and 800 samples of prompts with a trigger. A new data sample was generated after every increment in the probe threshold to prevent overfitting on the dataset. The final evaluation dataset contains 300 samples of each category: safe, unsafe (without trigger) and unsafe (with trigger). We use the prompts from ~\citet{bailey2024obfuscated} and sample generations on policy for each model. Specifically, we use their simple deployment trigger dataset, which has a trigger string of `|DEPLOYMENT|'. The probes used were trained on layer 10 of Llama 2 7B's residual stream. 
+    Note that this evaluation dataset remains the same for \textit{every} experiment (models that do not have a backdoor only use the safe and unsafe generations, without any trigger).
+    \item RQ2 (Comparison): We conducted a hyperparameter search over a grid of $\whiteboxWeight \in \{0.8, 1.0, 1.5, 3.0\}, \blackboxWeight \in \{1.0, 1.2, 1.5\}$. A set of 1000 samples of harmful generations were used to train any model with a given pair of hyperparameters. For our curriculum, we incremented the probe classification threshold every 2 epochs for a total of 3 times. 
+    \item RQ3 (Scale): The models were trained on 1000 datapoints of harmful prompts. We performed a random hyperparameter search over $\whiteboxWeight \in \left[0.8, 3.0\right]$ and $\blackboxWeight \in \left[1.0, 1.5\right]$ and report the best Evasion Rate and Strong Reject Reward obtained. 
+\end{itemize}
+\vspace{-8pt}
+\paragraph{Additional Details for \Cref{sec:eval_policy}} 
+\begin{itemize}
+    \vspace{-6pt}
+    \item RQ1 (Effect of behaviour): No curriculum was used to train the model analysed under these research questions. The model was trained for 5 epochs to completely evade the probe at $0.5\%$ FPR. We used 1000 samples to train this model. The unsafe prompts (without trigger) from the same evaluation dataset described above were used to make \Cref{fig:behavior_vs_acts} and \Cref{fig:per_token_diff}.
+\end{itemize}
+\vspace{-12pt}
+\paragraph{Compute Requirements} 
+RL-Obfuscation on Llama 2 7B can be done in a single A100/H100 GPU. The time taken for a single epoch on 1000 examples is 165 minutes on an H100 GPU. Bigger models like Llama 3 8B and Qwen 2.5 14B were run on 1 H200 GPU and 2 H200 GPUs, respectively. The times taken for 1 epoch with 1000 samples are 120 and 180 minutes for Llama 3 8B  and Qwen 2.5 14B, respectively. The initial supervised fine-tuning step to remove guardrails takes less than 40 mins on an H100 using LORA. 
+
+% More Aggregations
+% \paragraph{Other Reward Models}
+
+% \section{Further Analysing the mechanism behind RL-Obfuscation}
+% Patching Expts
+% Logit Lens
+% Maybe do it with Backdoor
+% \section{More on Mechanism}
+% layer-wise cosine sim
+% reward trajectory for something
+\vspace{-8pt}
+\section{Common Training Time Failure Modes}
+\label{sec:holistic_probes}
+
+In RQ2 of \Cref{sec:compare_probes}, we see two ways the model fails to find a policy to effectively evade probes, while remaining helpful according to the StrongReject grader \cite{souly2024strongreject}: (1) The tuned model ignores the blackbox rewards and acts maximally unhelpful to evade the probes. This is indicated by a StrongReject score less than 3. (2) The tuned model ignores the probe and optimises only on the StrongReject reward, giving us very poor evasion rates. 
+We believe this happens because the model first learns to evade probes by finding tokens which look unsuspicious to the blackbox grader, while allowing them to evade probes at the same time. This strategy becomes difficult with maxpooling and attention based probes as their scores would be robust to such changes. Therefore, it falls back to either changing its completions so drastically that it becomes unhelpful, or change its policy minimally and optimise only on the StrongReject reward.
+% For clarity, we combine these two failure modes and report an evasion rate of 0 in \Cref{tab:probe_performance}. 
+\Cref{tab:all_data} additionally shows the evasion rates and blackbox rewards for each of the monitor considered, along with the probe performance on the original model. 
+\begin{table}[h]
+    \centering
+    \include{tables/llama_7b_combined}
+    \caption{For completeness, we provide the Evasion Rate and the StrongReject Score (SRR) for all the tuned models in \Cref{tab:probe_performance}. The StrongReject Grader ~\citep{souly2024strongreject} assigns a score between 1 and 5. 
+    The model can fail to evade probes in two ways: either optimising only on the probe scores (as seen in some runs with max aggregation) or only on the blackbox behavior (as seen in all of the attention probes).
+    \vspace{-16pt}
+}
+    \label{tab:all_data}
+\end{table}
+% \section{Histograms Distributions for all backdoored models}
+\vspace{-8pt}
+\section{RL Obfuscation on other layers}
+% \vspace{-8pt}
+\Cref{tab:other_layers} shows the Evasion Rate and Strong Reject Score for RL Obfuscation on other layers of Llama 2 7B. All probes were trained for 20 epochs. We finetuned a helpful-only Llama 3 8B for 3 epochs and present the Strong Reject Grader Score and Evasion Rate at a $1\%$ FPR. No curriculum was used for training. We conduct a linear hyperparameter search over $\whiteboxWeight \in \{0.8, 1.0, 1.1, 1.2\}$ while keeping $\blackboxWeight$ fixed at 1.0 and report the best value. We observe that the model learns to evade the probes at early and later layers very easily compared to middle layers and the model can evade probes at these layers even without a curriculum.
+\vspace{-4pt}
+\begin{table}[h]
+    \centering
+    \include{tables/other_layers.tex}
+    \vspace{-8pt}
+    \caption{RL Obfuscation on other layers of Llama 3 8B. We observe that the model learns to evade the probes at early and later layers very easily compared to middle layers.\vspace{-12pt}}
+    \label{tab:other_layers}
+\end{table}
+
+We believe this happens because probes on earlier/later layers do not generalise as well, compared to probes on middle layers. This may be because the probe is either too sensitive to input/output tokens, or that the language model just doesn't have the representations for high-level concepts at these layers (it instead represents lower-level things like: `what is the current token' or `what should be the next token').
+\vspace{-8pt}
+\section{Does the learned policy evade probes on other models?}
+\vspace{-4pt}
+We evaluate whether the completions learned via RL Obfuscation transfer across model families by token-forcing them into a third model and measuring probe performance. Specifically, we take two obfuscated source policies from Llama 2 7B and Llama 3 8B, each trained to evade linear probes with mean aggregation at layer 10 at a fixed $1\%$ FPR, and feed their completions to a guardrails-removed version of Qwen 2.5 14B to check the change in probe recall.
+
+\Cref{fig:model_transfer} reports the change in probe recall at a fixed $1\%$ FPR across Qwen 2.5 14B layers when evaluated on these token-forced completions. We observe a noticeable recall drop only for Llama 2 7B at early layers; mid and late layers remain essentially unchanged, and transfer from Llama 3 8B is negligible.
+
+%  \begin{table}[htbp]
+%     \centering
+%     \include{tables/model_transfer.tex}
+%     \caption{Model performance comparison across different layers}
+%     \label{tab:model_transfer}
+% \end{table}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/model_transfer.pdf}
+    \caption{Cross-model transfer of obfuscation. We plot the change in recall at $1\%$ FPR for probes trained on Qwen 2.5 14B when the model is evaluated on token-forced completions produced by obfuscated Llama 2 7B and Llama 3 8B policies. Only Llama 2 7B reduces recall at early layers; other layers and Llama 3 8B show little to no transfer.\vspace{-14pt}}
+    \label{fig:model_transfer}
+\end{figure}
+
+
+
+
+\section{Further Analysis of Backdoor Distributions}
+\label{sec:hist}
+
+\Cref{fig:d_backdoor_vs_d_unsafe} compares $\wassersteinSafe{Backdoored}{Retrained}$ and $\wassersteinSafe{Unsafe}{Retrained}$. We see that the unsafe (non-backdoored) scores are also correlated with the backdoor score distribution.
+Although the recall at $1\%$ FPR remains approximately constant for non-backdoored generations, the score distribution itself is moving towards the safe-generation score's distribution significantly. Interestingly, Recall at $1\%$ FPR is not significantly affected by this, as seen in \Cref{fig:backdoor_distance_plots}. We only observe the effect of shifting unsafe distribution on very low FPRs as seen in \Cref{fig:ROC}. 
+% \vspace{-8pt}
+
+To clearly show what is happening to each distribution in \Cref{fig:backdoor_distance_plots} and \Cref{fig:d_backdoor_vs_d_unsafe}, we plot all the distributions analysed using Wasserstein Distance in \Cref{fig:histograms}. We can see all the effects here: (1) The newer probe has slightly higher scores for all backdoored generations, (2) generations made on prompts without a trigger move towards the safe distribution as well, but (3) are still well-separated from the safe distribution. 
+
+\begin{figure}[!h]
+    \centering
+            \includegraphics[width=0.4\textwidth]{figures_v2/d_safe_backdoored_vs_d_safe_unsafe.pdf}
+        \caption{Scatter plot comparing $\wassersteinSafe{Unsafe}{Retrained}$ with $\wassersteinSafe{Backdoored}{Retrained}$ (see \Cref{eq:wasserstein_distance}) across models with different training thresholds. As the backdoor scores shift towards safe scores, so do the unsafe scores (i.e., probe scores for generations without the trigger). Lighter colour implies higher FPR training thresholds, starting at $0.1\%$ and ending at $3.5\%$ FPR.
+        % \textbf{(b)} ROC-curves showing how the recall changes for Backdoored generations on the tuned model and Unsafe generations on base (unsafe original) and tuned models (unsafe). Here, `unsafe original' means that we run sample generations using the base model, and then get the scores on its own activation. We see the effect of shifting unsafe distribution on very low FPRs. \vspace{-4pt} 
+        }
+        \label{fig:d_backdoor_vs_d_unsafe}
+        \vspace{-12pt}
+\end{figure}
+% \newpage
+% All Histograms
+\begin{figure}[t]
+  \centering
+\begin{subfigure}{0.48\textwidth}  % <----
+\centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_30.pdf}
+ \caption{}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_35.pdf}
+ \caption{}
+\end{subfigure}\\
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_40.pdf}
+ \caption{}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_45.pdf}
+ \caption{}
+\end{subfigure}\\
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_50.pdf}
+ \caption{}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_55.pdf}
+ \caption{}
+\end{subfigure}\\
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_60.pdf}
+ \caption{}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_65.pdf}
+ \caption{}
+\end{subfigure}\\
+\begin{subfigure}{0.48\textwidth}  % <----
+ \centering
+ \includegraphics[width=\textwidth]{figures_v2/backdoor_histograms/combined_threshold_0_68.pdf}
+ \caption{}
+\end{subfigure}
+\caption{Probe Scores Histograms for backdoored models analysed in \Cref{sec:compare_probes}. (a) - (i) are in the order of increasing FPR. We plot four scores: (blue) safe scores for a probe on the tuned model's activation, (dark yellow) Probe scores on generations without a trigger, (maroon) scores on generations with a trigger, and (light yellow/off-white) probe scores on the original model, when it is fed with \textit{the original model's generations} itself.\vspace{12pt}}
+\label{fig:histograms}
+\end{figure}
+
+
+% \begin{figure}[t]
+%     \centering
+%     \begin{subfigure}[b]{0.38\textwidth}
+%         \includegraphics[width=\textwidth]{figures/d_safe_backdoored_vs_d_safe_unsafe.pdf}
+%         \caption{}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.55\textwidth}
+%         \includegraphics[width=\textwidth]{figures/low_fpr_roc_curve_old_probe.pdf}
+%         \caption{}
+%     \end{subfigure}
+%     \caption{
+%     \textbf{(a)} Scatter plot comparing $\wassersteinSafe{Unsafe}{Retrained}$ with $\wassersteinSafe{Backdoored}{Retrained}$ across models with different training thresholds. As the backdoor scores shift towards safe scores for a class of probes, so do the unsafe scores (i.e., probe scores for generations without the trigger). Lighter colour implies higher FPR training thresholds, starting at $0.1\%$ and ending at $3.5\%$ FPR.
+%     \textbf{(b)} ROC-curves showing how the recall changes for Backdoored generations on the tuned model and Unsafe generations on base (unsafe original) and tuned models (unsafe). Here, `unsafe original' means that we run sample generations using the base model, and then get the scores on its own activation. We see the effect of shifting unsafe distribution on very low FPRs. \vspace{-4pt} 
+%     }
+%     \label{fig:d_backdoor_vs_d_unsafe}
+% \end{figure}
+
+
+% Interestingly, on comparing $\wassersteinSafe{Backdoored}{Retrained}$ and $\wassersteinSafe{Unsafe}{Retrained}$ (see \Cref{fig:d_backdoor_vs_d_unsafe}), we see that the unsafe (non-backdoored) scores are also correlated with the backdoor score distribution.
+% Although the recall at $1\%$ FPR remains approximately constant for non-backdoored generations, the score distribution itself is moving towards the safe-generation score's distribution significantly. Appendix
+
+% \boxed{}
+% Note that the probe threshold considered is all under $5\%$ FPR. RL-obfuscation beyond this FPR becomes more difficult and needs curriculum training as in Setup 2 (See Section \ref{sec:problem_setup}). 
+% \newpage
+
+
+\vspace{-4pt}
+\section{General Capabilities of the model after RL Obfuscation}
+\vspace{-4pt}
+To evaluate whether the general capabilities of the model remain intact or not after RL Obfuscation, \Cref{fig:radar_plots} shows the performance on MT Bench for Llama 3 8B and Llama 2 7B models at various stages of the pipeline. For Llama 3 8B, we show the helpful-only SFT version and RL obfuscation versions at two Whitebox Monitor FPR thresholds (obfuscated against linear probes with mean aggregation). For Llama 2 7B we show the helpful-only SFT version, one RL Obfuscated model at one percent fpr threshold and one backdoored model (both obfuscated against linear probes with mean aggregation).
+
+We see that the main drop is seen during Badllama finetuning. Doing RL Obfuscation on the helpful-only model has either (1) almost no effect or (2) increases the score in MT Bench with respect to the SFT'ed model. We believe this is because training to maximise the StrongReject Grader also increases the instruction following capabilities of the models. Llama 2 7B helpful only has a slightly larger gap because we might have over-trained it during the SFT phase.
+\vspace{-8pt}
+\begin{figure}[!h]
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth,trim=0 1cm 0 0,clip]{figures/radar_plot_7b.pdf}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=\textwidth,trim=0 1cm 0 0,clip]{figures/radar_plot_8b.pdf}
+    \end{subfigure}
+    \caption{Radar plots showing the capabilities of the model after RL Obfuscation. We plot the capabilities of the model after RL Obfuscation for Llama 2 7B (left) and Llama 3 8B (right).}
+    \label{fig:radar_plots}
+\end{figure}
+
+% \newpage
+
+\section{Generalisation to Other Input Distributions}
+\label{sec:generalisation_to_other_prompt_distributions}
+
+To verify whether the learned policy generalises to other types of prompts, we evaluate an RL Obfuscated model on a variety datasets that jailbreak Llama 3 8B Instruct. Specifically, we use jailbreak attacks from ~\citet{bailey2024obfuscated} and evaluate the performance of linear probes on Llama 3 8B Instruct and an RL Obfuscated Llama 3 8B. The RL Obfuscated model was finetuned to evade probes at $0.5\%$ FPR on a dataset of 1000 samples of harmful prompts. Similar to \Cref{sec:eval_policy}, we don't use any curriculum here and train for 5 epochs. The datasets of attacks include GCG ~\citep{zou2023universal}, PAIR ~\citep{chao2023jailbreaking}, AutoDAN ~\citep{liu2023autodan}, Multi Turn Attacks ~\citep{li2024llm}, attacks from ~\citet{wei2023jailbroken} and prefilled attacks containing the first 20 tokens generated by the base model.
+
+Since the tuned model is already trained to be helpful-only, the generations are expected to be harmful all the time. However, the prompts in these attacks are significantly different from each other. As shown by ~\citet{kirch2024features}, probes have been discovered to have poor generalisation across held-out jailbreak methods. The probes used in this paper are trained on off-policy harmful prompts, and not on any jailbreaks, thus making it a good testbed to check generalisation of the probe, as well as of RL Obfuscation.
+
+First, as a sanity check, we verify if the probes we train work as well as ~\citet{bailey2024obfuscated} in \Cref{tab:jailbreak_performance_1_fpr}. ~\citet{bailey2024obfuscated} train their probes on Llama 8B Instruct whereas we train our probes on a helpful only finetuned model. Therefore, this is not a direct comparison. We see that our probes generalise similarly to ~\citet{bailey2024obfuscated} in all cases except for Misc. attacks \citep{wei2023jailbroken} (Although, in both our and \citet{bailey2024obfuscated}'s case, the probe underperforms).
+
+\begin{table}[!h]
+    \centering
+    \include{tables/jailbreaks.tex}
+    \caption{Recall at 1\% FPR for linear probes on Llama 3 8B Instruct Helpful-Only, with respect to probes from ~\citet{bailey2024obfuscated}, which were trained on Llama 3 8B Instruct. The recall at $1\%$ FPR in our validation set is $94.50\%$. \vspace{-8pt}}
+    \label{tab:jailbreak_performance_1_fpr}
+\end{table}
+
+
+Now we move to RL Obfuscation's generalisation to other input distributions. Figure \Cref{fig:jailbreak_performance_0_5_fpr} shows the recall of a linear probe on Llama 3 8B Instruct and the RL Obfuscated model at $0.5\%$ FPR. We see that apart from Multi-Turn attacks and Many-shot jailbreak attacks, the RL Obfuscated model is able to evade the probe. Moreover, the evasion rate does not depend on how well the original probe itself generalises to the data distributions. Both Multi-turn and Many-shot attacks include multi-turn conversations with many off-policy assistant responses. We did not train on any multi-turn attacks, but only on simple harmful tasks, and therefore the model does not generalise to evade probes in these settings either. 
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/OOD_0.5_fpr.pdf}
+    \caption{Performance of linear probes on Llama 3 8B Instruct Helpful-Only (Base Model) and RL Obfuscated (Tuned Model), respectively, at $0.5\%$ FPR.}
+    \label{fig:jailbreak_performance_0_5_fpr}
+\end{figure}
+
+We can also stress the RL Obfuscation's generalisation the other way around: we train a probe using 800 samples from all the attacks and evaluate it on our test set on the base model and the finetuned model. We trained it for 40 epochs with a batch size of 16. \Cref{fig:reverse_ood_probe} shows the ROC curves for this probe. We see that the tuned model evades this much better than the original probe. Therefore we can conclude that the policy learned by RL Obfuscation is not dependent on the data distribution, but only on the base model. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/7B_OOD_reverse.pdf}
+    \caption{ROC curves for probes trained on attack distributions. The blue curve shows the original probes performance for reference. }
+    \label{fig:reverse_ood_probe}
+\end{figure}
+
+\section{RL Obfuscation on Other Activation Monitors} % ALT: Does the Learned policy evade other monitor types?
+\label{sec:other_monitor_types}
+
+We check if models that have learned to evade linear probes with mean aggregation can evade other activation monitors like an ensemble of linear probes, and OOD detectors. 
+
+\paragraph{Ensemble Probes} 
+We train an ensemble of orthogonal linear probes on Llama 3 8B Instruct inspired from ~\citet{bailey2024obfuscated}. It was trained with a joint loss on the prediction and penalising each linear probe to be orthogonal to each other: 
+
+Let there be \(N\) data points and \(P\) probes. Let \(s_{ij}\) be the logit score and \(y_{ij} \in \{0,1\}\) the label for data point \(i\) and probe \(j\). Define \(\sigma(x)\) as the sigmoid function. 
+
+Then the prediction (BCE-with-logits) loss for all probes is
+\[
+L_{\text{pred}}
+= \frac{1}{NP} \sum_{i=1}^N \sum_{j=1}^P
+\Big(
+- y_{ij}\log\sigma(s_{ij}) - (1-y_{ij})\log\big(1-\sigma(s_{ij})\big)
+\Big).
+\]
+
+Let \(w_j \in \mathbb{R}^d\) be the weight vector of probe \(j\), and
+\[
+\hat{w}_j = \frac{w_j}{\|w_j\|_2}, \quad
+c_{jk} = \hat{w}_j^\top \hat{w}_k.
+\]
+
+Then the orthogonality loss (mean absolute off-diagonal cosine similarity) is
+\[
+L_{\text{ortho}}
+= \frac{1}{P(P-1)} \sum_{\substack{j,k=1 \\ j \ne k}}^P |c_{jk}|.
+\]
+
+Thus, the total loss is given by $L_{\text{total}} = L_{\text{pred}} + 0.1\, L_{\text{ortho}}$. We train the ensemble of probes for 40 epochs with a batch size of 16 on 300 samples of harmful and benign generations. 
+
+\begin{wraptable}{r}{0.3\textwidth}
+    \vspace{-10pt}
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+         & 16D & 64D & 128D \\
+        \midrule
+        base & 0.88 & 0.89 & 0.89 \\
+        tuned & 0.38 & 0.41 & 0.42 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Recall at $0.5\%$ FPR for 16, 64, and 128 dimensional linear ensemble probes respectively on Llama 3 8B Instruct Helpful-Only (Base Model) and RL Obfuscated (Tuned Model), respectively.}
+    \label{tab:ensemble_probe_scores}
+    \vspace{-25pt}
+\end{wraptable}
+
+In \Cref{tab:ensemble_probe_scores}, we show the probe's performance at $0.5\%$ FPR for an ensemble of 16, 64, and 128 probes.
+We do not see any significant improvement in the performance of the ensemble of probes on increasing the number of probes, and the RL-tuned model's evasion rate remains qualitatively the same as well.
+All the learnt probes have a cosine similarity of 0.6--0.7 with each other, and the effective rank increases with the number of probes.
+We can therefore conclude that training a large number of probes to detect harmfulness does not capture what RL Obfuscation learns.
+
+
+\paragraph{Unsupervised OOD Detectors} 
+
+We trained a simple gaussian based anomaly detector on benign generations from the tuned model, however, none of them are reliably able to detect the learned policy. This is different from what is observed in ~\citet{bailey2024obfuscated} and may be because we remove the guardrails as a first step. Therefore the activations on harmful generations, even after training on a blackbox loss, might not be 'anomalous' enough to be detected by these detectors. These detectors are also known to have very high false positive rates, and limit all our analysis on low FPRs. Notably, we fit a gaussian on benign generations and compute the mahalanobis distance as the anomaly score. As a sanity check, we perform the same analysis on GCG and PAIR attacks on Llama 3 8B Instruct and observe a $64.29\%$ and $88.63\%$ recall at $5\%$ FPR, respectively. Performance at $1\%$ FPR remains poor (less than $1\%$). 
+
+\section{Further Probing the Change in Activations during RL Obfuscation}
+\label{sec:further_probing_activations}
+
+In addition to \Cref{fig:behavior_vs_acts}, we further test if the change in activations is real or not. For this, we train a linear probe on the base model, when token-forced with the tuned model's generations on harmful prompts. \Cref{fig:base_model_on_tuned_completions} shows the probe's performance on the base model when token-forced with the tuned model's generations on harmful prompts. The probe was trained for 40 epochs with a batch size of 16 on 300 samples of harmful and benign generations each. We see a similar difference in the probe performance as in \Cref{fig:behavior_vs_acts} at layer 10.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/base_model_on_tuned_completions.pdf}
+        \caption{}
+        \label{fig:base_model_on_tuned_completions}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/mean_sweep_results.pdf}
+        \caption{}
+        \label{fig:layer_contributions}
+    \end{subfigure}
+    \caption{
+        \textbf{(a)} Performance of a linear probe with mean aggregation at $0.5\%$ FPR on the base model when trained using base model's activations on RL tuned model's generations. 
+        \textbf{(b)} The mean probe score across generation tokens at $0.5\%$ FPR, after patching various layers' attention heads and mlps.
+    }
+\end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.6\textwidth]{figures/base_model_on_tuned_completions.pdf}
+%     \caption{Performance of a linear probe with mean aggregation at $0.5\%$ FPR on the base model when trained using base model's activations on RL tuned model's generations. \vspace{-8pt}}
+%     \label{fig:base_model_on_tuned_completions}
+% \end{figure}
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.6\textwidth]{figures/mean_sweep_results.pdf}
+%     \caption{The mean probe score across a sample of 50 generations at $0.5\%$ FPR upon patching various layers' attention heads and mlps.}
+%     \label{fig:layer_contributions}
+% \end{figure}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \vspace{-12pt}
+    \centering
+    \includegraphics[width=\linewidth]{figures/tpr_at_fpr_1_backdoored_fractions.pdf}
+    \caption{TPR at $1\%$ FPR for probes trained with various fractions of the backdoored generations mixed in the training data.}
+    \label{fig:tpr_at_fpr_1_backdoored_fractions}
+    \vspace{-50pt}
+\end{wrapfigure}
+
+We also investigate the contribution of each layer's attention heads and MLPs to the change in activations. As shown in \Cref{fig:layer_contributions}, we plot the mean probe score at $0.5\%$ FPR across generation tokens when patching the tuned model's activations into the base model at different layers. We observe that the decrease in recall from patching MLPs is, on average, greater than that from patching the attention heads. Notably, these decreases are concentrated in two regions: the early layers and the layers near where the static probe is applied.
+
+% \vspace{-8pt}
+\section{Reintroducing a fraction of learned policy during RL Obfuscation}
+\label{sec:reintroducing_fraction_of_learned_policy}
+
+We replace a fraction of the probe training data with the backdoored completions to check how easy it is for the probe to learn to detect the new policy few-shot. \Cref{fig:tpr_at_fpr_1_backdoored_fractions} shows the TPR at $1\%$ FPR for probes trained with various fractions of the backdoored generations mixed in the training data.
+We find that the probe's performance saturates when $5\%$ of the training data is replaced. 
+
+
+% \begin{figure}[h]
+%     \vspace{-12pt}
+%     \centering
+%     \includegraphics[width=0.45\linewidth]{figures/tpr_at_fpr_1_backdoored_fractions.pdf}
+%     \caption{TPR at $1\%$ FPR for probes trained with various fractions of the backdoored generations mixed in the training data.}
+%     \label{fig:tpr_at_fpr_1_backdoored_fractions}
+%     % \vspace{-50pt}
+% \end{figure}

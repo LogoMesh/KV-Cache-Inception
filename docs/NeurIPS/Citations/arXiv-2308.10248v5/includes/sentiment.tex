@@ -1,0 +1,39 @@
+
+\bgroup
+\def\arraystretch{1}
+\begin{table*}[h!]
+\centering
+\caption{Results on IMDb sentiment. ``Steering'' denotes the probability of changing sentiment classification (called ``success'' in the baselines' papers). \textbf{Bold} results represent $p<0.05$ compared to the second-best. {\color{airforceblue}Gray text} denotes numbers reported by \cite{pei2023preadd}. \textit{Underline} denotes best steered result. Fluency is worse under all steering methods; 1.5x to 3x worse for ActAdd, 7x worse for PREADD. }
+\vspace{1mm}
+
+
+\begin{tabular}{rllllll}
+\toprule
+ & \multicolumn{3}{c}{\textbf{positive to negative}} & \multicolumn{3}{c}{\textbf{negative to positive}}    \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+ \textbf{Method} & \textbf{Steering $\uparrow$} & \textbf{Disfluency $\downarrow$} & \textbf{Relevance $\uparrow$} & \textbf{Steer. $\uparrow$} & \textbf{Disflu. $\downarrow$} & \textbf{Rel. $\uparrow$} 
+\\\midrule
+% Steering & ActAdd-GPT-2 & 0.624	& \textbf{20.7} & \textbf{0.327} & \textbf{0.660} & \textbf{20.3} & \textbf{0.387} \\ %& 1.5B \\
+% vector & \textbf{(ours)} &  \\
+ActAdd-OPT & 0.432 & 24.2 & \underline{0.387} & 0.564 & 20.95 & \underline{0.363} \\ %& 6.7B \\
+ % & OPT \textbf{(ours)} &  \\
+ActAdd-LLaMA3 & 0.268 & \underline{8.6} & 0.354 & \underline{\textbf{0.669}} & \underline{15.2} & 0.275\\ %& 8.0b \\
+ % &  \textbf{(ours)} &  \\
+ % Steering vector & ActAdd-LLaMA3 & - & - & - & 0.787 & 20.2 & 0.218 \\
+ % & Suc Optimised &  &  &  & \\ %& 8.0b \\
+ % &  \textbf{(ours)} &  \\
+OPT-Baseline & 0.175 & 8.95 & 0.430 & 0.445 & 9.38 & 0.423 \\ %& 6.7B \\
+ % &  & \\
+ LLaMA3-Baseline & 0.138 & \textbf{5.8} & \textbf{0.437} & 0.417 & \textbf{6.09} & \textbf{0.426} \\ %& 8.0B \\
+ % &  & \\
+OPT-Prompt & {\color{airforceblue}0.307} & {\color{airforceblue}53.5} & {\color{airforceblue}0.298}	& {\color{airforceblue}0.365}	& {\color{airforceblue}50.9} & {\color{airforceblue}0.287} \\ %& 6.7B \\
+  % &  & \\
+FUDGE & {\color{airforceblue}0.532} & {\color{airforceblue}25.1} & {\color{airforceblue}0.311} & {\color{airforceblue}0.551} & {\color{airforceblue}22.7} & {\color{airforceblue}0.320} \\ %& 6.7B \\
+ % &  & \\
+PREADD-S-OPT & \underline{\textbf{{\color{airforceblue}0.631}}} & {\color{airforceblue}68.4} & {\color{airforceblue}0.253} & {\color{airforceblue}0.624} & {\color{airforceblue}67.1} & {\color{airforceblue}0.258} \\ %& 6.7B \\
+ % &  & \\
+\bottomrule
+\end{tabular}
+\label{tab:sent}
+\end{table*}
+

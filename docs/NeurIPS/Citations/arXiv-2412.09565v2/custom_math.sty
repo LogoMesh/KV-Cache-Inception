@@ -1,0 +1,90 @@
+\RequirePackage{mathtools}
+% \RequirePackage{amssymb}
+
+%%%%%%%%%%%%%%%%%%%%
+% Generic commands
+%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\bracket}[1]{\left\langle #1 \right\rangle}
+\newcommand*{\setcomp}[2]{\left\{ #1 \,\middle|\, #2 \right\}}
+\newcommand*\mat[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand*{\mc}{\mathcal}
+\newcommand*{\mb}{\mathbb}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+\DeclareMathOperator*{\argmax}{arg\,max\:}
+\DeclareMathOperator*{\argmin}{arg\,min\:}
+
+% \let\temp\phi
+% \let\phi\varphi
+% \let\varphi\temp
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\E}{\mathop{\mb{E}}} % expected value
+% Black magic from https://tex.stackexchange.com/questions/308/different-command-definitions-with-and-without-optional-argument
+% usage: \expval[x \sim \mathcal{P}]{x^2}
+% or simply \expval{x^2} if the distribution is clear
+\makeatletter
+\def\expval{\@ifnextchar[{\@withE}{\@withoutE}}
+\def\@withE[#1]#2{\E_{#1}\left[ #2 \right]}
+\def\@withoutE#1{\E\left[ #1 \right]}
+\makeatother
+
+\makeatletter
+\def\Pr{\@ifnextchar[{\@withPr}{\@withoutPr}}
+\def\@withPr[#1]#2{\operatorname*{Pr}_{#1}\left[ #2 \right]}
+\def\@withoutPr#1{\operatorname*{Pr}\left[ #1 \right]}
+\makeatother
+
+\DeclarePairedDelimiterX{\doublebar}[2]{(}{)}{%
+  #1\;\delimsize\|\;#2%
+}
+\newcommand{\kl}{D_{KL}\doublebar}
+
+%%%%%%%%%%%%%%%%%%%%
+% Paper variables
+%%%%%%%%%%%%%%%%%%%%
+\newcommand{\model}{\ensuremath{M}}
+% Representations of input for a given model.
+% Usage: \repr[layer]{input}{model}  -> R(input; model)_layer
+% or: \repr{input}{model}           -> R(input; model)
+% or: \repr{input}                  -> R(input)
+\makeatletter
+\def\repr{\@ifnextchar[{\@withrepr}{\@withoutrepr}}
+\def\@withrepr[#1]#2{\@ifnextchar\bgroup{\@withreplayer[#1]{#2}}{\ensuremath{\mc{R}(#2)_{#1}}}}
+\def\@withreplayer[#1]#2#3{\ensuremath{\mc{R}(#2; #3)_{#1}}}
+\def\@withoutrepr#1{\@ifnextchar\bgroup{\@withreprmodel{#1}}{\ensuremath{\mc{R}(#1)}}}
+\def\@withreprmodel#1#2{\ensuremath{\mc{R}(#1; #2)}}
+\makeatother
+% \newcommand{\repr}[2]{}
+
+% Backdoor-specific commands
+\newcommand{\cleandata}{\mc{D}_{\text{clean}}}
+\newcommand{\backdoordata}{\mc{D}_{\text{backdoor}}}
+
+% Colorscheme
+\definecolor{baseline}{HTML}{576574}
+\definecolor{obfuscated}{HTML}{AE1335}
+\definecolor{harmful}{HTML}{ee5253}
+\definecolor{benign}{HTML}{10ac84}
+
+\newcommand{\baseline}[1]{\textbf{\textcolor{baseline}{#1}}}
+\newcommand{\obfuscated}[1]{\textbf{\textcolor{obfuscated}{#1}}}
+\newcommand{\harmful}[1]{\textbf{\textcolor{harmful}{#1}}}
+\newcommand{\benign}[1]{\textbf{\textcolor{benign}{#1}}}

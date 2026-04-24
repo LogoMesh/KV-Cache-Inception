@@ -1,0 +1,48 @@
+\section{Ablations}
+\label{sec:ablations}
+
+\begin{table}[!ht]
+    \scriptsize
+    \centering
+    \begin{tabular}{lrrr}
+        \toprule
+        Method & $\cos(\cdot)$ $\uparrow$ & T-1 $\uparrow$ & Rank $\downarrow$\\
+        \midrule
+        \atk{}&0.75 {\scriptsize (0.0)} & 0.91 & 2.64 {\scriptsize (0.1)}\\
+        Naïve Baseline&0.04 {\scriptsize (0.0)} & 0.00 & 4084.15 {\scriptsize (9.2)}\\
+        OT Baseline& 0.70 {\scriptsize (0.0)} & 0.00 & 3064.16 {\scriptsize (8.9)}\\
+        \midrule
+        -- VSP loss&0.58 {\scriptsize (0.0)} & 0.00 & 4196.64 {\scriptsize (9.2)}\\
+        -- CC loss&0.50 {\scriptsize (0.0)} & 0.00 & 3941.36 {\scriptsize (9.3)}\\
+        -- latent GAN&0.49 {\scriptsize (0.0)} & 0.00 & 3897.09 {\scriptsize (9.5)}\\
+        -- VSP \textit{and} CC loss&0.47 {\scriptsize (0.0)} & 0.00 & 3365.24 {\scriptsize (9.3)}\\
+        -- hyperparam. tuning&0.50 {\scriptsize (0.0)} & 0.00 & 4011.73 {\scriptsize (9.3)}\\
+        \bottomrule\\[-1.6ex]
+    \end{tabular}
+    \caption{gte $\to$ gtr translators trained without individual components of our method on NQ and evaluated on a 65536-text subset of NQ (chunked in batches of 8192). The rank metric varies from 1 to 8192, thus 4096 corresponds to a random ordering. Standard errors are shown in parentheses.}
+    \label{tab:loss_ablation}
+\end{table}
+
+\shortpara{Each component of our method is important.} We ablate our method subtractively, measuring the key metrics after removing individual components of our algorithm (described in \Cref{sec:architecture}).  \Cref{tab:loss_ablation} shows that each component appears to be \textit{critical} to building good translations. While \atk{}'s $\cos(\cdot)$ is higher than the naïve baseline, it performs worse across the board than the OT baseline and does not preserve the geometry of the vector space.\\
+
+
+\begin{table}[!ht]
+    \scriptsize
+    \centering
+    \begin{tabular}{rrrr}
+        \toprule
+        $N$ & $\cos(\cdot)$ $\uparrow$ & T-1 $\uparrow$ & Rank $\downarrow$ \\
+        \midrule
+        1000000&0.75 {\scriptsize (0.0)} & 0.92 & 2.73 {\scriptsize (0.2)}\\
+        \midrule
+        10000 & 0.57 {\scriptsize (0.0)} & 0.01 & 1462.21 {\scriptsize (20.)}\\
+        50000 & 0.74 {\scriptsize (0.0)} & 0.81 & 3.91 {\scriptsize (0.6)}\\
+        100000  & 0.74 {\scriptsize (0.0)} & 0.85 &  4.52 {\scriptsize (0.4)}\\
+        500000 & 0.75 {\scriptsize (0.0)} & 0.92 &  2.73 {\scriptsize (0.2)}\\
+        \bottomrule\\[-1.6ex]
+    \end{tabular}
+    \caption{gte $\to$ gtr translators trained with different amounts of GTE data: \atk{} models trained on NQ and evaluated an 8192-record subset of NQ. The rank metric varies from 1 to 8192, thus 4096 corresponds to a random ordering. Standard errors are shown in parentheses.}
+    \label{tab:n_data}
+\end{table}
+
+\shortpara{\atk{}s can be trained with significantly less data.} In \Cref{sec:eval_geometry,sec:eval_semantics}, we use 1M-point subsets of NQ to train our \atk{} models. Now, we train the gte $\to$ gtr \atk{} with 1M GTR embeddings but fewer GTE embeddings. \Cref{tab:n_data} shows that with as few as 10K embeddings, the translators still learn something (i.e. are better than random). Translations trained on 50K embeddings are almost as good as those trained on 1M. Translations generally improve with more training data.

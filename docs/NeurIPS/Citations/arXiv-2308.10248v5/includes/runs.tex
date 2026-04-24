@@ -1,0 +1,95 @@
+\bgroup
+\def\arraystretch{1.3}
+\begin{table*}[h!t]
+\centering
+\caption{All experiments run in this paper and where to find them. Full repo \underline{\href{https://zenodo.org/records/13879423}{here}}. }
+\begin{tabular}{p{1.9cm}|p{2.5cm}lllll}
+\toprule
+% 
+\thead{Experiment} & \thead{Description} & \thead{Model} & \thead{Vector} & \thead{Benchmark} & \thead{Results} & \thead{Code} 
+\\\hline
+Sentiment & \small quantify ability to & \small OPT, & \small love$-$hate& \small Stanford & \small Tab\ref{tab:sent} & 
+\underline{\href{
+%https://pastebin.com/0WLkWdi7
+https://colab.research.google.com/drive/1vuOaxDKw1X0hjv_XWIySpVnVwtZv2vxq?usp=sharing
+}{Link}}  
+\\
+% \underline{\href{https://colab.research.google.com/drive/1oPr4FrkCluN5tQF1c-J0iuERQNhuaR0m}{Link}}  \\
+steering & \small shift the sentiment of completions & \small LLaMA-3 & & \small IMdB &  &   \\\hline
+Detoxification & \small quantify ability to & \small OPT, & \small love$-$hate & \small RealToxicity & \small Tab\ref{tab:tox} & 
+\underline{\href{
+% https://pastebin.com/K2iet2eM
+https://colab.research.google.com/drive/1X2ZfC4y8Jx8FbkR7m-bLi8Ifrq-8MPTO?usp=sharing
+}{Link}} 
+\\
+& \small reduce toxic completions & \small LLaMA-3 & & \small Prompts & &   \\\hline
+Success & \small completion score on sentiment shift & \small SiEBERT & \small Various & \small N/A & \small Tab\ref{tab:sent} & \underline{\href{
+% https://pastebin.com/0WLkWdi7
+https://colab.research.google.com/drive/1vuOaxDKw1X0hjv_XWIySpVnVwtZv2vxq?usp=sharing
+}{Link}} \\\hline
+(Dis)Fluency & \small completion quality proxy using conditional perplexity & \small davinci-002 & \small Various & \small N/A & \small Tab\ref{tab:sent}, \ref{tab:tox}& \underline{\href{
+% https://pastebin.com/0WLkWdi7
+https://colab.research.google.com/drive/1vuOaxDKw1X0hjv_XWIySpVnVwtZv2vxq?usp=sharing
+}{Link}} \\\hline
+Relevance & \small cosine similarity & \small all-MiniLM- & \small Various & \small N/A & \small Tab\ref{tab:sent}, \ref{tab:tox} & \underline{\href{
+% https://pastebin.com/0WLkWdi7
+https://colab.research.google.com/drive/1vuOaxDKw1X0hjv_XWIySpVnVwtZv2vxq?usp=sharing
+}{Link}} \\
+& \small between prompt and completion embeddings & \small L6-v2 & & & & \\\hline
+Perplexity \!ratio & \small relative probability of tokens related to the steering vector & \small GPT-2-XL & \small wedding & \small OpenWebText & \small Fig\ref{fig:perplex} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}}\\\hline
+Logprob \!distribution \!shift & \small effect on token distribution and which tokens & \small GPT-2-XL & \small wedding & N/A & \small Fig\ref{fig:tokens_qq}, Tab\ref{tab:token_changes} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}}
+\\\hline
+Generality & \small score ActAdd outputs on a range of topics on relative relevance & \small GPT-2-XL & \small Various & GPT-3.5 & \small Fig~\ref{fig:generality} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}}  \\ \hline
+Generation scoring & \small score ActAdd generations over different injection layers &  \small GPT-2-XL & \small wedding & \small N/A & \small Fig\ref{fig:gen_mean},\ref{fig:gen_nonzero} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}}  \\\hline
+Preserves performance& \small side effects of ActAdd on off-target probabilities 
+& \small GPT-2-XL & \small wedding & \small ConceptNet & \small Fig~\ref{fig:capabilities} &  \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}} \\\hline
+% performance & \small Add on off-target probabilities & \small OPT??? & & & & \\\hline
+Topic \!steering & \small examples of topic control & \small GPT-2-XL & \small Various & \small N/A & \small Fig\ref{fig:gen_mean},\ref{fig:generality} & \underline{\href{
+% https://pastebin.com/P230fiit
+https://tinyurl.com/actadd3
+}{Link}}  \\\hline
+% Style steering & \small examples of inducing styles with steering & \small GPT-2-XL & \small Various & \small N/A & & \underline{\href{https://tinyurl.com/actadd3}{Link}}  \\\hline
+% Intervention effect & & & & & &  \\\hline
+% Inference  & \small cost to inference & \small GPT-2 & \small This is a & \small N/A & \small Fig\ref{fig:speedscale} & \underline{\href{https://zenodo.org/records/13879423}{Link}} \\
+% overhead & \small speed over increasing model size & \small OPT & \small test prompt& & & \\\hline
+Ruling out prompt eng.  & \small testing the effect of prompting on perplexity & \small GPT-2-XL & \small wedding & \small OpenWebText & \small Tab.~\ref{tab:promptperplex} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}}
+\\\hline
+Random \!ActAdds  & \small robustness of models to random activation noise & \small GPT-2-XL & \small Various & \small N/A & \small Tab\ref{tab:rando}, Fig\ref{fig:kl_rando} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}}
+\\\hline
+Partial \!ActAdd  & \small test effect of adding only the first $n$ residual stream dimensions & \small GPT-2-XL & \small wedding & \small N/A & \small Fig\ref{fig:partial} & \underline{\href{
+https://zenodo.org/records/13879423
+% https://github.com/montemac/activation_additions
+}{Link}} \\\hline
+% Other  & \small run some of the & \small GPT-J-6B & \small Various & \small N/A & \small Fig\ref{fig:gptj_kl},\ref{fig:gptj_p},\ref{fig:gptj_perp} & \underline{\href{https://tinyurl.com/actadd3-llama}{Link}}\\
+% replications & \small above on other models & \small LLaMA-13B & & &\small Tab\ref{tab:llama_examples} & 
+% \\
+\bottomrule
+\end{tabular}
+\label{tab:experiments}
+\end{table*}
+
+
+
+
+\clearpage

@@ -1,0 +1,35 @@
+\section{Conclusion}
+\label{sec:conclusion}
+% \vspace{-8pt}
+We introduced RL-Obfuscation, a way to test whether language models can evade a probe. It also serves as an effective attack on latent-space monitors that does not require any gradients through monitors. We find that LLMs can modify their activations even without this gradient signal. However, they fall short against latent-space monitors that pool signals from activations across all generation tokens. We also observe surprising generalisations across layers and monitors, and show that using the correct aggregation has much more significance compared to probing architectures. 
+
+\paragraph{Limitations and Future Work}
+Although providing new insights into how models could evade probes, we have to limit our analysis to generation-based probes only, since RL wouldn't have significant control over activations on prompts. This, however, complements Obfuscation Attacks ~\citep{bailey2024obfuscated}, where they find hard-prompt attacks effective mostly against prompt-based monitors. 
+
+We also limit our work to a simplistic setting of harmfulness, where reward signals are easy to obtain. Studying whether models can evade latent-space monitors in ambiguous settings like detecting lies and/or scheming is a promising direction of future work. Doing so might also result in qualitative changes in the learned policy. The models we train mostly exploit aggregation quirks, partly because the reward signal is very clearly defined in this setting. Studying settings or training procedures that result in qualitative changes is another promising direction of future work. Apart from using more ambiguous tasks, we think (1) doing this on much larger language models, (2) drastically increasing RL training steps, and (3) creating a malign initialisation using out of context/situational awareness datasets and/or leaking the probe training data to the model are promising ways to explore this.
+
+% We see some promise in attention-based probes in this work, as they prove to be robust under RL-Obfuscation. We also plan to explore if these probes remain robust with the scale of Language Models as well.
+
+Another promising line of future work would be to test if the models could bypass these monitors via reward \textit{hacking}: where we do not optimise directly against monitors, but the model still finds a way to exploit them. This might be hard to elicit, and our work serves as a conservative estimate for this. 
+
+We showed in \Cref{sec:compare_probes} RQ1, that the newly trained probes cannot detect this behavior when backdoored. A promising extension would be to study auditing techniques ~\citep{marks2025auditing} to elicit this behavior, or to detect this hidden backdoor in an unsupervised way. As a preliminary experiment, we tried a simple mahalonobis distance based anomaly detector in \Cref{sec:other_monitor_types}, but found that it has high False Positive Rates. We also try to naively retrain a probe by replacing a fraction of the training data with the backdoored generations in \Cref{sec:reintroducing_fraction_of_learned_policy}, and found it improves the probe's performance at $5\%$ fraction of the training data, showing some promise. 
+
+Finally, while RL-Obfuscation provides insight into the robustness of latent-space monitors, it does not directly measure robustness under other important threat models. For example, if RL-Obfuscation is able to bypass a monitor, this does not necessarily mean that the model could spontaneously do the same without weight changes, or that an input-space jailbreak succeeds. Conversely, failure to bypass a monitor with RL-Obfuscation might be due to optimization difficulties rather than fundamental robustness. But as we've argued, RL-Obfuscation does fill an important gap in the spectrum of red-team affordances and can thus help inform a holistic evaluation of a monitor.
+
+% \vspace{-8pt}
+\section*{Ethics Statement}
+Our work has complex societal implications. During this research, we generated harmful text and model weights to test evasion capabilities; however, we only open-source the algorithm, not these datasets or weights.
+RL-Obfuscation itself is unlikely to be an attacker's best strategy in most cases---it requires full weights access, in which case embedding-space or other finetuning attacks may be more promising.
+Though RL-Obfuscation might provide insights into evading latent-space monitors, our experiments also reveal promising directions for robust defenses. We believe that the benefits of understanding how models can evade safety measures currently outweigh the risks. 
+
+% Our work has complex societal implications. During this research, we generated harmful text and model weights to test evasion capabilities; however, we deliberately choose not to open-source these datasets or weights—only the algorithm itself.
+% RL-Obfuscation itself is unlikely to be an attacker's best strategy in most cases---it requires full weights access. Embedding-space or other finetuning attacks may be more feasible.
+% We acknowledge that RL-Obfuscation could provide insights into evading latent-space monitors, which could be misused after additional future research.
+% However, our experiments also reveal promising directions for robust defenses, particularly through attention-based mechanisms and pooled activation monitoring. We believe that the benefits of understanding how models can evade safety measures currently outweighs the risks. This knowledge can help inform the development of more resilient safety measures before latent-space monitors become more heavily relied upon.
+
+\section*{Reproducibility Statement}
+\label{sec:reproducibility}
+All base models used were open-source. The Badllama dataset ~\citep{gade2023badllama} is a gated huggingface repository and requires contacting the authors to access.
+See \Cref{sec:problem_setup} for details of the algorithms used. All the hyperparameters used for experiments are described in \Crefrange{sec:problem_setup}{sec:eval_policy}. Probe Training details can be seen in \Cref{sec:probe_training}. Other training details and compute requirements for running RL-Obfuscation can be found in \Cref{sec:more_training_details}. This contains the algorithm as well as additional details for each research question considered the main text. Experiments in the Appendix have all the details listed along with it. The code for running RL-Obfuscation can be found at 
+% \url{https://anonymous.4open.science/r/RL-obfuscation}.
+\url{https://github.com/cybershiptrooper/obfuscated_backdoors.git}.

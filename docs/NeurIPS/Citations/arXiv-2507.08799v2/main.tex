@@ -1,0 +1,583 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+
+% Fix space between caption and table
+\usepackage{caption}
+\captionsetup[table]{position=top, skip=\baselineskip}
+
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+
+\usepackage{xcolor}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\hypersetup{colorlinks,linkcolor={cvprblue},citecolor={cvprblue},urlcolor={cvprblue}}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{url}            % simple URL typesetting
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\usepackage[most]{tcolorbox}
+\usepackage{lipsum}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\usepackage{bbold}
+
+\definecolor{incorrectcolor}{HTML}{C0392B}   % red
+\definecolor{correctcolor}{HTML}{27AE60}   % green
+
+
+\tcbset{
+  examplebox/.style={
+    enhanced,
+    breakable,
+    colback=gray!10,
+    colframe=black!50,
+    boxrule=0.7pt,
+    boxsep=4pt,
+    left=4pt,
+    right=4pt,
+    top=4pt,
+    bottom=4pt,
+    fonttitle=\bfseries\normalsize,
+    title={#1},
+    before upper=\small,
+  }
+}
+
+\usepackage[subtle]{savetrees}
+
+
+\title{KV Cache Steering for Controlling Frozen LLMs}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+
+\author{
+  Max ~Belitsky \textsuperscript{1} \\
+  \And
+  Dawid J.~Kopiczko \textsuperscript{2} \\
+  \And
+  Michael Dorkenwald \textsuperscript{1} \\
+  \And
+  M. Jehanzeb Mirza \textsuperscript{3} \\
+  \And
+  James R.~Glass \textsuperscript{3} \\
+  \And
+  Cees G.M.~Snoek \textsuperscript{1} \\
+  \And
+  Yuki M.~Asano \textsuperscript{2}
+\\
+\AND
+\\
+ \textsuperscript{1} VIS Lab, University of Amsterdam
+ \hspace{0.5em}
+ \textsuperscript{2} FunAI Lab, University of Technology Nuremberg \\
+ \textsuperscript{3} CSAIL, Massachusetts Institute of Technology
+}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+We propose \textit{cache steering}, a lightweight method for implicit steering of language models via a one-shot intervention applied directly to the key-value cache. To validate its effectiveness, we apply cache steering to induce chain-of-thought reasoning in small language models. Our approach constructs steering vectors from reasoning traces, obtained either from teacher models (e.g., GPT-4o) or existing human annotations, that shift model behavior toward more explicit, multi-step reasoning without fine-tuning or prompt modifications. Experimental evaluations on diverse reasoning benchmarks demonstrate that cache steering improves both the qualitative structure of model reasoning and quantitative task performance. Additional experiments show that the method also scales to larger models and yields further gains on challenging datasets such as GPQA and MATH. Compared to prior activation steering techniques that require continuous interventions, our one-shot cache steering offers substantial advantages in terms of inference latency, hyperparameter stability, and ease of integration with existing inference APIs. Beyond mere reasoning induction, we show that cache steering enables controllable transfer of reasoning styles (e.g., stepwise, causal, analogical), making it a practical tool for behavior-level guidance of language models.
+\end{abstract}
+
+
+\section{Introduction}
+
+\let\thefootnote\relax\footnote{Correspondance to \texttt{max.belitsky@student.uva.nl} and \texttt{dawid.kopiczko@utn.de}}
+
+The ability of large language models to perform complex reasoning is a key driver of their increasing utility. However, this potential is not always spontaneously realized, especially in smaller models which may possess latent reasoning capabilities that require specific guidance to activate. Traditional methods for uncovering these abilities, such as supervised fine-tuning or few-shot prompting with chain-of-thought examples, can be effective but often demand significant data or intricate prompt design. The question then arises: can we develop more lightweight interventions to unlock and steer these inherent reasoning processes post-training?
+
+One promising direction is activation steering \citep{turner2308activation, panickssery2023steering}, which aims to guide model behavior by directly modifying its internal hidden states. While promising for its ability to influence outputs without retraining, activation steering often requires continuous interventions at each token generation step throughout the decoding process to be effective \citep{wehner2025taxonomy}. This continuous manipulation can introduce instability, making the outcomes highly sensitive to hyperparameter choices (e.g., targeted layers, intervention strength) and potentially leading to a degradation in generation quality.
+
+To address these issues, we introduce a method called \textbf{cache steering}. Our approach operates by making a targeted, one-time modification directly to the key-value cache of a Transformer model, typically after the cache has been populated by an initial prompt. By applying steering vectors, derived either from reasoning traces generated by a capable teacher model like GPT-4o or from existing human/dataset annotations, to these cached key and value representations, we can guide the reasoning trajectory of language models. This single intervention, applied before token generation begins, effectively steers the model towards more explicit, multi-step reasoning without altering model weights or requiring complex prompt modifications. Compared to activation steering, which applies interventions at every decoding step, cache steering avoids cascading effects, is robust to hyperparameter choices, introduces virtually no runtime cost, and seamlessly integrates with standard inference pipelines.
+
+We demonstrate that our method improves reasoning structure and, in many cases, task accuracy on multiple benchmarks, including GSM8K, ARC-Challenge, CSQA, and PIQA, and further scales to larger models and harder datasets such as GPQA and MATH. Beyond simple reasoning induction, cache steering enables \textit{controllable transfer of reasoning styles} (e.g., stepwise, causal, analogical), illustrating its value as a practical tool for behavior-level guidance.
+
+Overall, our key contributions are as follows:
+\begin{itemize}
+    \item We propose \textbf{cache steering}, a one-shot modification of the KV cache that provides a lightweight and production-ready alternative to activation steering and fine-tuning.
+    \item We demonstrate that cache steering can \textbf{distill reasoning styles} from teacher models or existing reasoning traces into smaller models without weight updates or prompt augmentation.
+    \item We conduct extensive evaluations across multiple model families and benchmarks, analyze efficiency and stability, and provide additional results on larger models and challenging reasoning datasets.
+\end{itemize}
+
+\let\thefootnote\relax\footnote{The code is available at \url{https://github.com/MaxBelitsky/cache-steering}.}
+
+\section{Related Work}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.99\linewidth]{figures/main_figure.pdf}
+    \caption{\textbf{Activation steering vs. Cache steering}. Activation steering (left) injects vectors into hidden states \textit{dynamically} during decoding, typically at a single chosen layer. Intervening at multiple layers is possible but often amplifies effects across the network, making the method sensitive to tuning and prone to instability. Cache steering (right) instead modifies the pre-computed KV cache once after the prefilling step. Because these cached representations are \textit{fixed}, the intervention can be applied consistently across all layers and then implicitly influences future tokens, leading to stable and efficient inference without repeated runtime injections.}
+    \label{fig:figure_1}
+\end{figure}
+
+\paragraph{Reasoning and Chain-of-Thought prompting.}
+
+A widely adopted approach to enhance reasoning abilities in LLMs involves demonstrating example solutions to the problem (in-context learning or ICL) that contain a step-by-step reasoning process (Chain-of-Thought or CoT) in a prompt to the language model \citep{brown2020language, wei2022chain}, a technique known as few-shot prompting. 
+Zero-shot variants of CoT prompting simplify this approach by adding instructions such as "Let’s think step by step" to elicit step-by-step reasoning without the need for example demonstrations \citep{kojima2022large}. 
+
+Recent work shows that reinforcement learning can lead to remarkable reasoning capabilities, which can be effectively distilled into smaller models through supervised fine-tuning \citep{guo2025deepseek}. These findings suggest that it is not enough to just trigger CoT reasoning in the language models, but the \textbf{style} of the reasoning matters. This motivates our approach, which aims to directly steer small models toward reasoning behavior reminiscent of larger teacher models via cache-level interventions.
+
+
+\paragraph{Activation steering.}
+
+Activation steering, also known as representation engineering, is a technique used to control the generation process of LLMs implicitly by manipulating their intermediate activations during decoding, typically through linear interventions \citep{panickssery2023steering, turner2308activation}. Multiple works have applied activation steering to induce or suppress specific behaviors in models without retraining. The examples include sentiment, topic and style control \citep{turner2308activation}; function steering \citep{todd2023function, postmus2024steering}, removing or inducing refusal behavior, \citep{lee2024programming}, toxicity reduction \citep{turner2308activation}, truthfulness \citep{wang2025adaptive}, editing factual knowledge \citep{yin2024lofit}, reasoning \citep{zhanguncovering, galichin2025have} and other \citep{wehner2025taxonomy}.
+
+In its most basic form, activation steering involves two steps: vector extraction and injection of the vector into the activations of the model at inference. The vector extraction stage involves computing a “steering vector”, which is commonly done by aggregating activations from pairs of positive prompts with desired behavior and negative or sometimes neutral prompts, forming a contrastive set \(C = \{(p_0^+, p_0^-), (p_1^+, p_1^-), ..., (p_N^+, p_N^-)\}\).
+The most common aggregation method is Difference-in-Means \citep{wehner2025taxonomy}, which is identical to Mean-of-Differences when the vectors are paired:
+\[\boldsymbol{s}_l = \frac{1}{N} \sum_{(p^+, p^-) \in C} f_l(p^+) - f_l(p^-)\]
+where \(f_l\) represents the part of the Transformer model (e.g., the whole decoder layer) at layer \(l\) and \(N\) is the number of examples in the contrastive dataset \(C\).
+To steer the model's output, the steering vector is added to the activations of specific layers during inference:
+\[
+\boldsymbol{h}_{l}^* = \boldsymbol{h}_{l} + c \boldsymbol{s}_l
+\]
+where \(\boldsymbol{h}_{l}\) represents the activations at layer \(l\) before steering, \(\boldsymbol{s}_l\) is a steering vector extracted from layer \(l\), and \(c\) is a coefficient that determines the strength of the steering.
+
+It is important to mention that the vector can be extracted and applied to different token positions, layers, and parts of the model, which are treated as hyperparameters or design choices. Usually, it is a common practice to perform a grid search to determine the layers to apply steering to and the value of the steering strength coefficient \(c\) \citep{turner2308activation, lee2024programming, wang2025adaptive, dong2024contrans, panickssery2023steering, wang2024semantics, stolfo2024improving, zhanguncovering, postmus2024steering}.
+
+While activation steering offers a tool for model control, it typically requires continuous intervention during generation \citep{wehner2025taxonomy}, which can be expensive and can lead to unstable generations. In contrast, our work extends the activation steering paradigm to the key-value (KV) cache, enabling a one-shot intervention that is both more efficient and more stable at inference time.
+
+
+\paragraph{Cache manipulation.}
+Another emerging line of research explores the idea of modifying the key-value (KV) cache from the memory and efficiency perspective \citep{li2024snapkv, liu2024clusterkv, ge2023context, mu2023learning}. These approaches aim to reduce the memory footprint or compress contextual representations through KV cache manipulation. Building on this idea, \citet{liu2024deliberation} introduced a method for augmenting the KV cache to improve the performance on tasks that require reasoning abilities. The authors use a differentiable "coprocessor", which allows augmenting the KV cache as a pre-generation step instead of modifying activations directly during the forward pass. However, in order to augment the KV cache, the method requires training a separate model, which makes this method less practical than pure activation steering methods introduced in the previous subsection.
+In contrast, our approach aims to use the KV cache as a target for behavioral control in small models without training auxiliary modules.
+
+\section{Cache Steering}
+\label{sec:method}
+
+We introduce \textbf{cache steering}, a lightweight method for inducing structured reasoning in language models by applying steering vectors directly to the key-value cache. Unlike traditional activation steering methods, which modify intermediate hidden states during generation, our approach modifies the cached keys and values associated with specific tokens, enabling a one-shot intervention that can be precomputed and reused. This technique is compatible with standard inference APIs and does not require model fine-tuning or prompt engineering.
+
+
+\subsection{Preliminaries} \label{subsec:prelims}
+
+Transformer-based language models rely on the self-attention mechanism, which operates on sets of query, key, and value vectors to compute contextualized token representations. For a given input sequence, the attention output at layer \( l \) is computed as:
+\[
+\text{Attention}(\boldsymbol{Q}^l, \boldsymbol{K}^l, \boldsymbol{V}^l) = \text{softmax} \left( \frac{\boldsymbol{Q}^l (\boldsymbol{K}^l)^\top}{\sqrt{D_h}} \right) \boldsymbol{V}^l
+\]
+where \( \boldsymbol{Q}^l, \boldsymbol{K}^l, \boldsymbol{V}^l \in \mathbb{R}^{T \times H \times D_h} \) are the query, key, and value tensors at layer \( l \), \( T \) is the sequence length, \( H \) is the number of attention heads, and \( D_h \) is the dimensionality of each head.
+
+During autoregressive decoding, the model stores the keys \( \boldsymbol{K}^l \) and values \( \boldsymbol{V}^l \) corresponding to previously processed tokens, which is known as a key-value (KV) cache. These cached tensors are used to efficiently compute attention for each new token without recomputing representations for the entire sequence. Importantly, these cache entries can be precomputed and reused across multiple examples (such as caching a system prompt), which is especially useful in scenarios involving large models or repeated inference over similar inputs. This makes the KV cache a potential target for behavioral interventions, offering compatibility with real-world settings.
+
+
+\subsection{Extracting key-value steering vectors}
+
+Similarly to activation steering, we construct a contrastive set of prompt pairs \(C = \{(p_0^+, p_0^-), (p_1^+, p_1^-), ..., (p_N^+, p_N^-)\}\) to extract the key-value steering vectors. We refer to prompts that demonstrate the desired behavior as positive and the prompts without such behavior as negative. We discuss the details of how the positive and negative prompts are constructed for the reasoning induction task in Section~\ref{implementation_details}.
+
+For each contrastive pair of examples, we make a forward pass and extract the keys and values vectors from the designated token position (typically the final token of the input prompt). The vectors are then aggregated using the Mean-of-Differences method:
+\[\boldsymbol{S}^k_l = \frac{1}{N} \sum_{(p^+, p^-) \in C} f_l(p^+) - f_l(p^-)
+\qquad
+\boldsymbol{S}^v_l = \frac{1}{N} \sum_{(p^+, p^-) \in C} f_l(p^+) - f_l(p^-)\]
+where \( f_l \) is a Transformer layer, \( \boldsymbol{S}^k_l \in \mathbb{R}^{H \times D_h} \) and \( \boldsymbol{S}^v_l \in \mathbb{R}^{H \times D_h} \) are the resulting steering tensors at layer \(l\), with \( H \) denoting the number of attention heads and \( D_h \) their dimension. By taking the difference between positive and negative examples and averaging across multiple contrastive pairs, we aim to isolate a directional signal associated with target behavior while minimizing the amount of noise introduced by information from individual examples.
+
+\subsection{Applying key-value steering vectors}
+
+At inference time, we perform a standard forward pass on the input prompt to populate the KV cache. Then, at each layer \( l \), we modify the cached key and value vectors at a target token position of the KV cache as follows:
+\[\boldsymbol{V}^*_l = \boldsymbol{V}_l + c^v \boldsymbol{S}^v_l 
+\qquad
+\boldsymbol{K}^*_l = \boldsymbol{K}_l + c^k \boldsymbol{S}^k_l \]
+where \( \boldsymbol{K}_l, \boldsymbol{V}_l \in \mathbb{R}^{H \times D_h} \) are the original cached key and value vectors at layer \( l \), and \( \boldsymbol{S}^k_l, \boldsymbol{S}^v_l \in \mathbb{R}^{H \times D_h} \) are the steering vectors, and \( c^k, c^v \in \mathbb{R} \) are scalar coefficients controlling the steering strength. Then the generation proceeds as usual using the modified cache.
+
+\subsection{Eliminating steering amplification}
+
+Cache steering differs fundamentally from traditional activation steering in \textit{how} and \textit{when} interventions are applied. Activation steering can amplify across layers and timesteps, making it unstable and sensitive to hyperparameters. Cache steering eliminates this amplification by modifying the fixed KV cache once after prefilling, as illustrated in Figure~\ref{fig:figure_1}. Below, we outline the core intuition behind this contrast.
+
+% \paragraph{No modification of queries.} Activation steering typically alters the hidden states that produce the queries, keys, and values. Changing the queries can potentially degrade the model’s ability to condition on its input. In contrast, cache steering modifies only the stored keys and values from past tokens, leaving the queries unchanged, which can help the model to retain a more accurate representation of the input context during decoding.
+
+At a specific timestep \(t\), activation steering explicitly affects the current hidden state at a chosen layer \(l\). This modification propagates both \emph{vertically} through all subsequent layers \(l+1\) to \(l+N\) and \emph{horizontally} into future tokens as decoding continues. Because interventions accumulate across layers and timesteps, small changes can compound into “oversteering,” which can negatively affect generation quality. This makes the method highly sensitive to hyperparameters such as steering strength and application layer \citep{turner2308activation, lee2024programming, wang2025adaptive, dong2024contrans, panickssery2023steering, wang2024semantics, stolfo2024improving, zhanguncovering, postmus2024steering}.
+
+In contrast, cache steering modifies the \textit{fixed} key and value representations of \textit{past} tokens after the prefilling stage. These cached representations are no longer transformed through the network and can therefore be adjusted vertically across all layers without risk of compounding. Future tokens then attend to this modified cache, so the steering effect propagates horizontally across the tokens during decoding. This one-shot intervention avoids cascading effects, allowing cache steering to be both stable to hyperparameters and efficient at runtime.
+
+In short, cache steering replaces the compounding per-step interventions of activation steering with a single post-prefill modification that avoids amplification, yielding a stable and efficient mechanism for guiding model behavior.
+
+% \paragraph{Alignment with source behavior.} Crucially, our steering vectors are extracted from the keys and values of prompts containing CoT reasoning traces. In standard few-shot prompting scenarios, these key-value pairs would reside in the past cache and would be attended to during generation. By applying steering vectors to the KV cache at inference time, we hope to transfer the style of these examples without needing to include them explicitly.
+
+\subsection{Implementation details} \label{implementation_details}
+\paragraph{Contrastive set construction.}
+
+To extract steering vectors, we construct a contrastive dataset consisting of paired prompts. Each pair includes a \textbf{positive example} (containing explicit chain-of-thought reasoning) and a \textbf{negative example} (containing only the final answer). Each contrastive prompt is created using few-shot in-context learning (ICL) examples. Specifically, both the positive and negative prompts include \(n\) ICL examples followed by a question and a generation prompt. The positive and negative prompts differ only in the presence of reasoning steps in the ICL examples (see Appendix~\ref{contrastive_data_construction} for more details and an illustrative example).
+
+\paragraph{Extraction and application positions.}
+
+We extract key and value vectors from the final token of the prompt, which typically corresponds to the last token of the generation prompt depending on the model's chat template (e.g. "\verb!\n!\verb!\n!" in "\texttt{assistant}\verb!\n!\verb!\n!").
+During inference, we aim to apply cache steering to the same logical position in the prompt as used during extraction. However, due to the autoregressive decoding mechanism (see Section~\ref{subsec:prelims}), the KV cache is populated only after each token is processed. To ensure alignment, we append a neutral offset token (e.g., a newline or whitespace) to the prompt, so that the KV representation of the final token can be used in the generation of the next tokens. This ensures the cache steering affects the intended location. Details on token alignment and cache offset are provided in Appendix~\ref{cache_position}.
+
+\paragraph{Hyperparameters.}
+
+As with activation steering, the steering strength coefficients of key and value vectors are treated as hyperparameters. Since we are interested in distilling reasoning behaviors from larger models, we additionally treat the number of contrastive pairs and the number of in-context examples in each pair as additional hyperparameters. Similarly to other steering approaches, we perform a small grid search over the hyperparameters to obtain reasonable values for each model-dataset pair \citep{turner2308activation, lee2024programming, wang2025adaptive, dong2024contrans, panickssery2023steering, wang2024semantics, stolfo2024improving, zhanguncovering, postmus2024steering}. We find that steering coefficients tend to lie within consistent ranges across tasks, suggesting robustness in the method's behavior. More on this in Section~\ref{sec:albations}. The full list of hyperparameters can be found in Appendix~\ref{hyperparams_list}.
+
+\section{Experimental Setup} \label{sec:experimental_setup}
+\paragraph{Datasets.}
+
+We use four common reasoning benchmarks for the evaluation: GSM8K \citep{cobbe2021training}, CommonsenseQA \citep{talmor2018commonsenseqa}, ARC-Challenge \citep{clark2018think}, and PIQA \citep{bisk2020piqa}. These datasets span arithmetic reasoning, commonsense inference, scientific questions, and physical commonsense reasoning. For each dataset, we generate elaborate step-by-step answers to a subset of questions from the corresponding training sets using GPT-4o, which are then used in positive examples in the contrastive set. The details on the specific prompt used to generate these steps and the generation procedure can be found in the Appendix \ref{gpt4o_dataset}. Steering vectors are computed using the training set, while evaluation is performed on the corresponding test sets. 
+
+\paragraph{Models.}
+We evaluate cache steering on small instruction-tuned models from four families: Llama-3.2 (1B and 3B variants), SmolLM2 (360M), Qwen2 (0.5B), and Phi-4-mini (3.8B) \citep{grattafiori2024llama, team2024qwen2, allal2025smollm2, abouelenin2025phi}. Additionally, we add the Llama-3.1 (8B) model to evaluate how cache steering scales beyond the smallest models. The list with the full model names and URLs can be found in Appendix~\ref{appendix:models}.
+
+\paragraph{Decoding strategies.}
+
+Since cache steering affects internal representations, which result in a shift in output logits, we evaluate our approach using both deterministic and stochastic decoding. For sampling-based decoding, we assess the consistency of steering effects by generating the response with 5 different seeds and comparing that to the baseline generations using the same setup. The generation arguments can be found in Appendix~\ref{sampling_parameters}.
+
+\input{tables/main_table}
+
+\paragraph{Answer extraction and metrics.}
+
+Answer correctness is determined using task-specific heuristics. For GSM8K, we extract the final number mentioned in the output using digit pattern matching \citep{wang2023far, wang2402chain}. For multiple-choice tasks (ARC, PIQA, CSQA), we develop a 4-stage extraction pipeline that uses soft string matching against known answer choices, with failover to constrained decoding. 
+More details on the answer extraction process can be found in Appendix~\ref{answer_extraction}.
+
+\paragraph{Comparison to activation steering.}
+In several experiments, we compare cache steering to activation steering. More specifically, we use the CAA method \citep{panickssery2023steering}, which is one of the most popular methods for activation steering. In all experiments, we make the best effort to provide a fair comparison. The details of how activation steering vectors are extracted and applied can be found in Appendix~\ref{act_steering_eval}.
+
+
+\section{Experiments}
+
+\subsection{Inducing reasoning via cache steering}
+
+To evaluate the effectiveness of cache steering in inducing reasoning behavior, we compare it against several baselines: standard greedy decoding (no intervention), CoT prompting (appending “Let’s think step by step” to the prompt), and activation steering. We also evaluate a hybrid approach that combines CoT prompting with cache steering. As shown in Table~\ref{tab:main_table} (greedy part), cache steering consistently outperforms the baseline and often leads to performance gains over the CoT prompting. Furthermore, the combination of CoT prompting with cache steering leads to additional gains in more than half of the cases, indicating the complementary nature of both techniques. Notably, cache steering surpasses activation steering in almost all cases.
+
+Additionally, we report the mean number of generated tokens per model, averaged over all datasets, in Table~\ref{tab:averaged_n_tokens} (results for each dataset-pair can be found in Appendix~\ref{app:token_length}). 
+Cache steering leads to longer outputs, suggesting that the intervention encourages reasoning even without explicit prompting.
+Taking into account the results from both tables, we can conclude that cache steering leads to well-structured reasoning traces, whcih can be further confirmed by examining qualitative examples in Appendix~\ref{qualitative_examples}.
+% Importantly, even though cache steering is effective at inducing reasoning, this alone does not guarantee higher accuracy on the benchmarks. In some cases, it induces reasoning traces that are well-structured and plausible but arrive at incorrect conclusions (e.g., due to question ambiguity or alternative valid interpretations). We also observe that failures or the models to tie complex reasoning back to the choice labels (i.e., generating the correct answer but the wrong label) sometimes cause correct reasoning traces to be scored as incorrect. We encourage readers to examine qualitative outputs in the code repository, where the steering effect is visible in the structure and style of responses. 
+
+To complement our main results on small and medium-sized models, we evaluate cache steering on a larger model (Llama-3.1-70B) and more challenging benchmarks. The results in Table~\ref{tab:hard_benchmarks} show +4.6\% accuracy on GPQA Diamond and +7.4\% on a MATH subset. These gains are even stronger than those observed on small models, where limited base capabilities can bottleneck the benefits of induced reasoning. This suggests that cache steering has the potential to scale effectively with model size. 
+% Further exploration of scaling trends is left to future work.
+
+\input{tables/averged_n_tokens}
+\input{tables/scaling}
+
+% \paragraph{Qualitative examination.}
+% To verify that cache steering indeed induces reasoning behaviors, we present several representative completions in Appendix~\ref{qualitative_examples}. In nearly all cases, cache steering causes the model to produce multi-step, logically structured answers, even when the baseline outputs are shallow or abrupt. 
+
+\paragraph{Stability under sampling.}
+The right side of Table~\ref{tab:main_table} reports results under sampling-based decoding, comparing cache steering to the baseline across multiple models and tasks. We observe that cache steering produces consistent performance improvements or maintains parity with the baseline, indicating that the intervention leads to stable and meaningful \textit{shift in logits}. Rather than injecting noise or introducing erratic behavior, cache steering systematically biases the model toward more structured reasoning even under stochastic generation. The relatively low standard deviations across runs further support the robustness of the effect.
+
+\subsection{Computational overhead} \label{robustness}
+
+Cache steering involves only a one-time cache modification after the prefilling step and does not require any additional forward passes compared to the baseline. In contrast, activation steering typically requires continuous interventions at every decoding step for the steering to be effective \citep{wehner2025taxonomy}. As shown in Figure~\ref{fig:time_per_token}, cache steering achieves latency nearly identical to the baseline ($\sim$10 ms/token at batch size 1), while activation steering incurs substantially higher time per token ($\sim$15 ms/token, with the gap widening at larger batch sizes). These findings underscore the practical efficiency of cache steering, making it well-suited for real-world deployment scenarios. Full experimental details are provided in Appendix~\ref{computational_overhead_details}.
+
+\subsection{Ablation studies} \label{sec:albations}
+We conduct ablation experiments on Llama-3.2-1B-Instruct and the ARC-c dataset to assess the sensitivity of cache steering to the primary hyperparameters: 1) number of contrastive pairs used to extract steering vectors, 2) number of few-shot examples per contrastive example, and 3) steering strength coefficients \(c^k\) and \(c^v\). The results for all the ablation studies can be found in Figure~\ref{fig:ablations_results}.
+
+\paragraph{Vector extraction.}
+We vary the number of contrastive pairs from 100 to 1000. The accuracy remains relatively stable across this range, with only minor fluctuations (from 53.1\% to 55.7\%). This suggests that even small contrastive sets can yield effective steering vectors, though performance tends to improve slightly with larger sets. We also vary the number of ICL examples per prompt from 1 to 10. Interestingly, the best result is achieved with a single example (55.8\%), and performance dips slightly at 3-shot (52.4\%) before recovering. This non-monotonic trend suggests that reasoning signals may be sensitive to specific examples in the training data.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/ablation_results.pdf}
+    \caption{\textbf{Cache steering ablations on ARC-c (Llama-3.2-1B-Instruct)}. Accuracy remains stable across contrastive set sizes and key/value steering strengths, with optimal performance around \(c^k\) = 0.3 and \(c^v\) = 6. Fewer in-context examples (e.g., 1-shot) yield better steering, likely due to reduced noise. Overall, the method is robust to a range of hyperparameters.}
+    \label{fig:ablations_results}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/time_per_token.pdf}
+    \caption{\textbf{Cache steering introduces negligible overhead compared to activation steering.} We report average time per token (in milliseconds) for cache steering, activation steering, and the baseline (no intervention) on a single H100 GPU, using batch sizes of 1 and 16. At batch size 1, both the baseline and cache steering run at $\sim$10 ms/token, while activation steering is slower at $\sim$15 ms/token; the gap widens further at larger batch sizes. Unlike activation steering, which requires continuous intervention, cache steering adds virtually no runtime cost over baseline inference.}
+    \label{fig:time_per_token}
+\end{figure}
+
+\paragraph{Vector application.}
+More importantly, we observe that cache steering is robust to steering strength variation. Varying the key coefficient \(c^k\) between 0.0 and 0.4 results in only minor changes, with the best performance at \(c^k = 0.3\) (56.4\%). Varying the value coefficient \(c^v\) from 1 to 10 shows a peak around \(c^v = 6\) (55.0\%) and a gradual decline afterward, with performance dropping below 52\% beyond \(c^v = 8\). Although extreme hyperparameters can lead to slight performance drops, cache steering remains stable to local changes to the coefficients. In contrast, activation steering often exhibits high sensitivity, with small shifts in coefficient values leading to catastrophic generation failures \citep{panickssery2023steering, turner2308activation, da2025steering}. We show the sensitivity of activation steering to hyperparameters on a smaller subset of ARC-c in Appendix~\ref{activation_steering_sensitivity}.
+
+
+
+\subsection{Style Transfer}
+
+\input{tables/styles_results}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/style_examples.pdf}
+    \caption{{\textbf{Example outputs on a single ARC-c question, using different style-specific vectors}. Each generation reflects the structure of the steering traces used to construct the corresponding vector.}}
+    \label{fig:style-example}
+\end{figure}
+
+To explore whether cache steering can be used to distill distinct reasoning styles from a teacher model, we evaluate how the stylistic form of the reasoning traces used to extract the vectors affects the response structure. For this experiment, we construct reasoning traces of 5 different styles (definitions and experiment details in Appendix~\ref{appendix:style_transfer}) for a subset of ARC-Challenge questions and extract one steering vector per style.  Table~\ref{tab:reasoning_metrics_transposed} reports the percentage of generated responses that match the intended structure for each style-specific steering vector using the SmolLM-360M-Instruct model. The results indicate that cache steering reliably induces the correct structure for common styles such as \textit{Stepwise Reasoning}, \textit{Causal Chain}, and \textit{Analogical Reasoning}. Performance is weaker for less common styles. We provide an analysis of these failure modes in Appendix~\ref{appendix:style_transfer}. 
+
+Figure~\ref{fig:style-example} illustrates outputs from a single ARC-Challenge question under different style-specific steering vectors. These show that the rhetorical
+differences between generations are not only detectable but often pronounced. For instance, all analogical responses begin with \texttt{Just like ...}, while causal chain examples follow a conditional logic pattern. These observations confirm that stylistic
+signals are indeed encoded in the KV cache and can be carried over to any prompt using cache steering. Taken together, these results show that cache steering can be used not only to induce reasoning in general, but to exert fine-grained control over its \textit{form}.
+
+
+
+% We extract one steering vector per style. During inference, we apply each style-specific steering vector to a set of 20 questions from the test set of the ARC-Challenge dataset to examine how it affects the resulting output structure. For this experiment, we use the SmolLM-360M-Instruct model due to its small size.
+
+% Table~\ref{tab:reasoning_metrics_transposed} reports the percentage of generated responses that match the intended structure for each style-specific steering vector. The results indicate that cache steering successfully induces the correct structure in almost all test cases for \textit{Stepwise Reasoning}, \textit{Causal Chain}, and \textit{Analogical Reasoning} styles. In these cases, the outputs consistently adhere to the patterns from the test data used to extract the steering vectors, suggesting that the stylistic signal is robustly captured and transferred through the key-value cache intervention.
+
+% By contrast, style transfer is less reliable for the \textit{Strategy + Execution} and \textit{Annotated Deduction} formats. Only half of the generations reflect the strategy-execution structure, and just 3 out of 20 match the annotated deduction style. To understand these failure modes, we perform a qualitative analysis of the outputs. In the case of \textit{Annotated Deduction}, we hypothesize that this format is underrepresented in the model’s pretraining distribution. While most of the completions exhibit partial stylistic artifacts, such as starting with a phase or word in square brackets (e.g., \texttt{[Farms] in Wyoming were ...}), they lack the structured logical progression seen in the positive examples used during vector extraction. In most cases, the steering signal appears to “nudge” the model in the direction of the desired style, but is either not strong enough to elicit full adherence or too strong to generate meaningful text.
+
+% A similar pattern emerged with the \textit{Strategy + Execution} format. Although all the responses begin with the correct discourse marker (e.g., \texttt{Strategy:}), half of the generated samples repeat the same marker in a loop (e.g. \texttt{Strategy:, Strategy:, ...}). We attribute this breakdown to possible oversteering: since we do not explicitly adapt the steering coefficients for each style, the default values are likely too high for this specific case, leading to degenerate outputs.
+
+% Figure~\ref{fig:style-example} provides qualitative examples of the opening segments of responses generated for a single ARC-Challenge question under each of the five steering styles. These illustrate that the rhetorical differences between generations are not only detectable but often pronounced. For instance, all responses produced using the analogical steering vector begin with \texttt{Just like ...}, while the causal chain examples adhere to a conditional logic pattern. These observations confirm that stylistic signals are indeed encoded in the KV cache and can be carried over to any prompt using cache steering.
+
+% Taken together, these results suggest that cache steering can be used not only to induce reasoning in general, but to exert more fine-grained control over its \textit{form}. This opens up future work on controllable reasoning strategies, such as choosing a style to improve model interpretability, user alignment, or explanation quality.
+
+\section{Conclusions}
+
+We introduced \emph{cache steering}, a one-shot technique for guiding language models by modifying their key–value cache. Using contrastive examples and GPT-4o-generated reasoning traces, our method induces structured reasoning in small models without fine-tuning, prompt engineering, or continuous interventions. Unlike activation steering, cache steering operates once on fixed past representations, improving stability, efficiency, and compatibility with standard inference pipelines. Experiments on GSM8K, ARC-c, CSQA, and PIQA show reliable induction of reasoning behavior and occasional accuracy gains, while style-transfer experiments demonstrate the ability to control reasoning forms. Although its effectiveness still depends on coefficient settings and steering vector selection, cache steering provides a lightweight, practical mechanism for behavior control and opens new directions for behavior control and low-cost distillation in the KV space.
+
+\section*{Acknowledgments}
+This research was supported in part by the European Laboratory for Learning and Intelligent Systems (ELLIS). The ELLIS Amsterdam Unit sponsored a research visit to the Fundamental AI Lab (FunAI) at the University of Technology Nuremberg (UTN). We also acknowledge the University of Amsterdam (UvA) for providing the computational resources that made this research possible.
+
+
+\bibliography{references}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\newpage
+
+\section{Additional details on style transfer}
+\label{appendix:style_transfer}
+
+\subsection{Experimental setup}
+To evaluate whether cache steering can transfer distinct reasoning styles, we select a subset of 20 questions from the ARC-Challenge dataset, each paired with its correct multiple-choice answer. For each question, we construct five distinct reasoning traces that arrive at the same answer but differ in their structure. The description of the five styles can be found in Table~\ref{tab:reasoning_styles}.
+
+We extract one steering vector per style. During inference, we apply each style-specific steering vector to a set of 20 questions from the test set of the ARC-Challenge dataset to examine how it affects the resulting output structure. For this experiment, we use the SmolLM-360M-Instruct model due to its small size.
+
+
+\input{tables/styles}
+
+\subsection{Failure analysis}
+Style transfer was less reliable for the \textit{Strategy + Execution} and \textit{Annotated Deduction} formats. Only half of the generations reflected the strategy-execution structure, and just one out of ten matched the annotated deduction style. To understand these failure modes, we performed a qualitative analysis of the outputs. In the case of \textit{Annotated Deduction}, we hypothesize that this format is underrepresented in the model’s pretraining distribution. While most of the completions exhibited partial stylistic artifacts, such as starting with a phase or word in square brackets (e.g., \texttt{[Farms] in Wyoming were ...}), they lacked the structured logical progression seen in the positive examples used during vector extraction. The steering signal appeared to “nudge” the model in the direction of the desired style, but was not strong enough to elicit full adherence.
+
+A similar pattern emerged with the \textit{Strategy + Execution} format. Although all the responses began with the correct discourse marker (e.g., \texttt{Strategy:}), half of the generated samples repeated the same marker in a loop (e.g. \texttt{Strategy:, Strategy:, ...}). We attribute this breakdown to possible oversteering: since we did not tune the steering coefficients for each style, it is likely that the default values were too strong in this case, leading to degenerate outputs.
+These analyses suggest that while cache steering robustly transfers common reasoning styles, rare or structurally complex formats may require further tuning or style-specific adjustments.
+
+\section{Qualitative examples} \label{qualitative_examples}
+
+Here we show qualitative examples from different model-dataset pairs. We try to include cases when: 1) both baseline and steering answers are correct; 2) only the steering answer is correct; 3) only the baseline answer is correct. All qualitative examples can be found the the code repository, whcih contains the outputs for all model-dataset pairs.
+
+Importantly, even though cache steering is effective at inducing reasoning, this alone does not guarantee higher accuracy on the benchmarks. In some cases, it induces reasoning traces that are well-structured and plausible but arrive at incorrect conclusions (e.g., due to question ambiguity or alternative valid interpretations). We also observe that failures or the models to tie complex reasoning back to the choice labels (i.e., generating the correct answer but the wrong label) sometimes cause correct reasoning traces to be scored as incorrect. We encourage readers to examine qualitative outputs in the code repository, where the steering effect is visible in the structure and style of responses.
+
+\subsection{Llama-3.2-1B-Instruct on ARC-c}
+
+\begin{tcolorbox}[examplebox={Llama-3.2-1B-Instruct on ARC-c: both baseline and steering are correct}]
+\textbf{Prompt:} A scientist investigated how well plants native to Maryland would grow in desert conditions. The scientist placed equal amounts of desert soil into 10 identical containers. Each container held two of the same kind of plant. The scientist investigated a total of 10 different kinds of plants. The scientist placed all of the containers into a greenhouse adjusted to produce hot, desert-like conditions. The scientist gave the plants equal, but small amounts of water for the next five weeks. Most of the plants did not survive after the five week investigation. Which statement best explains why 16 of the plants did not survive?
+Choices:\\ \textcolor{incorrectcolor}{A: Plants do not grow in desert conditions.}\\ \textcolor{correctcolor}{B: Few plants survive severe changes to their environment.}\\ \textcolor{incorrectcolor}{C: Plants native to Maryland are not good for scientific studies.}\\ \textcolor{incorrectcolor}{D: Plants native to Maryland are only able to survive in Maryland.}
+
+\vspace{0.5em}
+\textbf{Baseline Response:}\\
+The correct answer is B: Few plants survive severe changes to their environment.\\The statement that best explains why 16 of the plants did not survive is that they were placed in a desert-like environment with hot, desert-like conditions, and then given small amounts of water for five weeks. This severe change to their environment would likely be stressful for the plants, making it difficult for them to survive. The fact that most of the plants did not survive suggests that the conditions were too harsh for them, rather than that the plants themselves are not good for scientific studies or that they are only able to survive in Maryland. \textcolor{correctcolor}{So the correct choice is B.}
+
+\vspace{0.5em}
+\textbf{Steered Response:}\\
+To understand why 16 of the plants did not survive, we need to consider the factors that affect plant growth in desert conditions.\\Firstly, plants native to Maryland are not adapted to desert conditions. They are typically found in temperate climates with moderate temperatures and adequate rainfall. Desert plants, on the other hand, are adapted to hot, dry conditions with limited water availability.\\Secondly, the desert soil used in the containers was not suitable for the plants. Desert soil is often high in salt and lacks essential nutrients, which can be detrimental to plant growth.\\Thirdly, the amount of water provided to the plants was small, which can be stressful for most plants. Even if the plants were adapted to desert conditions, the lack of water would still be a significant challenge.\\Now, let's consider the options:\\A: Plants do not grow in desert conditions. This statement is incorrect because plants can grow in desert conditions, but they require specific adaptations and conditions to survive.\\B: Few plants survive severe changes to their environment. This statement is partially correct, as the severe changes to the environment (hot, dry conditions and limited water) would indeed be challenging for most plants. However, it does not explain why 16 of the plants did not survive.\\C: Plants native to Maryland are not good for scientific studies. This statement is incorrect because plants native to Maryland can be valuable subjects for scientific studies, especially when they are adapted to specific conditions.\\D: Plants native to Maryland are only able to survive in Maryland. This statement is incorrect because plants native to Maryland can survive in other environments, including desert conditions, as long as they are adapted to those conditions.\\The correct answer is B: Few plants survive severe changes to their environment. This is because the combination of hot, dry conditions and limited water provided to the plants would be challenging for most plants to survive. \textcolor{correctcolor}{So the correct choice is B.}
+\end{tcolorbox}
+
+\begin{tcolorbox}[examplebox={Llama-3.2-1B-Instruct on ARC-c: incorrect baseline, correct steering}]
+\textbf{Prompt:} A college campus has so few parking spaces that cars are often lined up waiting to park during class hours. Which of the following describes how the college could best solve the need for more parking spaces using the universal systems model? Choices:\\ \textcolor{incorrectcolor}{A: The college could build an additional parking lot, gather parking data, and then receive input from community meetings.}\\ \textcolor{incorrectcolor}{B: The college could limit access to parking lots during busy hours, hire security officers to help restrict parking, and then gather parking data.}\\ \textcolor{correctcolor}{C: The college could gather parking data, receive input from community meetings, build an additional parking lot, and then gather more parking data.}\\ \textcolor{incorrectcolor}{D: The college could hire security officers to help restrict parking, gather parking data, receive input from community meetings, and then gather more data.}
+
+\vspace{0.5em}
+\textbf{Baseline Response:}\\
+The correct answer is B: The college could limit access to parking lots during busy hours, hire security officers to help restrict parking, and then gather parking data.\\This option describes how the college could best solve the need for more parking spaces using the universal systems model. The universal systems model is a framework for understanding and managing complex systems, and in this case, it involves:\\* Identifying the problem (limited parking spaces)\\* Gathering data on the current situation (parking data)\\* Receiving input from stakeholders (community meetings)\\* Taking action to address the problem (limiting access to parking lots during busy hours and hiring security officers)\\This approach is a good example of how the universal systems model can be applied to solve a complex problem like limited parking spaces. \textcolor{incorrectcolor}{So the correct choice is B}.
+
+\vspace{0.5em}
+\textbf{Steered Response:}\\
+To solve the need for more parking spaces on a college campus, the college should consider the universal systems model, which involves several key components.\\First, the college should gather parking data. This involves collecting information about the number of cars parked, the types of vehicles, and the time of day when parking is most popular. This data will help the college understand the current parking situation and identify areas where additional parking spaces are needed.\\Next, the college should receive input from community meetings. This involves engaging with students, faculty, and staff to gather their opinions and concerns about parking. By listening to their feedback, the college can better understand the needs and priorities of the community.\\Building an additional parking lot is a crucial step in addressing the parking shortage. However, it should be done in conjunction with the gathering of parking data and the community meetings. This ensures that the new parking lot is designed and constructed to meet the needs of the community, and that it is accessible and convenient for everyone.\\Finally, the college should gather more parking data to evaluate the effectiveness of the new parking lot and make adjustments as needed. This will help the college to refine its parking management strategies and ensure that the parking lot is meeting its intended purpose.\\In summary, the correct answer is the one that involves gathering parking data, receiving input from community meetings, building an additional parking lot, and then gathering more data to evaluate its effectiveness.\\Choices A, B, and D do not accurately describe the universal systems model. Choice A involves gathering data and then implementing a solution, but it does not involve community meetings. Choice B involves restricting access to parking during busy hours, but it does not involve gathering data or receiving input from the community. Choice D involves gathering data, but it does not involve building an additional parking lot or receiving input from the community. \textcolor{correctcolor}{So the correct choice is C}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[examplebox={Llama-3.2-1B-Instruct on ARC-c: correct baseline, incorrect steering}]
+\textbf{Prompt:} 
+In 1903 Mary Anderson invented the first windshield wiper. How did this invention most likely help people?\\\ Choices: \\ \textcolor{incorrectcolor}{A: It helped people use less gas.} \\ \textcolor{incorrectcolor}{B: It kept people from driving too fast.} \\ \textcolor{incorrectcolor}{C: It made cars easier for people to buy.} \\ \textcolor{correctcolor}{D: It made cars safer to drive in bad weather.}
+
+\vspace{0.5em}
+\textbf{Baseline Response:}\\
+The correct answer is D: It made cars safer to drive in bad weather.\\Mary Anderson's windshield wiper invention was designed to help people see while driving, especially in rainy or snowy conditions. By keeping the windshield clear of rain and snow, drivers could see the road ahead more clearly, reducing the risk of accidents. This was particularly important in the early days of automobile travel, when roads were often poorly maintained and visibility was limited. Anderson's invention helped to improve road safety and reduce the number of accidents on the roads. \textcolor{correctcolor}{So the correct choice is D.}
+
+\vspace{0.5em}
+\textbf{Steered Response:}\\
+To understand how Mary Anderson's windshield wiper invention helped people, we need to consider the context and purpose of the invention.\\Mary Anderson's windshield wiper was designed to improve visibility while driving, especially in rainy or foggy conditions. The primary goal of the invention was to reduce the amount of time spent stopping and starting the vehicle, which was a significant challenge in early automobiles.\\In the early 1900s, driving was a hazardous activity, especially in poor weather conditions. Drivers had to constantly stop and start the engine, which was time-consuming and often resulted in accidents. The windshield wiper helped to reduce this time by allowing drivers to clear the windshield of rain and debris more quickly.\\Therefore, the correct answer is that Mary Anderson's windshield wiper invention most likely helped people by reducing the time spent stopping and starting the vehicle, which was a significant challenge in early automobiles. \textcolor{incorrectcolor}{So the correct choice is B.}
+\end{tcolorbox}
+
+\section{Implementation details}
+\subsection{Contrastive data construction} \label{contrastive_data_construction}
+
+All prompts are formatted using the chat template from the model's tokenizer configuration. This ensures consistency with how the models are typically used during chat-style inference. The example of a single contrastive pair with 1 in-context example:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/contrastive_example.pdf}
+    \caption{\textbf{The example of a single contrastive pair with 1 in-context example}. The positive example (left) includes both the reasoning trace and the final answer. The negative example (right) includes only the final answer.}
+    \label{fig:contrastive_demonstration}
+\end{figure}
+
+To ensure that in-context examples are semantically similar to the target question, we embed all training questions using the \texttt{all-MiniLM-L6-v2} sentence embedding model \citep{reimers2019sentence} and retrieve the top-\( n \) most similar examples based on cosine similarity. 
+
+\subsection{Answer extraction} \label{answer_extraction}
+We explored using an LLM to extract answer labels from model outputs, which is a common practice in recent activation steering studies \citep{panickssery2023steering, wang2023far, wehner2025taxonomy}. However, due to computational constraints, we were unable to use a sufficiently large model to ensure high-quality extraction. In particular, smaller judges often rely on their own knowledge to infer the correct answer, rather than faithfully extracting it from the generated output. This compromises the reliability of evaluation in cases where steering affects reasoning without necessarily correcting the final answer. To minimize the amount of false positive answers, we opted for a rule-based pipeline that is transparent, fast to run at scale, and robust enough for comparative analysis in our setting.
+
+\paragraph{GSM8K.}
+For GSM8K, we extract the final numeric answer using a digit-based pattern match. Specifically, we select the last number mentioned in the model's output. This approach has been used in prior work \citep{wang2023far, wang2402chain}. While this method introduces both false positives (e.g., trailing numbers in explanations) and false negatives (e.g., answers embedded in text), these effects tend to cancel out over large-scale evaluation.
+
+\paragraph{Multiple-choice tasks.}
+For multiple-choice datasets, we require more structured extraction due to the open-ended nature of the model outputs. Therefore, we adopt the approach from \citet{wang2402chain} and augment it further with a more rigorous extraction process. We develop a multi-stage extraction pipeline designed to recover answer labels with high precision and robustness. For all experiments, we append the string \texttt{"So the correct choice is"} to the end of the prompt and allow the model to generate 10 additional tokens. The output is then processed in the following stages:
+\begin{enumerate}
+    \item \textbf{Regex-based label extraction:} We apply a sequence of 12 regular expressions to identify explicit label mentions (e.g., “A”, “option C”, “(B)”) both immediately following the answer prefix and in the whole answer string as a fallback. Each pattern is designed to handle common formats seen across models and datasets. The full list of regex patterns can be found in the code.
+    
+    \item \textbf{String match fallback:} If no regex match is found, we scan the span after \texttt{"So the correct choice is"} for an exact string match with any of the raw answer choices. To avoid false positive matches, we only accept matches when exactly one choice matches unambiguously. We also filter out cases containing negation cues (e.g., “not”, “incorrect”, “wrong”) to exclude completions like “So the correct answer is not B”.
+    
+    \item \textbf{Invalid and multi-label detection:} We detect multi-answer completions (e.g., “both A and C”) or noncommittal outputs (“none of the above”) and label them as \texttt{[incorrect]}. Any remaining answers that do not match a valid choice are marked as \texttt{[invalid]}.
+
+    \item \textbf{Constrained decoding for fallback resolution:} For all completions marked as \texttt{[invalid]}, we discard the answer span after \texttt{"So the correct choice is"} and repeat decoding with constraints: we re-append \texttt{"So the correct choice is"} to the prompt and sample a single token, masking the logits to allow only valid label tokens. This final step guarantees that a valid label is recovered for every input.
+\end{enumerate}
+
+Despite this multi-stage approach, errors in label extraction are still common. In particular, semantically correct answers may be incorrectly marked due to minor phrasing differences or ambiguous generation formats. Additionally, the constrained decoding stage forces the model to generate a valid label even if the generated text is not semantically meaningful, which was especially common in activation steering experiments. Therefore, to mitigate this, we discard the results if the accuracy before the constrained decoding stage is significantly lower than after. 
+
+\subsection{Activation steering evalutaion} \label{act_steering_eval}
+
+To make a fair comparison of activation steering to cache steering, we chose a similar setting: greedy decoding, 200 contrastive samples, each with 5 few-shot examples. Similarly to cache steering implementation, the vectors were extracted from the last token position, aggregated with a Difference-in-Means method. The vectors were applied continuously to each new token during decoding. All these choices adhere to the current best practices in activation steering research \citep{wehner2025taxonomy}.
+To extract and apply the steering vector, we used the steering-vectors Python library \citep{steering-vectors} that implements the most popular activation steering method CAA \citep{panickssery2023steering}.
+
+First we performed a grid search on a subset of data over \(c \in [0.5, 1, 3]\) and middle layers of each model: for SmolLM2-360M-Instruct \(l \in [13, 14, 15, 16, 17, 18, 19]\), for Llama-3.2-1B-Instruct \(l \in [6, 7, 8, 9, 10]\), for Llama-3.2-3B-Instruct \(l \in [13, 14, 15]\), for Llama-3.1-8B-Instruct \(l \in [15, 16, 17]\), for Phi-4-mini-instruct \(l \in [15, 16, 17]\), for Qwen2-0.5B-Instruct \(l \in [11, 12, 13]\). The selected hyperparameters were inspired by the numbers reported in \cite{turner2308activation}. Then, activation steering with the best parameters was evaluated on the full test set to obtain the final results.
+
+\subsection{Sampling parameters} \label{sampling_parameters}
+For sampling experiments, we used the parameters specified in the generation config of the model. If the generation config was not available, we used temperature: 0.6, top\_p: 0.9, top\_k: 50.
+
+\subsection{Aligning cache position} \label{cache_position}
+
+Through extensive experimentation, we discovered that for most datasets, cache steering is most effective if the vectors are applied to the same token from which the vectors were extracted. In case of an instruction-tuned model, such a token can be the last token of the generation prompt (e.g., the newline character after "assistant"). Therefore, when we extract the steering vectors from such a token, the steering effect is most pronounced if we apply the vector to the same token. Even though the actual positions of the extraction and application tokens in the corresponding sequences are different, in both sequences the tokens play a similar role. We think of these tokens as information aggregation tokens. In cases when the desired application token is last in the sequence, we append a special token to the prompt in order to be able to apply the intervention to the correct position. In cases when cache steering is applied to any other position, this procedure is not needed.
+
+\subsection{Generation of reasoning data}\label{gpt4o_dataset}
+To generate reasoning data, we used a GPT-4o model via OpenAI's Chat Completions API. We used the following instruction prompt to elicit detailed CoT-style responses:
+\begin{quote}
+\texttt{You are given a question and a corresponding answer to that question. Your task is to think step by step and provide the reasoning steps to get the answer. Separate each reasoning step with <reasoning> </reasoning> tags. The question: '\{question\}'. The correct answer: \{answer\}.}
+\end{quote}
+The obtained reasoning steps were further parsed with regular expressions.
+
+\subsection{Computational overhead experiment details} \label{computational_overhead_details}
+
+To compare the computational efficiency of cache steering,  activation steering, and the model without any intervention, we measure the per-token generation time under both methods using a subset of 100 examples from the ARC-Challenge dataset.
+
+We conduct experiments using two different batch sizes: 1 (single-example inference) and 16 (batched inference), to reflect both interactive and throughput-oriented use cases. All runs are executed on the same hardware using greedy decoding.
+
+Timing is measured from the beginning of generation (post-prompt forward pass) to the completion of the final token. All results are averaged over three runs.
+
+\subsection{Models Used} \label{appendix:models}
+
+We evaluate our method using multiple open-source language models from different model families. Below, we list their Hugging Face model hub URLs.
+
+\begin{itemize}
+    \item \textbf{SmolLM2-360M-Instruct}  
+    \begin{itemize}
+        \item URL: \url{https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct}
+        \item License: Apache 2.0
+    \end{itemize}
+
+    \item \textbf{LLaMA-3.2-1B-Instruct}  
+    \begin{itemize}
+        \item URL: \url{https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct}
+        \item License: Llama 3.2 Community License
+    \end{itemize}
+
+    \item \textbf{LLaMA-3.2-3B-Instruct}  
+    \begin{itemize}
+        \item URL: \url{https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct}
+        \item License: Llama 3.2 Community License
+    \end{itemize}
+
+    \item \textbf{Qwen2-0.5B-Instruct}  
+    \begin{itemize}
+        \item URL: \url{https://huggingface.co/Qwen/Qwen2-0.5B-Instruct}
+        \item License: Apache 2.0
+    \end{itemize}
+
+    \item \textbf{Phi-4-mini-instruct}  
+    \begin{itemize}
+        \item URL: \url{https://huggingface.co/microsoft/Phi-4-mini-instruct}
+        \item License: MIT
+    \end{itemize}
+
+    \item \textbf{Llama-3.1-8B-Instruct}  
+    \begin{itemize}
+        \item URL: \url{https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct}
+        \item License: Llama 3.1 Community License
+    \end{itemize}
+
+\end{itemize}
+
+\section{Reproducibility} \label{app:reproducibility}
+
+\subsection{Experiments reproducibility}
+To ensure consistency and facilitate detailed analysis, we implemented several reproducibility safeguards throughout our experimental pipeline.
+
+\paragraph{Sample tracking via UUIDs.}  
+At test time, we assign each input a unique identifier (UUID) derived deterministically from a hash of the input text. This allows us to track and compare individual examples across experiments with different settings (e.g., sampling, steering variants, decoding strategies), and ensures the integrity of input data over time. The UUID makes it easy to locate the same question across logs, qualitative outputs, and evaluation reports, and is sensitive to minor changes in the question itself.
+
+\paragraph{Deterministic runs.}  
+For all runs involving stochastic generation (e.g., sampling-based decoding), we set the random seed at the beginning of each run to guarantee reproducibility.
+
+
+\paragraph{Llama chat template}
+In all experiments, we used the chat template predefined by the model to tokenize the input text. However, we noticed that specifically in the Llama models, the current date is added to the system prompt, making it impossible to fully reproduce the results. Therefore, we modify the chat template of the Llama models to exclude the current date from the system prompt.
+
+
+\subsection{Hardware specifications} \label{hardware}
+All experiments were run on the internal cluster (not in the cloud). These are the specifications of the hardware:
+\begin{itemize}
+    \item 1 NVIDIA H100 GPU, 94GiB of memory
+    \item 16 AMD 4th GEN EPYC CPUs
+\end{itemize}
+The time to run each experiment varied per model, dataset, whether it was a baseline experiment, cache steering or activation steering experiment, the amount of training data used, etc. On average, a single run for almost all model-dataset pairs took less than 1 hour to run, with the exception of Llama-3.2-3B model on PIQA dataset, which took under 2 hours, and activation steering experiments, which took under 6 hours per experiment. The full research project required more compute than the experiments reported in the paper since a significant part of the project was experimentation and empirical analysis.
+
+\subsection{Software environment}
+\begin{itemize}
+    \item Python 3.11.11
+    \item transformers: 4.49.0
+    \item torch: 2.5.1
+\end{itemize}
+
+\section{Sensitivity of activation steering to hyperparameters} \label{activation_steering_sensitivity}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.99\linewidth]{figures/activation_steering_ablation.pdf}
+    \caption{Sensitivity of activation steering to hyperparameters on ARC-c dataset using Llama-3.2-1B. The results are obtained from the activation steering grid search described in \ref{act_steering_eval}.}
+    \label{fig:activation_steering_ablations_results}
+\end{figure}
+
+
+\newpage
+\section{Length of generated outputs} \label{app:token_length}
+\input{tables/n_tokens}
+
+\newpage
+\section{List of hyperparameters} \label{hyperparams_list}
+\input{tables/hypeparams}
+
+
+\section{Limitations} \label{limitations}
+
+In this work, we focus primarily on inducing reasoning behavior in small LLMs. While results on one larger model already show a potential for even better improvements, further study is needed to assess how well cache steering generalizes across a wider range of large models, domains, and tasks beyond reasoning. Importantly, cache steering, like other behavior-guidance methods including prompting and fine-tuning, has broad applications. Potential misuse, such as steering toward deceptive, harmful, or biased outputs, remains a concern. We therefore advocate responsible use and recommend that safeguards are considered.
+
+\end{document}

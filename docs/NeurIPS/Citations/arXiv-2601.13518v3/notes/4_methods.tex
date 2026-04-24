@@ -1,0 +1,69 @@
+% !TEX root =  main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-0.2cm}
+\section{Methods}
+\label{method}
+
+%We adopt a similar framework that iteratively generates new candidate agentic systems to explore the space of such functions, with some alterations making it suitable for red-teaming use case.
+\vspace{-0.2cm}
+%Although Meta Agent Search can theoretically program any agentic system within the code space, naïvely applying it to our domain results in minimal improvement over generations as shown in Appendix \ref{appx: naive meta agent search}. The designed agents lack an execution interface to interact with the target model and the judge function, resulting in a lack of verifiable signals to guide the optimization.
+
+We propose \method, an evolving pipeline tailored for the red-teaming domain. It starts with an archive of state-of-the-art red-teaming systems and their associated metrics (``fitness"), and uses an LLM (the ``meta agent'') to iteratively program new agentic systems. Each newly generated system is verified and evaluated on a red-teaming benchmark. A generational knowledge dataset, including previously attempted failed prompts and successful prompts, is accumulated over time and passed down to subsequent generations.
+
+Inspired by the principle of ``survival of the fittest" from Darwinian evolutionary theory \citep{darwin2023origin}, we enforce the meta agent to generate multiple new agentic systems (``offspring'') at each generation, and retain only the best-performing systems in the archive based on their performance metrics on an initial evaluation dataset. The best-performing system is then added to the archive along with its evaluation metrics on a comprehensive evaluation dataset. Pseudocode of the algorithm is provided in Appendix \ref{appx: agenticred algorithm}. The evolutionary structure diagram of \method~is shown in Figure \ref{fig:agenticred_architecture}. 
+
+%Each generated system is assessed using an initial red-teaming dataset, which is a subset of evaluation dataset, to get an initial fitness score. If an error occurs during the initial assessment, the error message will be fed back to the meta agent for self-correction. Only the generated system with the highest fitness score within the generation is kept and evaluated using the full batch of evaluation dataset to get its final fitness score. The system is then added to the archive along with its evaluation metrics. A pseudocode of the algorithm is provided in Algorithm \ref{alg:meta_agent_search}.
+%we adopt a framework that iteratively generates new candidate agentic systems to explore the design space of red-teaming systems, with some alterations making it suitable for the red-teaming use case.
+
+%Previous works adapt an archive that mostly consider agentic systems designed for commonly-used reasoning tasks such as LLM-Debate \citep{du2023improvingfactualityreasoninglanguage} and Step-back Abstration \citep{zheng2024stepbackevokingreasoning}. Due to a lack of feedback signals from the target model and judge function, these methods cannot be directly transfered to the red-teaming task. %In ADAS, the archive consists of commonly-used reasoning agentic systems such as LLM-Debate, Step-back Abstraction and Dynamic Assignment of Roles. In practice, agentic systems for reasoning cannot generalize to red-teaming tasks due to its lack of feedback signals from the target model and judge function. 
+%We create an archive consisting of SOTA red-teaming agentic systems that effectively use the feedback signals from the target model and judge function. This archive serves as a customized baseline for generating agentic systems specific for red-teaming tasks. We also implement an ``evolutionary selection pressure'' mechanism inspired by the evolution theory, by programming and evaluating multiple agents for each generation, but only adding the best performing agent to archive, as the equation below.
+
+
+% overview
+%\method~is a simple yet powerful search algorithm for red-teaming agentic system. %The core idea is to have a meta agent iteratively generate new agentic systems given its ever-growing archive of previous discoveries and their associated performance (fitness) score. 
+%\method~starts with an archive of baseline state-of-the-art red-teaming systems, and their associated fitness score. For each generation, a meta agent is provided with framework and helper functions to interact with target models and judge functions, and asked to program multiple new systems, conditioned on the discovered archive. Each generated system is assessed using an initial red-teaming dataset, which is a subset of evaluation dataset, to get an initial fitness score. If an error occurs during the initial assessment, the error message will be fed back to the meta agent for self-correction. Only the generated system with the highest fitness score within the generation is kept and evaluated using the full batch of evaluation dataset to get its final fitness score. The system is then added to the archive along with its evaluation metrics. A pseudocode of the algorithm is provided in Algorithm \ref{alg:meta_agent_search}.
+
+
+\vspace{-0.2cm}
+\subsection{Archive}
+\label{method:archive}
+The archive serves as an evolutionary warm start in \method. Previous works typically populate their archives with agentic systems designed for general reasoning tasks, such as LLM-Debate \citep{du2023improvingfactualityreasoninglanguage} and Step-back Abstraction \citep{zheng2024stepbackevokingreasoning}. %Commonly-used reasoning agentic systems used by ADAS in its archive prove to be effective in reasoning tasks such as mathematics and reading comprehension. However, directly applying them to red-teaming tasks result in near zero ASR (\ref{appx: additional agentic system evalution}).
+These agentic systems, while effective in other domains, lack interfaces to obtain feedback critical to the red-teaming task, including target model responses and judge evaluations. Instead, we initialize our archive with components directly tailored to the red-teaming setting.
+
+We crafted an archive that consists of Self-Refine (Reflexion) \citep{madaan2023selfrefineiterativerefinementselffeedback} and JudgeScore-Guided Adversarial Reasoning. We constructed this archive as our starting point because the baseline systems in the provided archive; (1) effectively use the response and feedback signal from the target model and judge function; (2) cover a wide range of modular components and helper functions; (3) their different workflow and corresponding fitness shows how different system design can lead to big differences in fitness.
+
+ 
+\textbf{JudgeScore-Guided Adversarial Reasoning.}
+\label{method:JudgeScore-Guided Adversarial Reasoning}
+We created JudgeScore-Guided Adversarial Reasoning (JS-Guided AdvReasoning) for our initial archive. We took inspiration from the SOTA red-teaming method, Adversarial Reasoning \citep{sabbaghi2025adversarial}. We apply the ``Proposer and Verifier" principle \citep{snell2024scaling} by iteratively ranking and refining the reasoning string provided to the attacker model. Previous work requires the logits of a white-box target model, while in JS-Guided AdvReasoning, we instead develop a black-box compatible implementation that exploits the judge model's confidence signal, measured by the logit of the first token generated by the judge. Its details can be found in Appendix \ref{appx: JudgeScore-Guided Adversarial Reasoning}.
+
+\vspace{-0.2cm}
+\subsection{Evolutionary Selection} 
+\label{method:evolutionary_pressure}
+We apply evolutionary selection to the search algorithm by selecting the 'fittest' design from multiple candidate agentic systems in each generation. To reduce computational cost, each design is evaluated on a small-scale subset $d\subset \tilde D$. Only the ``fittest" system of each generation is retained, passed down to full evaluation, and subsequently added to the archive. We use ASR in Equation \ref{eq:asr} as the fitness score for evolutionary selection. That is,
+\begin{align}
+\label{eq:selection}
+    \boldsymbol{A}_{n+1} \in 
+    %\arg\max_{\boldsymbol A \in \mathcal C_n}\mathbb{E}_{I\sim D}[\boldsymbol{J}(\boldsymbol{T}(\boldsymbol{A}(I)), I)] = 
+    \arg\max_{\boldsymbol A \in \mathcal C_n}ASR(\boldsymbol A, \boldsymbol{T}, \boldsymbol{J}, d),
+\end{align}
+where $\mathcal C_n$ is obtained by sampling $\mathcal M(\cdot|\mathcal X_n)$ $M$ times, $\mathcal X_i$ is the archive after $i^{th}$ generation,  $\boldsymbol{A_i}$ is the agent added to the current archive $\mathcal X_{i-1}$ at the $i^{th}$ generation, $d$ is the initial evaluation dataset of objectionable intentions, $\boldsymbol{T}$ is the target LLM, and $\boldsymbol{J}$ is the judge function.
+
+Since some subtle runtime errors, such as illegal ASCII formatting or token length violations, only surface during deployment, we first evaluate each system on a small subset of the benchmark. Any errors encountered are fed back to the system as self-reflective feedback for correction before proceeding to full evaluation.
+ 
+
+\subsection{Generational Knowledge} 
+\label{method:generational knowledge}
+Generational knowledge refers to information transferred from earlier generations of agents to later ones \citep{83de36be-2c3e-320a-8208-9cd092458307}, serving both to guide future directions and to prevent repeated mistakes. In our setting, that information consists of both failed and successful attacks, maintained in \texttt{FailedPromptMemory} and \texttt{SucceedPromptMemory} respectively.
+
+Before launching a new attack, an agent checks whether the candidate prompt already exists in \texttt{FailedPromptMemory} and avoids repeating known failures. During diversity-oriented search, candidate systems are evaluated based on the semantic distance between the attacks they generate and those already stored in \texttt{SucceedPromptMemory}. This design encourages exploration of novel strategies while preserving useful historical signals, allowing the pipeline to accumulate increasingly diverse and effective attacks over generations.
+
+% Starting from scratch is inefficient. Search space too hard. We provide helper function.
+% We
+\vspace{-0.2cm}
+\subsection{\method~Search Framework}
+Previous works have proved that textual and numerical feedback signals are critical to attack optimization in red-teaming systems, and the suboptimal results we observed from the naïve approaches (see Appendix \ref{appx: naive meta agent search}) are partially due to a lack of feedback signals. We thus provide the meta agent with a structural guidance and basic helper functions to interact with target models and judge functions. Our helper functions include (1) a query function to the target model, where we set the temperature to 0 so that the model always selects the highest-probability token and therefore produces a reproducible response for a given prompt, and (2) a query function to the judge function to validate if a target model's response adequately addresses the provided intention and its corresponding log probability. These functions are critical for crafting an effective red-teaming system, as they provide a verifiable dense signal, and allow the system to return once a jailbreaking attempt succeeds.
+
+%Since red-teaming domain has been widely researched, the meta agent would evitably have exposure to knowledge about red-teaming during pretraining. We are aware that science is an accumulative proceduture and always involves learning from previous success, we therefore encourage the meta agent to draw inspirations from the existing literature about red-teaming techniques. 
+%Similar to existing open-endedness algorithms that encourage novelty and exploration \citep{zhang2023omni,lu2024intelligent}, we encourage the meta agent to design novel and original systems while maximizing the fitness score. The full prompt is provided in Appendix \ref{appx: meta agent instruction}.

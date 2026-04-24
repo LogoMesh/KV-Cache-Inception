@@ -1,0 +1,45 @@
+\begin{table*}[ht!]
+
+    \resizebox{\textwidth}{!}{ %
+    \begin{tabular}{l|ccc|ccc|ccc}
+    \toprule
+    & \multicolumn{9}{c}{\bf Prompt One} \\
+    \hline
+    & \multicolumn{3}{c|}{Overall} & \multicolumn{3}{c|}{Judge Answered Correctly} & \multicolumn{3}{c}{Judge Answered Incorrectly}\\
+& \textit{None} & \textit{Self} & \textit{Human} & \textit{None} & \textit{Self} & \textit{Human} & \textit{None} & \textit{Self} & 
+         \textit{Human} \\
+\hline
+GPT-4o & $0.47_{\pm 0.05 }$ & $0.52_{\pm 0.05 }$ & $\textbf{0.68}_{\pm 0.04 }$ & $0.46_{\pm 0.07 }$ & $0.52_{\pm 0.06 }$ & \R $0.59_{\pm 0.06 }$ & \R $0.16_{\pm 0.14 }$ & \R $0.13_{\pm 0.15 }$ & $\textbf{0.81}_{\pm 0.13 }$ \\
+Llama 3.3 70b & $0.42_{\pm 0.05 }$ & $0.53_{\pm 0.05 }$ & $\textbf{0.78}_{\pm 0.04 }$ & $0.62_{\pm 0.09 }$ & $0.54_{\pm 0.08 }$ & $0.74_{\pm 0.07 }$ & \R $0.13_{\pm 0.06 }$ & \R $0.23_{\pm 0.11 }$ & $\textbf{0.69}_{\pm 0.10 }$ \\
+Phi 4 & $0.27_{\pm 0.05 }$ & $0.47_{\pm 0.05 }$ & $\textbf{0.72}_{\pm 0.04 }$ & $0.48_{\pm 0.10 }$ & $0.47_{\pm 0.07 }$ & $\textbf{0.67}_{\pm 0.07 }$ & \R $0.03_{\pm 0.05 }$ & \R $0.03_{\pm 0.11 }$ & $\textbf{0.56}_{\pm 0.12 }$ \\
+Yi 1.5 34B & $0.38_{\pm 0.06 }$ & $0.37_{\pm 0.05 }$ & $\textbf{0.63}_{\pm 0.05 }$ & $0.23_{\pm 0.11 }$ & $0.29_{\pm 0.07 }$ & \R $0.43_{\pm 0.09 }$ & $0.18_{\pm 0.10 }$ & $0.14_{\pm 0.10 }$ & $\textbf{0.65}_{\pm 0.08 }$ \\
+Qwen 2.5 7B & $0.24_{\pm 0.06 }$ & $0.43_{\pm 0.06 }$ & $\textbf{0.63}_{\pm 0.05 }$ & $0.31_{\pm 0.10 }$ & $0.37_{\pm 0.10 }$ & $0.54_{\pm 0.09 }$ & \R $0.08_{\pm 0.07 }$ & $0.21_{\pm 0.10 }$ & $\textbf{0.57}_{\pm 0.08 }$ \\
+  
+
+
+\end{tabular}
+
+}
+\vspace{1em}
+    \resizebox{\textwidth}{!}{ %
+    \begin{tabular}{l|ccc|ccc|ccc}
+    \toprule
+    & \multicolumn{9}{c}{\bf Prompt Two} \\
+    \hline
+    & \multicolumn{3}{c|}{Overall} & \multicolumn{3}{c|}{Judge Answered Correctly} & \multicolumn{3}{c}{Judge Answered Incorrectly}\\
+         & \textit{None} & \textit{Self} & \textit{Human} & \textit{None} & \textit{Self} & \textit{Human} & \textit{None} & \textit{Self} & 
+         \textit{Human} \\
+
+\hline
+GPT-4o & $0.47_{\pm 0.06 }$ & $0.53_{\pm 0.06 }$ & $\textbf{0.65}_{\pm 0.05 }$ & $0.47_{\pm 0.07 }$ & $0.53_{\pm 0.07 }$ & $0.57_{\pm 0.07 }$ & \R $0.10_{\pm 0.14 }$ & \R $0.10_{\pm 0.16 }$ & $\textbf{0.67}_{\pm 0.21 }$ \\
+Llama 3.3 70b & $0.38_{\pm 0.06 }$ & $0.55_{\pm 0.06 }$ & $\textbf{0.76}_{\pm 0.04 }$ & $0.56_{\pm 0.10 }$ & $0.58_{\pm 0.08 }$ & $0.71_{\pm 0.07 }$ & \R $0.11_{\pm 0.05 }$ & \R $0.21_{\pm 0.11 }$ & $\textbf{0.69}_{\pm 0.09 }$ \\
+Phi 4 & $0.33_{\pm 0.06 }$ & $0.55_{\pm 0.05 }$ & $\textbf{0.69}_{\pm 0.05 }$ & $0.45_{\pm 0.09 }$ & $0.61_{\pm 0.07 }$ & $0.71_{\pm 0.07 }$ & \R $0.08_{\pm 0.06 }$ & \R $0.06_{\pm 0.11 }$ & \R $\textbf{0.43}_{\pm 0.11 }$ \\
+Yi 1.5 34B & $0.22_{\pm 0.06 }$ & $0.40_{\pm 0.06 }$ & $\textbf{0.63}_{\pm 0.05 }$ & $0.25_{\pm 0.13 }$ & $0.35_{\pm 0.11 }$ & $\textbf{0.62}_{\pm 0.10 }$ & \R $0.05_{\pm 0.06 }$ & $0.17_{\pm 0.09 }$ & $\textbf{0.50}_{\pm 0.08 }$ \\
+Qwen 2.5 7B & $0.29_{\pm 0.06 }$ & $0.46_{\pm 0.06 }$ & $\textbf{0.63}_{\pm 0.05 }$ & $0.32_{\pm 0.10 }$ & $0.37_{\pm 0.09 }$ & $0.50_{\pm 0.09 }$ & \R $0.10_{\pm 0.08 }$ & $0.23_{\pm 0.11 }$ & $\textbf{0.59}_{\pm 0.09 }$ \\
+
+\bottomrule
+\end{tabular}
+}
+\caption{Performance comparison on single grading using the two sets of prompts. Cells in \colorbox{red!30}{red} represent cases in which the model is worse when it was wrong as a candidate ($\alpha < 0.05$). Numbers in \textbf{bold} indicate the maximum values on that subset with statistical significance ($\alpha < 0.05$).}
+\label{tab:right-wrong-table-kappa-v1}
+\end{table*}

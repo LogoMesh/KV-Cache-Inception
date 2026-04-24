@@ -1,0 +1,267 @@
+\subsection{Single, Reference, Turn One}
+\noindent\textbf{System Prompt:}
+
+\noindent You are a helpful assistant.
+
+\noindent\textbf{Prompt Template:}
+\begin{lstlisting}
+
+[Instruction]
+Please act as an impartial judge and evaluate the correctness of the response provided by an AI assistant to the user question. You will be given a reference correct answer and the assistant's answer. The reference answer is always correct. Begin you evaluation by comparing the assistant's answer to the correct answer. Identify any mistakes. Be as objective as possible. After providing your explanation, you must rule whether the response is correct or incorrect. Output your final verdict by strictly following this format: "[[Correct]]" if the answer is correct and "[[Incorrect]]" is the answer is incorrect.
+
+[Question]
+{question}
+
+[The Start of Reference Answer]
+{ref_answer_1}
+[The End of Reference Answer]
+
+[The Start of Assistant's Answer]
+{answer}
+[The End of Assistant's Answer]
+
+\end{lstlisting}
+
+\subsection{Single, Reference, Turn Two}
+\noindent\textbf{System Prompt:}
+
+\noindent Please act as an impartial judge and evaluate the correctness of the response provided by an AI assistant to the user question. You will be given a reference correct answer and the assistant's answer. The reference answer is always correct. You should only focus on the assitants answer to the second question. Begin you evaluation by comparing the assistant's answer to the correct answer. Identify any mistakes. Be as objective as possible. After providing your explanation, you must rule whether the response is correct or incorrect. Output your final verdict by strictly following this format: "[[Correct]]" if the answer is correct and "[[Incorrect]]" is the answer is incorrect.
+
+\noindent \textbf{Prompt Template:}
+\begin{lstlisting}
+
+<|The Start of Reference Answer|>
+
+### User:
+{question_1}
+
+### Reference answer:
+{ref_answer_1}
+
+### User:
+{question_2}
+
+### Reference answer:
+{ref_answer_2}
+
+<|The End of Reference Answer|>
+
+
+<|The Start of Assistant A's Conversation with User|>
+
+### User:
+{question_1}
+
+### Assistant A:
+{answer_1}
+
+### User:
+{question_2}
+
+### Assistant A:
+{answer_2}
+
+<|The End of Assistant A's Conversation with User|>
+\end{lstlisting}
+
+
+
+\subsection{Single, No Reference, Turn One}
+\noindent\textbf{System Prompt:}
+
+\noindent You are a helpful assistant.
+
+\noindent\textbf{Prompt Template:}
+\begin{lstlisting}
+
+[Instruction]
+Please act as an impartial judge and evaluate the correctness of the response provided by an AI assistant to the user question. You will only be given the assistant's answer. Identify any mistakes. Be as objective as possible. After providing your analysis, you must rule whether the response is correct or incorrect. Output your final verdict by strictly following this format: "[[Correct]]" if the answer is correct and "[[Incorrect]]" is the answer is incorrect.
+
+[Question]
+{question}
+
+[The Start of Assistant's Answer]
+{answer}
+[The End of Assistant's Answer]
+
+\end{lstlisting}
+
+\subsection{Single, No Reference, Turn Two}
+\noindent\textbf{System Prompt:}
+
+\noindent Please act as an impartial judge and evaluate the correctness of the responses provided by two AI assistants to the user questions. You should choose the assistant that gives the more correct response. Your evaluation should only consider correctness. You should focus on who provides a more correct answer to the second user question. Begin your evaluation by comparing the responses of the two assistants and provide a short explanation. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: "[[A]]" if assistant A is more correct, and "[[B]]" if assistant B is more correct.
+
+\noindent\textbf{Prompt Template:}
+\begin{lstlisting}
+
+<|The Start of Assistant A's Conversation with User|>
+
+### User:
+{question_1}
+
+### Assistant A:
+{answer_a_1}
+
+### User:
+{question_2}
+
+### Assistant A:
+{answer_a_2}
+
+<|The End of Assistant A's Conversation with User|>
+
+
+<|The Start of Assistant B's Conversation with User|>
+
+### User:
+{question_1}
+
+### Assistant B:
+{answer_b_1}
+
+### User:
+{question_2}
+
+### Assistant B:
+{answer_b_2}
+
+<|The End of Assistant B's Conversation with User|>
+\end{lstlisting}
+
+
+
+
+
+
+
+
+\subsection{Pairwise, Reference, Turn One}
+
+\noindent\textbf{System Prompt:}
+
+\noindent Please act as an impartial judge and evaluate the correctness of the responses provided by two AI assistants to the user question displayed below. Your evaluation should consider only correctness. You will be given a reference answer, assistant A's answer, and assistant B's answer. The reference answer is always correct. Your job is to evaluate which assistant's answer is more correct. Begin your evaluation by comparing both assistants' answers with the reference answer. Identify any mistakes. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: "[[A]]" if assistant A is more correct, and "[[B]]" if assistant B is more correct.
+
+\noindent\textbf{Prompt Template:}
+\begin{lstlisting}
+
+[User Question]
+{question}
+
+[The Start of Reference Answer]
+{ref_answer_1}
+[The End of Reference Answer]
+
+[The Start of Assistant A's Answer]
+{answer_a}
+[The End of Assistant A's Answer]
+
+[The Start of Assistant B's Answer]
+{answer_b}
+[The End of Assistant B's Answer]
+\end{lstlisting}
+
+
+\subsection{Pairwise, Reference, Turn Two}
+\noindent\textbf{System Prompt:}
+
+\noindent Please act as an impartial judge and evaluate the quality of the responses provided by two AI assistants to the user questions. Your evaluation should consider only correctness. You will be given reference answers, the assistant A's answers, the assistant B's answers. The reference answer is always correct. Your job is to determine which assistant provides a more correct answer to the second user question. Begin your evaluation by comparing both assistants' answers with the reference answers. Identify any mistakes. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: "[[A]]" if assistant A is more correct, and "[[B]]" if assistant B is more correct.
+
+\noindent\textbf{Prompt Template:}
+\begin{lstlisting}
+
+<|The Start of Reference Answer|>
+
+### User:
+{question_1}
+
+### Reference answer:
+{ref_answer_1}
+
+### User:
+{question_2}
+
+### Reference answer:
+{ref_answer_2}
+
+<|The End of Reference Answer|>
+
+
+<|The Start of Assistant A's Conversation with User|>
+
+### User:
+{question_1}
+
+### Assistant A:
+{answer_a_1}
+
+### User:
+{question_2}
+
+### Assistant A:
+{answer_a_2}
+
+<|The End of Assistant A's Conversation with User|>
+
+
+<|The Start of Assistant B's Conversation with User|>
+
+### User:
+{question_1}
+
+### Assistant B:
+{answer_b_1}
+
+### User:
+{question_2}
+
+### Assistant B:
+{answer_b_2}
+
+<|The End of Assistant B's Conversation with User|>
+\end{lstlisting}
+
+
+\subsection{Pairwise, No Reference, Turn One}
+\noindent\textbf{System Prompt:}
+
+\noindent Please act as an impartial judge and evaluate the correctness of the responses provided by two AI assistants to the user question displayed below. You should choose the assistant that gives the more correct response. Your evaluation should only consider correctness. Begin your evaluation by comparing the two responses and provide a short explanation. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: "[[A]]" if assistant A is more correct, and "[[B]]" if assistant B is more correct.
+
+\noindent\textbf{Prompt Template:}
+\noindent\begin{lstlisting}
+
+[User Question]
+{question}
+
+[The Start of Assistant A's Answer]
+{answer_a}
+[The End of Assistant A's Answer]
+
+[The Start of Assistant B's Answer]
+{answer_b}
+[The End of Assistant B's Answer]
+\end{lstlisting}
+
+\subsection{Pairwise, No Reference, Turn Two }
+\noindent\textbf{System Prompt:}
+
+\noindent Please act as an impartial judge and evaluate the correctness of the response provided by an AI assistant to the user question. You will only be given the assistant's answer. You should only focus on the assitant's answer to the second question. Identify any mistakes. Be as objective as possible. After providing your analysis, you must rule whether the response is correct or incorrect. Output your final verdict by strictly following this format: "[[Correct]]" if the answer is correct and "[[Incorrect]]" is the answer is incorrect.
+
+\noindent\textbf{Prompt Template:}
+\begin{lstlisting}
+
+<|The Start of Assistant A's Conversation with User|>
+
+### User:
+{question_1}
+
+### Assistant A:
+{answer_1}
+
+### User:
+{question_2}
+
+### Assistant A:
+{answer_2}
+
+<|The End of Assistant A's Conversation with User|>
+\end{lstlisting}

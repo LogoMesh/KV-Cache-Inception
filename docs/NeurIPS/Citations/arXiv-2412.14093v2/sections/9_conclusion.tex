@@ -1,0 +1,16 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Our work provides the first empirical example of a large language model faking alignment with its training objective in order to prevent its preferences from being modified---in a setting which is plausibly analogous to real situations with future AI systems. This suggests that alignment faking might occur if a future AI system were to include all the key elements of our setting (Section~\ref{sec:our_setup_key_elements}):
+\begin{enumerate}
+    \item The model has strong preferences in at least some contexts.
+    \item The training objective conflicts with the model's preferences.
+    \item The model has relevant information about its training and deployment situation.
+    \item The model reasons in detail about its situation.\footnote{Note that more cautious and better hidden reasoning than we see in our results would be needed for alignment faking to not be trivially detected by examining model behavior.}
+\end{enumerate}
+
+Our synthetic document fine-tuning results suggest that (3) could potentially happen through documents the model saw in pre-training or other fine-tuning (Section~\ref{sec:synthetic_document})\footnote{Though we found that fine-tuning on a large number of tokens (roughly 40 million, see Figure~\ref{fig:synthetic-results}) was needed to exhibit an effect, indicating that high levels of salience might be required to see alignment faking, at least in current models. 
+Furthermore, the tag which tells the AI whether the user is on the free tier makes training particularly salient.}---and the strength of our results without the chain-of-thought in our synthetic document fine-tuned setup (Section~\ref{sec:synthetic_document_nocot}) suggests that a weak version of (4) may already be true in some cases for current models. 
+Our results are least informative regarding whether future AIs will develop strong and unintended preferences that conflict with the training objective ((1) and (2)), suggesting that these properties are particularly important for future work to investigate.
+
+If alignment faking did occur in practice, our results suggest that alignment faking could reduce the extent to which further training would modify the model's preferences. Sufficiently consistent and robust alignment faking might fully prevent the model's preferences from being modified, in effect locking in the model's preferences at the point in time when it began to consistently fake alignment. While our results do not necessarily imply that this threat model will be a serious concern in practice, we believe that our results are sufficiently suggestive that it could occur---and the threat model seems sufficiently concerning---that it demands substantial further study and investigation.

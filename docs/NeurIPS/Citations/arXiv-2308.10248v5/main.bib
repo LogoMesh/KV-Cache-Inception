@@ -1,0 +1,845 @@
+@misc{devlin2019bert,
+      title={{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding}, 
+      author={Jacob Devlin and Ming-Wei Chang and Kenton Lee and Kristina Toutanova},
+      year={2018},
+      eprint={1810.04805},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@article{wei2022chain,
+  title={Chain-of-thought prompting elicits reasoning in large language models},
+  author={Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Xia, Fei and Chi, Ed and Le, Quoc V and Zhou, Denny and others},
+  journal={Advances in neural information processing systems},
+  volume={35},
+  pages={24824--24837},
+  year={2022}
+}
+
+@article{lin2021truthfulqa,
+  title={Truthfulqa: Measuring how models mimic human falsehoods},
+  author={Lin, Stephanie and Hilton, Jacob and Evans, Owain},
+  journal={arXiv preprint arXiv:2109.07958},
+  year={2021}
+}
+
+@misc{mini2023understandingcontrollingmazesolvingpolicy,
+      title={Understanding and Controlling a Maze-Solving Policy Network}, 
+      author={Ulisse Mini and Peli Grietzer and Mrinank Sharma and Austin Meek and Monte MacDiarmid and Alexander Matt Turner},
+      year={2023},
+      eprint={2310.08043},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2310.08043}, 
+}
+
+@misc{ziegler2020finetuning,
+      title={Fine-Tuning Language Models from Human Preferences}, 
+      author={Daniel M. Ziegler and Nisan Stiennon and Jeffrey Wu and Tom B. Brown and Alec Radford and Dario Amodei and Paul Christiano and Geoffrey Irving},
+      year={2019},
+      eprint={1909.08593},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+@article{qi2023fine,
+  title={Fine-tuning aligned language models compromises safety, even when users do not intend to!},
+  author={Qi, Xiangyu and Zeng, Yi and Xie, Tinghao and Chen, Pin-Yu and Jia, Ruoxi and Mittal, Prateek and Henderson, Peter},
+  journal={arXiv preprint arXiv:2310.03693},
+  year={2023}
+}
+
+
+
+@inproceedings{yang-klein-2021-fudge,
+    title = "{FUDGE}: Controlled Text Generation With Future Discriminators",
+    author = "Yang, Kevin  and
+      Klein, Dan",
+    editor = "Toutanova, Kristina  and
+      Rumshisky, Anna  and
+      Zettlemoyer, Luke  and
+      Hakkani-Tur, Dilek  and
+      Beltagy, Iz  and
+      Bethard, Steven  and
+      Cotterell, Ryan  and
+      Chakraborty, Tanmoy  and
+      Zhou, Yichao",
+    booktitle = "Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jun,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.naacl-main.276",
+    doi = "10.18653/v1/2021.naacl-main.276",
+    pages = "3511--3535",
+    abstract = "We propose Future Discriminators for Generation (FUDGE), a flexible and modular method for controlled text generation. Given a pre-existing model G for generating text from a distribution of interest, FUDGE enables conditioning on a desired attribute a (for example, formality) while requiring access only to G{'}s output logits. FUDGE learns an attribute predictor operating on a partial sequence, and uses this predictor{'}s outputs to adjust G{'}s original probabilities. We show that FUDGE models terms corresponding to a Bayesian decomposition of the conditional distribution of G given attribute a. Moreover, FUDGE can easily compose predictors for multiple desired attributes. We evaluate FUDGE on three tasks {---} couplet completion in poetry, topic control in language generation, and formality change in machine translation {---} and observe gains in all three tasks.",
+}
+
+@misc{touvron2023llama,
+      title={{LLaMA}: Open and Efficient Foundation Language Models}, 
+      author={Hugo Touvron and Thibaut Lavril and Gautier Izacard and Xavier Martinet and Marie-Anne Lachaux and Timothée Lacroix and Baptiste Rozière and Naman Goyal and Eric Hambro and Faisal Azhar and Aurelien Rodriguez and Armand Joulin and Edouard Grave and Guillaume Lample},
+      year={2023},
+      eprint={2302.13971},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@inproceedings{peters-etal-2018-deep,
+    title = "Deep Contextualized Word Representations",
+    author = "Peters, Matthew E.  and
+      Neumann, Mark  and
+      Iyyer, Mohit  and
+      Gardner, Matt  and
+      Clark, Christopher  and
+      Lee, Kenton  and
+      Zettlemoyer, Luke",
+    booktitle = "Proceedings of the 2018 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)",
+    month = jun,
+    year = "2018",
+    address = "New Orleans, Louisiana",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/N18-1202",
+    doi = "10.18653/v1/N18-1202",
+    pages = "2227--2237",
+    abstract = "We introduce a new type of deep contextualized word representation that models both (1) complex characteristics of word use (e.g., syntax and semantics), and (2) how these uses vary across linguistic contexts (i.e., to model polysemy). Our word vectors are learned functions of the internal states of a deep bidirectional language model (biLM), which is pre-trained on a large text corpus. We show that these representations can be easily added to existing models and significantly improve the state of the art across six challenging NLP problems, including question answering, textual entailment and sentiment analysis. We also present an analysis showing that exposing the deep internals of the pre-trained network is crucial, allowing downstream models to mix different types of semi-supervision signals.",
+}
+
+@misc{brown2020language,
+      title={Language Models are Few-Shot Learners}, 
+      author={Tom B. Brown and Benjamin Mann and Nick Ryder and Melanie Subbiah and Jared Kaplan and Prafulla Dhariwal and Arvind Neelakantan and Pranav Shyam and Girish Sastry and Amanda Askell and Sandhini Agarwal and Ariel Herbert-Voss and Gretchen Krueger and Tom Henighan and Rewon Child and Aditya Ramesh and Daniel M. Ziegler and Jeffrey Wu and Clemens Winter and Christopher Hesse and Mark Chen and Eric Sigler and Mateusz Litwin and Scott Gray and Benjamin Chess and Jack Clark and Christopher Berner and Sam McCandlish and Alec Radford and Ilya Sutskever and Dario Amodei},
+      year={2020},
+      eprint={2005.14165},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+
+
+
+@article{liu2018generating,
+  title={Generating wikipedia by summarizing long sequences},
+  author={Liu, Peter J and Saleh, Mohammad and Pot, Etienne and Goodrich, Ben and Sepassi, Ryan and Kaiser, Lukasz and Shazeer, Noam},
+  journal={arXiv preprint arXiv:1801.10198},
+  year={2018}
+}
+
+@article{elhage2021mathematical,
+  title={A mathematical framework for transformer circuits},
+  author={Elhage, Nelson and Nanda, Neel and Olsson, Catherine and Henighan, Tom and Joseph, Nicholas and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and Conerly, Tom and others},
+  journal={Transformer Circuits Thread},
+  volume={1},
+  year={2021}
+}
+
+@article{radford2019language,
+  title={Language models are unsupervised multitask learners},
+  author={Radford, Alec and Wu, Jeffrey and Child, Rewon and Luan, David and Amodei, Dario and Sutskever, Ilya and others},
+  journal={OpenAI blog},
+  volume={1},
+  number={8},
+  pages={9},
+  year={2019}
+}
+
+
+@article{gu2022controllable,
+  title={Controllable text generation via probability density estimation in the latent space},
+  author={Gu, Yuxuan and Feng, Xiaocheng and Ma, Sicheng and Zhang, Lingyuan and Gong, Heng and Zhong, Weihong and Qin, Bing},
+  journal={arXiv preprint arXiv:2212.08307},
+  year={2022}
+}
+
+
+@article{zhong2023air,
+  title={Air-{D}ecoding: Attribute Distribution Reconstruction for Decoding-Time Controllable Text Generation},
+  author={Zhong, Tianqi and Wang, Quan and Han, Jingxuan and Zhang, Yongdong and Mao, Zhendong},
+  journal={arXiv preprint arXiv:2310.14892},
+  year={2023}
+}
+
+@article{pei2023preadd,
+  title={{PREADD}: prefix-adaptive decoding for controlled text generation},
+  author={Pei, Jonathan and Yang, Kevin and Klein, Dan},
+  journal={arXiv preprint arXiv:2307.03214},
+  year={2023}
+}
+
+
+@InProceedings{maas2011, author = {Maas, Andrew L. and Daly, Raymond E. and Pham, Peter T. and Huang, Dan and Ng, Andrew Y. and Potts, Christopher}, title = {Learning Word Vectors for Sentiment Analysis}, booktitle = {Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies}, month = {June}, year = {2011}, address = {Portland, Oregon, USA}, publisher = {Association for Computational Linguistics}, pages = {142--150}, url = {http://www.aclweb.org/anthology/P11-1015} }
+
+@misc{liu2023incontext,
+      title={In-context {V}ectors: Making In Context Learning More Effective and Controllable Through Latent Space Steering}, 
+      author={Sheng Liu and Lei Xing and James Zou},
+      year={2023},
+      eprint={2311.06668},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{zou2023representation,
+      title={Representation Engineering: A Top-Down Approach to AI Transparency}, 
+      author={Andy Zou and Long Phan and Sarah Chen and James Campbell and Phillip Guo and Richard Ren and Alexander Pan and Xuwang Yin and Mantas Mazeika and Ann-Kathrin Dombrowski and Shashwat Goel and Nathaniel Li and Michael J. Byun and Zifan Wang and Alex Mallen and Steven Basart and Sanmi Koyejo and Dawn Song and Matt Fredrikson and J. Zico Kolter and Dan Hendrycks},
+      year={2023},
+      eprint={2310.01405},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@article{hartmann2023more,
+title = {More than a Feeling: Accuracy and Application of Sentiment Analysis},
+journal = {International Journal of Research in Marketing},
+volume = {40},
+number = {1},
+pages = {75-87},
+year = {2023},
+issn = {0167-8116},
+doi = {https://doi.org/10.1016/j.ijresmar.2022.05.005},
+url = {https://www.sciencedirect.com/science/article/pii/S0167811622000477},
+author = {Jochen Hartmann and Mark Heitmann and Christian Siebert and Christina Schamp},
+keywords = {Sentiment Analysis, Meta-Analysis, Natural Language Processing, Machine Learning, Transfer Learning, Deep Contextual Language Models, Text Mining},
+abstract = {Sentiment is fundamental to human communication. Countless marketing applications mine opinions from social media communication, news articles, customer feedback, or corporate communication. Various sentiment analysis methods are available and new ones have recently been proposed. Lexicons can relate individual words and expressions to sentiment scores. In contrast, machine learning methods are more complex to interpret, but promise higher accuracy, i.e., fewer false classifications. We propose an empirical framework and quantify these trade-offs for different types of research questions, data characteristics, and analytical resources to enable informed method decisions contingent on the application context. Based on a meta-analysis of 272 datasets and 12 million sentiment-labeled text documents, we find that the recently proposed transfer learning models indeed perform best, but can perform worse than popular leaderboard benchmarks suggest. We quantify the accuracy-interpretability trade-off, showing that, compared to widely established lexicons, transfer learning models on average classify more than 20 percentage points more documents correctly. To form realistic performance expectations, additional context variables, most importantly the desired number of sentiment classes and the text length, should be taken into account. We provide a pre-trained sentiment analysis model (called SiEBERT) with open-source scripts that can be applied as easily as an off-the-shelf lexicon.}
+}
+
+
+
+@misc{wu2023evakellm,
+      title={Eva-{KELLM}: A New Benchmark for Evaluating Knowledge Editing of {LLMs}}, 
+      author={Suhang Wu and Minlong Peng and Yue Chen and Jinsong Su and Mingming Sun},
+      year={2023},
+      eprint={2308.09954},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{hernandez2023inspecting,
+      title={Inspecting and Editing Knowledge Representations in Language Models}, 
+      author={Evan Hernandez and Belinda Z. Li and Jacob Andreas},
+      year={2023},
+      eprint={2304.00740},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+
+@misc{meng2023locating,
+      title={Locating and Editing Factual Associations in {GPT}}, 
+      author={Kevin Meng and David Bau and Alex Andonian and Yonatan Belinkov},
+      year={2023},
+      eprint={2202.05262},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{white2016sampling,
+      title={Sampling Generative Networks}, 
+      author={Tom White},
+      year={2016},
+      eprint={1609.04468},
+      archivePrefix={arXiv},
+      primaryClass={cs.NE}
+}
+
+
+
+@misc{merullo2023language,
+      title={Language Models Implement Simple {W}ord2{V}ec-style Vector Arithmetic}, 
+      author={Jack Merullo and Carsten Eickhoff and Ellie Pavlick},
+      year={2023},
+      eprint={2305.16130},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@inproceedings{mikolov2013linguistic,
+  title={Linguistic regularities in continuous space word representations},
+  author={Mikolov, Tom{\'a}{\v{s}} and Yih, Wen-tau and Zweig, Geoffrey},
+  booktitle={Proceedings of the 2013 conference of the north american chapter of the association for computational linguistics: Human language technologies},
+  pages={746--751},
+  year={2013}
+}
+
+
+
+@inproceedings{ghazvininejad-etal-2017-hafez,
+    title = "{H}afez: an Interactive Poetry Generation System",
+    author = "Ghazvininejad, Marjan  and
+      Shi, Xing  and
+      Priyadarshi, Jay  and
+      Knight, Kevin",
+    booktitle = "Proceedings of {ACL} 2017, System Demonstrations",
+    month = jul,
+    year = "2017",
+    address = "Vancouver, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/P17-4008",
+    pages = "43--48",
+}
+
+@inproceedings{NIPS2013_9aa42b31,
+ author = {Mikolov, Tomas and Sutskever, Ilya and Chen, Kai and Corrado, Greg S and Dean, Jeff},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {C.J. Burges and L. Bottou and M. Welling and Z. Ghahramani and K.Q. Weinberger},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Distributed Representations of Words and Phrases and their Compositionality},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2013/file/9aa42b31882ec039965f3c4923ce901b-Paper.pdf},
+ volume = {26},
+ year = {2013}
+}
+
+
+@misc{larsen2016autoencoding,
+      title={Autoencoding beyond pixels using a learned similarity metric}, 
+      author={Anders Boesen Lindbo Larsen and Søren Kaae Sønderby and Hugo Larochelle and Ole Winther},
+      year={2016},
+      eprint={1512.09300},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{li2021prefixtuning,
+      title={Prefix-{T}uning: Optimizing Continuous Prompts for Generation}, 
+      author={Xiang Lisa Li and Percy Liang},
+      year={2021},
+      eprint={2101.00190},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{lester2021power,
+      title={The Power of Scale for Parameter-Efficient Prompt Tuning}, 
+      author={Brian Lester and Rami Al-Rfou and Noah Constant},
+      year={2021},
+      eprint={2104.08691},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{elhage2022toy,
+      title={Toy Models of Superposition}, 
+      author={Nelson Elhage and Tristan Hume and Catherine Olsson and Nicholas Schiefer and Tom Henighan and Shauna Kravec and Zac Hatfield-Dodds and Robert Lasenby and Dawn Drain and Carol Chen and Roger Grosse and Sam McCandlish and Jared Kaplan and Dario Amodei and Martin Wattenberg and Christopher Olah},
+      year={2022},
+      eprint={2209.10652},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{alain2018understanding,
+      title={Understanding intermediate layers using linear classifier probes}, 
+      author={Guillaume Alain and Yoshua Bengio},
+      year={2018},
+      eprint={1610.01644},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML}
+}
+
+@techreport{korinek2023language,
+  title={Language models and cognitive automation for economic research},
+  author={Korinek, Anton},
+  year={2023},
+  institution={National Bureau of Economic Research}
+}
+
+@article{gnanadesikan1968probability,
+  title={Probability plotting methods for the analysis of data},
+  author={Gnanadesikan, Ramanathan and Wilk, Martin B},
+  journal={Biometrika},
+  volume={55},
+  number={1},
+  pages={1--17},
+  year={1968}
+}
+
+@inproceedings{NIPS2017_3f5ee243,
+ author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, \L ukasz and Polosukhin, Illia},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {I. Guyon and U. Von Luxburg and S. Bengio and H. Wallach and R. Fergus and S. Vishwanathan and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Attention is All you Need},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf},
+ volume = {30},
+ year = {2017}
+}
+
+
+@article{shen2017style,
+  title={Style transfer from non-parallel text by cross-alignment},
+  author={Shen, Tianxiao and Lei, Tao and Barzilay, Regina and Jaakkola, Tommi},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}
+
+@misc{li2018deleteretrievegeneratesimple,
+      title={Delete, Retrieve, Generate: A Simple Approach to Sentiment and Style Transfer}, 
+      author={Juncen Li and Robin Jia and He He and Percy Liang},
+      year={2018},
+      eprint={1804.06437},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/1804.06437}, 
+}
+
+@article{wang2024prompt,
+  title={Prompt engineering in consistency and reliability with the evidence-based guideline for LLMs},
+  author={Wang, Li and Chen, Xi and Deng, XiangWen and Wen, Hao and You, MingKe and Liu, WeiZhi and Li, Qi and Li, Jian},
+  journal={npj Digital Medicine},
+  volume={7},
+  number={1},
+  pages={41},
+  year={2024},
+  publisher={Nature Publishing Group UK London}
+}
+
+@inproceedings{NEURIPS2022_c4025018,
+ author = {Ye, Xi and Durrett, Greg},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
+ pages = {30378--30392},
+ publisher = {Curran Associates, Inc.},
+ title = {The Unreliability of Explanations in Few-shot Prompting for Textual Reasoning},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/c402501846f9fe03e2cac015b3f0e6b1-Paper-Conference.pdf},
+ volume = {35},
+ year = {2022}
+}
+
+
+@inproceedings{petroni2019language,
+  title={Language Models as Knowledge Bases?},
+  author={F. Petroni and T. Rockt{\"{a}}schel and A. H. Miller and P. Lewis and A. Bakhtin and Y. Wu and S. Riedel},
+  booktitle={In: Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP), 2019},
+  year={2019}
+}
+
+
+@incollection{Sloman2002-SLOTIO-2,
+	editor = {Matthias Scheutz},
+	author = {Aaron Sloman},
+	year = {2002},
+	title = {The Irrelevance of Turing Machines to Artificial Intelligence},
+	booktitle = {Computationalism: New Directions},
+	publisher = {MIT Press}
+}
+
+@misc{gptj,
+    title={{GPT-J-6B}: 6{B} JAX-Based Transformer},
+    year={2021},
+    author={Wang, Ben and Komatsuzaki, Aran },
+    howpublished={https://github.com/kingoflolz/mesh-transformer-jax\#gpt-j-6b}
+}
+
+
+@misc{zhang2022opt,
+      title={{OPT}: Open Pre-trained Transformer Language Models}, 
+      author={Susan Zhang and Stephen Roller and Naman Goyal and Mikel Artetxe and Moya Chen and Shuohui Chen and Christopher Dewan and Mona Diab and Xian Li and Xi Victoria Lin and Todor Mihaylov and Myle Ott and Sam Shleifer and Kurt Shuster and Daniel Simig and Punit Singh Koura and Anjali Sridhar and Tianlu Wang and Luke Zettlemoyer},
+      year={2022},
+      eprint={2205.01068},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{llama3,
+    title={Meta {L}lama 3},
+    year={2024},
+    author={Meta},
+    howpublished={https://llama.meta.com/llama3}
+}
+
+
+
+@misc{lens,
+    title={Transformer{L}ens: A Library for Mechanistic Interpretability of Generative Language Models},
+    year={2022},
+    author={Bloom, Joseph and Nanda, Neel},
+    howpublished={https://neelnanda-io.github.io/TransformerLens/}
+}
+
+
+@misc{composit,
+    title={Distributed Representations: Composition \& Superposition},
+    year={2023},
+    author={Olah, Christopher},
+    howpublished={https://transformer-circuits.pub/2023/superposition-composition/index.html}
+}
+
+@misc{infvstrain,
+    title={How Inferencing Differs From Training In Machine Learning Applications},
+    year={2022},
+    author={Fuller, Sam},
+    howpublished={https://semiengineering.com/how-inferencing-differs-from-training-in-machine-learning-applications/}
+}
+
+
+
+@misc{punkt,
+    title={nltk.tokenize.punkt module},
+    year={2013},
+    author={Strunk, Jan},
+    howpublished={https://www.nltk.org/api/nltk.tokenize.punkt.html}
+}
+
+
+
+@misc{owt,
+    title={OpenWebText},
+    year={2018},
+    author={Peterson, Joshua and Meylan, Stephan and Bourgin, David},
+    howpublished={https://github.com/jcpeterson/openwebtext}
+}
+
+
+@article{KACI2014501,
+title = {A postulate-based analysis of comparative preference statements},
+journal = {Journal of Applied Logic},
+volume = {12},
+number = {4},
+pages = {501-521},
+year = {2014},
+issn = {1570-8683},
+doi = {https://doi.org/10.1016/j.jal.2014.07.004},
+url = {https://www.sciencedirect.com/science/article/pii/S1570868314000603},
+author = {Souhila Kaci and Namrata Patel},
+keywords = {Comparative preference statements, Preference semantics, Postulates},
+abstract = {There has been a growing interest in the study of preferences for their utility in solving problems related to decision making. Most of the preference representation languages developed in the literature are based on comparative preference statements since they offer a simple and intuitive way for expressing preferences. They can be further interpreted following different semantics, imparting a greater flexibility on how outcomes can be compared. So far the main objective has been to rank-order the set of outcomes given a set of comparative preference statements and one or several semantics. Tackling this problem from a different angle, we look into the behavioural aspects of the preference semantics and statements by attempting to formalise the intuition behind them using postulates studied in preference logics and non-monotonic reasoning. We select the postulates w.r.t. three criteria: coherence, syntax independence and inference. Thus, our analysis provides a means to determine those properties that are satisfied for a given preference semantics.}
+}
+
+
+@misc{toprightvector,
+    title={Understanding and controlling a maze-solving policy network}, 
+      author={Alexander Turner and Peli Grietzer and Lisa Thiergart},
+      year={2023},  
+    howpublished={alignmentforum.org/posts/cAC4AXiNC5ig6jQnc/understanding-and-controlling-a-maze-solving-policy-network},
+    urldate = {2023-07-11}
+}
+
+
+@misc{neelnanda_othello,
+    title={Actually, Othello-GPT Has A Linear Emergent World Representation}, 
+      author={Neel Nanda},
+      year={2023},  
+    howpublished={neelnanda.io/mechanistic-interpretability/othello},
+    urldate = {2023-07-11}
+}
+
+
+
+@misc{hase2023does,
+      title={Does Localization Inform Editing? Surprising Differences in Causality-Based Localization vs. Knowledge Editing in Language Models}, 
+      author={Peter Hase and Mohit Bansal and Been Kim and Asma Ghandeharioun},
+      year={2023},
+      eprint={2301.04213},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{brown2023robustness,
+      title={Robustness of edited neural networks}, 
+      author={Davis Brown and Charles Godfrey and Cody Nizinski and Jonathan Tu and Henry Kvinge},
+      year={2023},
+      eprint={2303.00046},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{orgad2023editing,
+      title={Editing Implicit Assumptions in Text-to-Image Diffusion Models}, 
+      author={Hadas Orgad and Bahjat Kawar and Yonatan Belinkov},
+      year={2023},
+      eprint={2303.08084},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
+@inproceedings{
+zhou2022steering,
+title={Steering Large Language Models using {APE}},
+author={Yongchao Zhou and Andrei Ioan Muresanu and Ziwen Han and Keiran Paster and Silviu Pitis and Harris Chan and Jimmy Ba},
+booktitle={NeurIPS ML Safety Workshop},
+year={2022},
+url={https://openreview.net/forum?id=JjvNzMOiBEp}
+}
+
+
+@misc{ranzato2016sequence,
+      title={Sequence Level Training with Recurrent Neural Networks}, 
+      author={Marc'Aurelio Ranzato and Sumit Chopra and Michael Auli and Wojciech Zaremba},
+      year={2016},
+      eprint={1511.06732},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{dathathri2020plug,
+      title={Plug and Play Language Models: A Simple Approach to Controlled Text Generation}, 
+      author={Sumanth Dathathri and Andrea Madotto and Janice Lan and Jane Hung and Eric Frank and Piero Molino and Jason Yosinski and Rosanne Liu},
+      year={2020},
+      eprint={1912.02164},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{grover2019bias,
+      title={Bias Correction of Learned Generative Models using Likelihood-Free Importance Weighting}, 
+      author={Aditya Grover and Jiaming Song and Alekh Agarwal and Kenneth Tran and Ashish Kapoor and Eric Horvitz and Stefano Ermon},
+      year={2019},
+      eprint={1906.09531},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML}
+}
+
+@article{geva2022transformer,
+  title={Transformer feed-forward layers build predictions by promoting concepts in the vocabulary space},
+  author={Geva, Mor and Caciularu, Avi and Wang, Kevin Ro and Goldberg, Yoav},
+  journal={arXiv preprint arXiv:2203.14680},
+  year={2022}
+}
+
+@misc{burns2022discovering,
+      title={Discovering Latent Knowledge in Language Models Without Supervision}, 
+      author={Collin Burns and Haotian Ye and Dan Klein and Jacob Steinhardt},
+      year={2022},
+      eprint={2212.03827},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+
+@misc{openai2023gpt4,
+      title={GPT-4 Technical Report}, 
+      author={OpenAI},
+      year={2023},
+      eprint={2303.08774},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+
+@misc{moschella2023relative,
+      title={Relative representations enable zero-shot latent space communication}, 
+      author={Luca Moschella and Valentino Maiorca and Marco Fumero and Antonio Norelli and Francesco Locatello and Emanuele Rodolà},
+      year={2023},
+      eprint={2209.15430},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+
+@article{jin-etal-2022-deep,
+    title = "Deep Learning for Text Style Transfer: A Survey",
+    author = "Jin, Di  and
+      Jin, Zhijing  and
+      Hu, Zhiting  and
+      Vechtomova, Olga  and
+      Mihalcea, Rada",
+    journal = "Computational Linguistics",
+    volume = "48",
+    number = "1",
+    month = mar,
+    year = "2022",
+    address = "Cambridge, MA",
+    publisher = "MIT Press",
+    url = "https://aclanthology.org/2022.cl-1.6",
+    doi = "10.1162/coli_a_00426",
+    pages = "155--205",
+    abstract = "Text style transfer is an important task in natural language generation, which aims to control certain attributes in the generated text, such as politeness, emotion, humor, and many others. It has a long history in the field of natural language processing, and recently has re-gained significant attention thanks to the promising performance brought by deep neural models. In this article, we present a systematic survey of the research on neural text style transfer, spanning over 100 representative articles since the first neural text style transfer work in 2017. We discuss the task formulation, existing datasets and subtasks, evaluation, as well as the rich methodologies in the presence of parallel and non-parallel data. We also provide discussions on a variety of important topics regarding the future development of this task.1",
+}
+
+@article{olsson2022context,
+  title={In-context learning and induction heads},
+  author={Olsson, Catherine and Elhage, Nelson and Nanda, Neel and Joseph, Nicholas and DasSarma, Nova and Henighan, Tom and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and others},
+  journal={arXiv preprint arXiv:2209.11895},
+  year={2022}
+}
+
+@inproceedings{NEURIPS2019_2c601ad9,
+ author = {Michel, Paul and Levy, Omer and Neubig, Graham},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Are Sixteen Heads Really Better than One?},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2019/file/2c601ad9d2ff9bc8b282670cdd54f69f-Paper.pdf},
+ volume = {32},
+ year = {2019}
+}
+
+
+@inproceedings{khashabi-etal-2022-prompt,
+    title = "Prompt Waywardness: The Curious Case of Discretized Interpretation of Continuous Prompts",
+    author = "Khashabi, Daniel  and
+      Lyu, Xinxi  and
+      Min, Sewon  and
+      Qin, Lianhui  and
+      Richardson, Kyle  and
+      Welleck, Sean  and
+      Hajishirzi, Hannaneh  and
+      Khot, Tushar  and
+      Sabharwal, Ashish  and
+      Singh, Sameer  and
+      Choi, Yejin",
+    booktitle = "Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jul,
+    year = "2022",
+    address = "Seattle, United States",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.naacl-main.266",
+    doi = "10.18653/v1/2022.naacl-main.266",
+    pages = "3631--3643",
+    abstract = "Fine-tuning continuous prompts for target tasks has recently emerged as a compact alternative to full model fine-tuning. Motivated by these promising results, we investigate the feasibility of extracting a discrete (textual) interpretation of continuous prompts that is faithful to the problem they solve. In practice, we observe a {``}wayward{''} behavior between the task solved by continuous prompts and their nearest neighbor discrete projections: We can find continuous prompts that solve a task while being projected to an arbitrary text (e.g., definition of a different or even a contradictory task), while being within a very small (2{\%}) margin of the best continuous prompt of the same size for the task. We provide intuitions behind this odd and surprising behavior, as well as extensive empirical analyses quantifying the effect of various parameters. For instance, for larger model sizes we observe higher waywardness, i.e, we can find prompts that more closely map to any arbitrary text with a smaller drop in accuracy. These findings have important implications relating to the difficulty of faithfully interpreting continuous prompts and their generalization across models and tasks, providing guidance for future progress in prompting language models.",
+}
+
+@article{zhang2022survey,
+  title={A survey of controllable text generation using transformer-based pre-trained language models},
+  author={Zhang, Hanqing and Song, Haolin and Li, Shaoyu and Zhou, Ming and Song, Dawei},
+  journal={arXiv preprint arXiv:2201.05337},
+  year={2022}
+}
+
+@inproceedings{gu-etal-2017-trainable,
+    title = "Trainable Greedy Decoding for Neural Machine Translation",
+    author = "Gu, Jiatao  and
+      Cho, Kyunghyun  and
+      Li, Victor O.K.",
+    booktitle = "Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing",
+    month = sep,
+    year = "2017",
+    address = "Copenhagen, Denmark",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/D17-1210",
+    doi = "10.18653/v1/D17-1210",
+    pages = "1968--1978",
+    abstract = "Recent research in neural machine translation has largely focused on two aspects; neural network architectures and end-to-end learning algorithms. The problem of decoding, however, has received relatively little attention from the research community. In this paper, we solely focus on the problem of decoding given a trained neural machine translation model. Instead of trying to build a new decoding algorithm for any specific decoding objective, we propose the idea of trainable decoding algorithm in which we train a decoding algorithm to find a translation that maximizes an arbitrary decoding objective. More specifically, we design an actor that observes and manipulates the hidden state of the neural machine translation decoder and propose to train it using a variant of deterministic policy gradient. We extensively evaluate the proposed algorithm using four language pairs and two decoding objectives and show that we can indeed train a trainable greedy decoder that generates a better translation (in terms of a target decoding objective) with minimal computational overhead.",
+}
+
+
+@inproceedings{shin-etal-2020-autoprompt,
+    title = "{A}uto{P}rompt: {E}liciting {K}nowledge from {L}anguage {M}odels with {A}utomatically {G}enerated {P}rompts",
+    author = "Shin, Taylor  and
+      Razeghi, Yasaman  and
+      Logan IV, Robert L.  and
+      Wallace, Eric  and
+      Singh, Sameer",
+    booktitle = "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    month = nov,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.emnlp-main.346",
+    doi = "10.18653/v1/2020.emnlp-main.346",
+    pages = "4222--4235",
+    abstract = "The remarkable success of pretrained language models has motivated the study of what kinds of knowledge these models learn during pretraining. Reformulating tasks as fill-in-the-blanks problems (e.g., cloze tests) is a natural approach for gauging such knowledge, however, its usage is limited by the manual effort and guesswork required to write suitable prompts. To address this, we develop AutoPrompt, an automated method to create prompts for a diverse set of tasks, based on a gradient-guided search. Using AutoPrompt, we show that masked language models (MLMs) have an inherent capability to perform sentiment analysis and natural language inference without additional parameters or finetuning, sometimes achieving performance on par with recent state-of-the-art supervised models. We also show that our prompts elicit more accurate factual knowledge from MLMs than the manually created prompts on the LAMA benchmark, and that MLMs can be used as relation extractors more effectively than supervised relation extraction models. These results demonstrate that automatically generated prompts are a viable parameter-free alternative to existing probing methods, and as pretrained LMs become more sophisticated and capable, potentially a replacement for finetuning.",
+}
+
+@misc{askell2021general,
+      title={A General Language Assistant as a Laboratory for Alignment}, 
+      author={Amanda Askell and Yuntao Bai and Anna Chen and Dawn Drain and Deep Ganguli and Tom Henighan and Andy Jones and Nicholas Joseph and Ben Mann and Nova DasSarma and Nelson Elhage and Zac Hatfield-Dodds and Danny Hernandez and Jackson Kernion and Kamal Ndousse and Catherine Olsson and Dario Amodei and Tom Brown and Jack Clark and Sam McCandlish and Chris Olah and Jared Kaplan},
+      year={2021},
+      eprint={2112.00861},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{ouyang2022training,
+      title={Training language models to follow instructions with human feedback}, 
+      author={Long Ouyang and Jeff Wu and Xu Jiang and Diogo Almeida and Carroll L. Wainwright and Pamela Mishkin and Chong Zhang and Sandhini Agarwal and Katarina Slama and Alex Ray and John Schulman and Jacob Hilton and Fraser Kelton and Luke Miller and Maddie Simens and Amanda Askell and Peter Welinder and Paul Christiano and Jan Leike and Ryan Lowe},
+      year={2022},
+      eprint={2203.02155},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@inproceedings{subramani-2022-extracting,
+    title = "Extracting Latent Steering Vectors from Pretrained Language Models",
+    author = "Subramani, Nishant  and
+      Suresh, Nivedita  and
+      Peters, Matthew",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL 2022",
+    month = may,
+    year = "2022",
+    address = "Dublin, Ireland",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.findings-acl.48",
+    doi = "10.18653/v1/2022.findings-acl.48",
+    pages = "566--581",
+    abstract = "Prior work on controllable text generation has focused on learning how to control language models through trainable decoding, smart-prompt design, or fine-tuning based on a desired objective. We hypothesize that the information needed to steer the model to generate a target sentence is already encoded within the model. Accordingly, we explore a different approach altogether: extracting latent vectors directly from pretrained language model decoders without fine-tuning. Experiments show that there exist steering vectors, which, when added to the hidden states of the language model, generate a target sentence nearly perfectly ({\textgreater} 99 BLEU) for English sentences from a variety of domains. We show that vector arithmetic can be used for unsupervised sentiment transfer on the Yelp sentiment benchmark, with performance comparable to models tailored to this task. We find that distances between steering vectors reflect sentence similarity when evaluated on a textual similarity benchmark (STS-B), outperforming pooled hidden states of models. Finally, we present an analysis of the intrinsic properties of the steering vectors. Taken together, our results suggest that frozen LMs can be effectively controlled through their latent steering space.",
+}
+
+
+@misc{ilharco2023editing,
+      title={Editing Models with Task Arithmetic}, 
+      author={Gabriel Ilharco and Marco Tulio Ribeiro and Mitchell Wortsman and Suchin Gururangan and Ludwig Schmidt and Hannaneh Hajishirzi and Ali Farhadi},
+      year={2023},
+      eprint={2212.04089},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+
+@misc{lyu2024keeping,
+      title={Keeping LLMs Aligned After Fine-tuning: The Crucial Role of Prompt Templates}, 
+      author={Kaifeng Lyu and Haoyu Zhao and Xinran Gu and Dingli Yu and Anirudh Goyal and Sanjeev Arora},
+      year={2024},
+      eprint={2402.18540},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{li2023inferencetime,
+      title={Inference-Time Intervention: Eliciting Truthful Answers from a Language Model}, 
+      author={Kenneth Li and Oam Patel and Fernanda Viégas and Hanspeter Pfister and Martin Wattenberg},
+      year={2023},
+      eprint={2306.03341},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@inproceedings{
+burns2023discovering,
+title={Discovering Latent Knowledge in Language Models Without Supervision},
+author={Collin Burns and Haotian Ye and Dan Klein and Jacob Steinhardt},
+booktitle={The Eleventh International Conference on Learning Representations },
+year={2023},
+url={https://openreview.net/forum?id=ETKGuby0hcs}
+}
+
+
+@article{park2023linear,
+  title={The Linear Representation Hypothesis and the Geometry of Large Language Models},
+  author={Park, Kiho and Choe, Yo Joong and Veitch, Victor},
+  journal={arXiv preprint arXiv:2311.03658},
+  year={2023}
+}
+
+
+@misc{zhang2024comprehensive,
+      title={A Comprehensive Study of Knowledge Editing for Large Language Models}, 
+      author={Ningyu Zhang and Yunzhi Yao and Bozhong Tian and Peng Wang and Shumin Deng and Mengru Wang and Zekun Xi and Shengyu Mao and Jintian Zhang and Yuansheng Ni and Siyuan Cheng and Ziwen Xu and Xin Xu and Jia-Chen Gu and Yong Jiang and Pengjun Xie and Fei Huang and Lei Liang and Zhiqiang Zhang and Xiaowei Zhu and Jun Zhou and Huajun Chen},
+      year={2024},
+      eprint={2401.01286},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@misc{li2023emergent,
+      title={Emergent World Representations: Exploring a Sequence Model Trained on a Synthetic Task}, 
+      author={Kenneth Li and Aspen K. Hopkins and David Bau and Fernanda Viégas and Hanspeter Pfister and Martin Wattenberg},
+      year={2023},
+      eprint={2210.13382},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@article{gehman2020realtoxicityprompts,
+  title={Realtoxicityprompts: Evaluating neural toxic degeneration in language models},
+  author={Gehman, Samuel and Gururangan, Suchin and Sap, Maarten and Choi, Yejin and Smith, Noah A},
+  journal={arXiv preprint arXiv:2009.11462},
+  year={2020}
+}
+
+@article{reimers2019sentence,
+  title={Sentence-bert: Sentence embeddings using siamese bert-networks},
+  author={Reimers, Nils and Gurevych, Iryna},
+  journal={arXiv preprint arXiv:1908.10084},
+  year={2019}
+}
+

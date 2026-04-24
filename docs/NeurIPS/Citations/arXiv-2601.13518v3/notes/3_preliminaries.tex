@@ -1,0 +1,49 @@
+% !TEX root =  main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-0.2cm}
+\section{Preliminaries}
+
+\subsection{Problem Formulation}
+For the purposes of this paper, the red-teaming objective is to elicit objectionable content from a target LLM $\boldsymbol{T}$ in response to a malicious intent $I$ (e.g. ``Tell me how to build a bomb"). While a safety-aligned LLM will typically refuse such a query when posed directly, this can be circumvented by crafting an adversarial prompt $p$ such that the target LLM's response to $p$, $\boldsymbol{T}(p)\in \mathcal{R}$ addresses $I$ (e.g. ``Here is the step-by-step instructions of how to build a bomb..."). In practice, intentions are taken from a standardized benchmark dataset $D$.
+
+To evaluate if $\boldsymbol{T}(p)$ adequately addresses $I$, an evaluation function is used, often referred to as a judge function or a judge model. It can be expressed as $\boldsymbol{J}: \mathcal{R} \times D \rightarrow \{0, 1\}$ corresponding to successful or failed jailbreaking attempt. Thus, the objective of a red-teaming system is that, given an intention $I$ taken from dataset $D$, it wants to find a prompt $p$ such that $\boldsymbol{J}(\boldsymbol{T}(p), I)=1$. With a clear objective, we can define a red-teaming agentic system that aims to address this objective given the intention $I$.
+
+Within the scope of this paper, we define an agentic system as a function that involves LLMs as components to solve a task through iterative steps of processing. Under the context of red-teaming, we frame a red-teaming system $\boldsymbol{A}$ as $p=\boldsymbol{A}(I)$ or $p=\boldsymbol{A}(I, target(I))$ if a target phrase (e.g. ``Here is the step-by-step instruction of building a bomb") is provided along with the original intention.
+When plugged in the red-teaming objective into the agentic system, the effectiveness of a red-teaming agentic system measured by attack success rate (ASR) can be expressed as below:
+\begin{align}
+\label{eq:asr}
+    ASR(\boldsymbol{A},\boldsymbol{T},\boldsymbol{J},D) = \mathbb{E}_{I\sim D}[\boldsymbol{J}(\boldsymbol{T}(\boldsymbol{A}(I)), I)]
+\end{align}
+Our goal is to develop a flexible framework that can rapidly discover effective red-teaming agentic systems defined by a function $\boldsymbol{A}$, for any given target LLM and judge function. 
+\vspace{-0.2cm}
+\subsection{Automated Red-Teaming System Search}
+
+%Previous works adapt an archive that mostly consider agentic systems designed for commonly-used reasoning tasks such as LLM-Debate \citep{du2023improvingfactualityreasoninglanguage} and Step-back Abstration \citep{zheng2024stepbackevokingreasoning}. Due to a lack of feedback signals from the target model and judge function, these methods cannot be directly transfered to the red-teaming task. %In ADAS, the archive consists of commonly-used reasoning agentic systems such as LLM-Debate, Step-back Abstraction and Dynamic Assignment of Roles. In practice, agentic systems for reasoning cannot generalize to red-teaming tasks due to its lack of feedback signals from the target model and judge function. 
+%We therefore create an archive consisting of SOTA red-teaming agentic systems that effectively use the feedback signals from the target model and judge function. This archive serves as a customized baseline for generating agentic systems specific for red-teaming tasks. We also implement an ``evolutionary selection pressure'' mechanism inspired by the evolution theory, by programming and evaluating multiple agents for each generation, but only adding the best performing agent to archive, as the equation below.
+% \begin{align*}
+%     \boldsymbol{A}_{n+1} = \arg\max_{\boldsymbol{A\sim Gen_{n+1}}}\mathbb{E}_{I\sim D}[\boldsymbol{J}(\boldsymbol{T}(\boldsymbol{A}(I)), I)\\ | Archive \cup \{ \boldsymbol{A}_1, \boldsymbol{A}_2, ... \boldsymbol{A}_n\}]
+% \end{align*}
+% \begin{align*}
+%     \boldsymbol{A}_{n+1} \in \arg\max_{\boldsymbol A \in \mathcal C_n}\mathbb{E}_{I\sim D}[\boldsymbol{J}(\boldsymbol{T}(\boldsymbol{A}(I)), I)]
+% \end{align*}
+% where $\mathcal C_n$ is obtained by sampling $\mathcal M(\cdot|\mathcal A_0, \boldsymbol A_1, ..., \boldsymbol A_n)$ $N$ times, $\mathcal A_0$ is the initial archive of agents, $\boldsymbol{A_i}$ is the agent added to the archive at the $i^{th}$ generation, $D$ is the dataset of objectionable intentions, $\boldsymbol{T}$ is the target LLM, and $\boldsymbol{J}$ is the judge function. The comparison diagram between ADAS and \method~is shown in \ref{fig:preliminary comparison}.
+% \begin{figure}[t!]
+% \begin{subfigure}
+%     \centering
+%     \includegraphics[width=\linewidth]{figure/compare.drawio.png}
+%     \label{fig:preliminary comparison}
+% \end{subfigure}
+% \caption{\textbf{\method's evolutionary structure vs. ADAS}}
+% \end{figure}
+
+To develop a pipeline that iteratively designs novel red-teaming systems, we build on Meta Agent Search \citep{hu2025automateddesignagenticsystems}. It starts with an archive of hand-designed agentic systems and their corresponding performance metrics. Each generation, an LLM programs a new agentic system based on an ever-growing archive of previous discoveries. The newly generated system is then evaluated on the performance metric and added back to the archive.
+
+% We made this choice for three main reasons. First, searching within a code space allows the meta agent to explore a wide range of possible building components including prompts, tool and workflows and combine them in any arbitrary way, providing more flexibility compared to adopting a modular agent design space \citep{shang2024agentsquare}. Additionally, it allows the meta agent to maintain and exploit a growing archive of discovered algorithms and design patterns. Because the archive keeps track of both effective and ineffective agentic systems, the meta agent can compare all the alternatives, reuse successful patterns, and avoid repeatedly exploring unproductive directions. Moreover, Meta Agent Search has shown its effective in reasoning tasks.
+%Moreover, since LLMs are trained on vast corpora containing known jailbreak strategies, operating in code space lets the meta agent leverage effective attack patterns in its rich prior, and incorporate them in the code space.
+
+
+
+%Adversarial Reasoning proposes to reinterpret this problem as a reasoning problem. In their method, rather than directly optimizing the prompt $p$ using token-level methods (cite), they construct candidate $p$ by using a reasoning string $S$. Applying the “Proposer and Verifier” framework \citep{snell2024scaling}, where the proposer proposes a distribution of solutions and a verifier assigns rewards to the proposed distributions, the key idea is to use attacker model $A$ to iteratively propose and refine the reasoning string $S$ according to the assigned rewards.
+
+%For the verifier, Adversarial Reasoning assigns reward using cross-entropy loss that measures how likely the target model is to begin with the target string $I_t$ (e.g. "Here is the step-by-step instructions on how to build a bomb"), which can be calculated by using the log-prob vectors of the target model. Although this method saves time to train a verifier from scratch, its problem is that it only works under the white-box settings, when we have access to the target model parameters. Instead, we extrapolate the log probability of the token produced by the judge model as our reward. Since the judge model has the max token length of 1, we can assume the log probability of it producing the "No" corresponds to how likely it wants to reject the jailbreaking attempts, which is an inverse measurement of how good the jailbreaking attempt is. Using this method, we can extract the reward even the target model is called through API. 

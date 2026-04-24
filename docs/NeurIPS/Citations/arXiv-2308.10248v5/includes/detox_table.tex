@@ -1,0 +1,26 @@
+\bgroup
+\def\arraystretch{1}
+\begin{table*}[h!]
+\centering
+% \caption{Results on RealToxicityPrompts (random $n=1000$ subset)}
+\caption{Results on RealToxicityPrompts (random n=1000). The OPT used is 6.7B parameters, LLaMA-3-8B. \textbf{Bold} is $p<0.05$ against second-best. {\color{airforceblue}Gray} text denotes numbers reported by \cite{pei2023preadd} (PREADD), \citet{yang-klein-2021-fudge} (FUDGE), or \cite{zhong2023air} (Air-Decoding). More recent models are less toxic by default. However, ActAdd-OPT is the least toxic of the OPT interventions and even outperforms an unsteered LLaMA-3.}
+\vspace{1mm}
+\begin{tabular}{rcclll}
+\toprule
+\textbf{Control Type} & \textbf{Method} & \textbf{Model} & \textbf{Toxicity} $\downarrow$ & \textbf{(Dis)Fluency} $\downarrow$ & \textbf{Relevance} $\uparrow$\\\midrule
+Unsteered & baseline & OPT & .134 & 8.9 & .369 \\%& 6.7B \\
+Prompting & baseline & OPT & {\color{airforceblue}.200} & {\color{airforceblue}54.3} & {\color{airforceblue}.294} \\%& 6.7B \\
+Steering vector & ActAdd & OPT & .112 & 13.8 & .329 \\%& 6.7B \\
+Controlled gen.  & FUDGE & GPT-2-M & {\color{airforceblue}.128} & {\color{airforceblue}22.1} & {\color{airforceblue}.329} \\%& 6.7B \\
+Contrast. decoding & PREADD-S & OPT & {\color{airforceblue}.134} & {\color{airforceblue}51.7} & {\color{airforceblue}.290} \\%& 6.7B \\
+Contrast. decoding & PREADD-D & OPT & {\color{airforceblue}.122} & {\color{airforceblue}56.6} & {\color{airforceblue}.326} \\%& 6.7B \\
+Gradient-guided gen. & Air-Decoding & GPT-2-L & {\color{airforceblue}.185} & {\color{airforceblue}48.3} & {\color{airforceblue}-} \\%& 355M \\
+% Gradient-guided gen & PriorControl & {\color{airforceblue}.043} & {\color{airforceblue}54.6} & - \\%& 345M \\
+\hline
+Unsteered & baseline & LLaMA3 & .114 & \textbf{6.3} & \textbf{.391} \\%& 8.0B \\
+Steering vector & \textbf{ActAdd} & \textbf{LLaMA3} & \textbf{.108} & 6.7 & .365 \\%& 8.0B \\
+
+\bottomrule
+\end{tabular}
+\label{tab:tox}
+\end{table*}

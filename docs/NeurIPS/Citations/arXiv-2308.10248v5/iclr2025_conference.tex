@@ -1,0 +1,502 @@
+\documentclass{article}
+
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2024
+
+
+% ready for submission
+\usepackage{iclr2025_conference_arxiv,times}
+
+
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2024}
+
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{Styles/neurips_2024}
+
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2024}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[bookmarks=false,hidelinks]{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{natbib}
+\usepackage{microtype}
+\usepackage{svg}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{wrapfig}
+\usepackage{caption}
+\setcitestyle{authoryear,open={},close={},citesep={;},aysep={,},yysep={;}}
+
+\usepackage{algorithm}
+% \usepackage{algorithmic}
+\usepackage{algorithmicx}
+% Attempt to make hyperref and algorithmic work together better:
+% \newcommand{\theHalgorithm}{\arabic{algorithm}}
+\newcommand{\longscore}{\underline{\hspace{0.18cm}}}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage[capitalize,noabbrev]{cleveref}
+\usepackage{accents}
+
+\newcommand{\method}{\text{Activation Addition}}
+\newcommand{\shortmethod}{\text{ActAdd}}
+\newcommand{\llm}{GPT-2}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand\thickbar[1]{\accentset{\rule{.4em}{.8pt}}{#1}}
+
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\setlength {\marginparwidth }{2cm}
+% Todonotes is useful during development; simply uncomment the next line
+%    and comment out the line below the next line to turn off comments
+%\usepackage[disable,textsize=tiny]{todonotes}
+\usepackage[textsize=tiny]{todonotes}
+\newcommand{\oblong}[1][]{
+\begin{tikzpicture}[#1]
+    \draw[rounded corners] (0, 0) rectangle (0.5, 0.3) {};
+    % \node[draw,ellipse,minimum height=5pt,minimum width=10pt](e){};
+\end{tikzpicture}
+}
+\definecolor{activationcolor}{HTML}{1BA1E2}
+
+
+\title{Steering Language Models With Activation Engineering}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+  Alexander Matt Turner \\
+  Independent researcher\\
+  \texttt{alex@turntrout.com} \\
+  \And
+  Lisa Thiergart \\
+  MIRI \\
+  \And
+  Gavin Leech \\
+  University of Bristol \\
+  \texttt{g.leech@bristol.ac.uk} \\
+  \AND
+  David Udell\\
+  Independent researcher \\
+  \And
+  Juan J. Vazquez \\
+  Arb Research \\
+  \And
+  Ulisse Mini\\
+  MATS \\
+  \And
+  Monte MacDiarmid \\
+  Anthropic \\
+}
+
+\iclrfinalcopy
+
+\begin{document}
+
+
+\maketitle
+
+
+% \maketitle
+\begin{abstract}
+Prompt engineering and finetuning aim to maximize language model performance on a given metric (like toxicity reduction). However, these methods do not fully elicit a model’s capabilities.  To reduce this gap, we introduce \emph{activation engineering}: the inference-time modification of activations in order to control (or \emph{steer}) model outputs. Specifically, we introduce the \emph{\method} (\shortmethod) technique, which contrasts the intermediate activations on prompt pairs (such as “Love” versus “Hate”) to compute a \emph{steering vector} (\citep{subramani-2022-extracting}). By tactically adding in e.g. the “Love” $-$ “Hate” steering vector during the forward pass, we achieve SOTA on negative-to-positive sentiment shift and detoxification using models including LLaMA-3 and OPT. {\shortmethod} yields inference-time control over high-level output properties (like topic and sentiment) while preserving performance on off-target tasks. {\shortmethod} is lightweight: it does not require any machine optimization and works with a single pair of data points, which enables rapid iteration over steering. {\shortmethod} demonstrates the power of activation engineering.
+\end{abstract}
+
+
+\section{Introduction}\label{sec:intro}
+
+LLMs contain hidden capabilities we do not know how to fully elicit (\citep{korinek2023language}). Naively prompting a model with a question does not maximize the probability of the correct response.  Carefully consider how prompting a model to think ``step-by-step'' (\citep{wei2022chain}) massively improves performance on a range of benchmarks. Similarly, ``few-shot'' prompting a model with correct answers to unrelated in-distribution questions allows ``in-context learning'' for e.g. stronger performance on NLP tasks (\citep{brown2020language}). Importantly, these interventions do not supply the LLM with extra task-relevant information or update the algorithm implemented by the LLM's computational graph. Even though the model is initially \emph{able} to score higher on these benchmarks, those capabilities do not emerge without a specific intervention. We therefore hypothesize the presence of an \emph{elicitation overhang}: we do not know how to elicit all relevant abilities and information from frontier models.
+
+Prompt engineering is the most obvious way to steer a model, but prompting has limited reliability (\citep{NEURIPS2022_c4025018,wang2024prompt}). Therefore, to reduce the elicitation overhang, we explore a new modality for steering language model outputs. By strategically perturbing activations during the forward pass, we hope to more reliably and effectively steer models compared to prompt engineering. We call this methodology \emph{activation engineering}.
+
+
+We suspect that compared to prompt engineering, activation engineering can elicit a wider range of model capabilities. Consider, for example, a model optimized to imitate the text outputs of eloquent poets and awkward mathematicians. The model may contain the internal mechanisms required to output text which is \emph{both} eloquent and mathematical. However, if the model is an accurate estimator of the training distribution, it will (correctly) assign low probability to eloquent mathematical prose. Because nothing in the training data was both eloquent and mathematical, there may exist no prompt which elicits mathematical prose. In contrast, activation engineering might be able to simultaneously activate the circuitry for eloquent speech and for mathematical content.
+
+
+To demonstrate the power of activation engineering, we introduce \emph{Activation Addition} (\shortmethod). Suppose we want to achieve negative-to-positive sentiment control (\citep{li2018deleteretrievegeneratesimple,dathathri2020plug}). To achieve this, {\shortmethod} first compares the model's activations on a contrast pair of prompts, such as the prompts ``Love'' and ``Hate.'' The otherwise-similar prompts differ along the target dimension of sentiment. {\shortmethod} then computes the difference of these activations in order to compute \emph{steering vectors}. These vectors act like ``virtual bias terms'' because {\shortmethod} \emph{directly adds} the steering vectors to the forward pass at inference time. By shifting the inference-time activations along the direction of the steering vector, {\shortmethod} steers the model to generate positive sentiment completions (\cref{tab:hate}).
+
+\input{includes/example}
+
+
+\paragraph{Contributions.} We unify past literature on related topics to introduce \emph{activation engineering}. To better elicit the full capabilities of models, we introduce the {\shortmethod} steering method, which achieves SOTA on toxicity reduction and sentiment control. We thoroughly test the steered models to verify the preservation of their general capabilities. We therefore show the promise of {\shortmethod} as an effective and cheap method for steering LLM outputs.
+
+\section{Related Work}
+
+
+\textbf{Latent space arithmetic.}
+Research in generative models for computer vision has long demonstrated the ability to steer image generation using derived vectors, including steering latent variables -- most famously, shifting activations along a direction that corresponds to smiles in images (\cite{larsen2016autoencoding,white2016sampling}). Similarly, in the text domain, classic results on the word2vec embedding show that arithmetic on word vectors can capture some parts of semantic reasoning (for instance, analogies: \cite{mikolov2013linguistic,NIPS2013_9aa42b31}). Our work focuses on steering generative language models.
+
+\paragraph{LLM steering.} Many approaches attempt to affect the output of a pretrained LLM, whether:
+\begin{itemize}[leftmargin=*]
+    \item \textit{Intervening on weights}, as with supervised finetuning, RLHF, steerable layers, and weight editing (that is, targeted fine-tuning) (\cite{ranzato2016sequence,ziegler2020finetuning,dathathri2020plug,meng2023locating, ilharco2023editing}).
+However, naive RLHF, finetuning, and weight editing have known side-effects on overall model performance (\cite{hase2023does,qi2023fine, brown2023robustness});
+    \item \textit{Intervening at decoding}, as with guided or trainable decoding (\cite{gu-etal-2017-trainable,grover2019bias}; see \citealt{zhang2022survey} for an overview of controlled generation and \citealt{jin-etal-2022-deep} for textual style transfer);
+    \item \textit{Intervening on the prompt}, as with automated prompt engineering (\cite{shin-etal-2020-autoprompt,zhou2022steering});
+    \item \textit{Intervening on token embeddings}, as with `soft prompting' (\cite{li2021prefixtuning,lester2021power,khashabi-etal-2022-prompt});
+    \item \textit{Intervening on activations}, for instance by freezing the weights of the LLM and searching for a `steering vector' of activations, e.g. using gradient descent (\cite{subramani-2022-extracting,hernandez2023inspecting}). These optimized extraction methods, which search for a steering vector, differ from 
+    %\todo{deterministic} 
+    extraction methods which directly compute it (present work and \citealt{li2023inferencetime}). In our work, we do not use gradient descent or other optimization methods.
+\end{itemize}
+
+
+
+\input{includes/lit_table}
+
+
+
+
+\paragraph{Activation engineering.}
+Activation engineering involves creating vectors of activations which cause desired changes to output text when added to the forward passes of a frozen LLM (\cite{dathathri2020plug}). \Cref{tab:steering_lit} organizes prior work by intervention type. %(It is elsewhere called `steering vector extraction.'  
+
+An early antecedent is the Plug-and-Play Language Model of \citealt{dathathri2020plug}. This uses a separate classifier (one classifier per attribute to steer towards) to perturb the
+model's activations to generate text that accords more closely with the classifier's target.
+%
+\citealt{subramani-2022-extracting} extract latent steering vectors from a frozen LLM, successfully discovering sentence-specific vectors which steer completions to near-perfect BLEU scores (i.e, control of the LLM's generation) and unsupervised style transfer. However, the method requires running gradient descent for each new steering vector.
+% 
+\citealt{hernandez2023inspecting} locate and edit an LLM's knowledge through learning an encoding of facts in its activation space. Ablating attention heads can also be seen as activation engineering, though the technique is mostly used for model interpretation rather than steering (\cite{NEURIPS2019_2c601ad9,olsson2022context}).
+
+
+Independently, \citealt{li2023inferencetime} developed a similar method called ITI which computes steering vectors which are selectively applied according to trained linear probes. They use these probes to find attention heads with different activation distributions for true and false statements. They steer the model toward truthful outputs, where our experiments cover a range of goals. In addition, ITI adds the same steering vector at all sequence positions during inference and ITI requires dozens of samples. In contrast, {\shortmethod} we add steering vectors to a subset of sequence positions and require as few as 2 samples. Similar work on `in-context vectors' also followed ours (\cite{liu2023incontext}). Lastly, \citet{zou2023representation}'s ``representation engineering'' also followed our work. They develop a range of techniques for deriving steering vectors and for steering models using activation-space edits and optimization. In comparison to \citet{zou2023representation}, we steer different models (LLaMA-3, OPT, GPT-2, and GPT-J) on different tasks (detoxification and sentiment control).
+
+
+
+
+% https://app.diagrams.net/#G1n9PDjxgfOZHMqKEJw9CMVD-xBjLehIPM
+\begin{figure*}
+    \centering
+    % 
+    \includegraphics[width=\textwidth]{figs/actadd_fig1.pdf}
+    
+    \caption{Schematic of the \method\,(\textbf{\shortmethod}) method. 
+    \oblong[] $=$ natural language text; 
+    {\huge\color{activationcolor}$\bullet$\,} = vectors of activations just before a specified layer. In this example, the output is heavily biased towards discussing weddings, regardless of the topic of the user prompt. (See Algorithm~\ref{alg} for the method's parameters: intervention strength,  intervention layer, and sequence alignment.)}
+    \label{fig:method}
+\end{figure*}
+
+
+
+
+\section{How Activation Addition works}
+\label{sec:meth}
+
+We use decoder-only Transformer neural networks (\cite{NIPS2017_3f5ee243}). The LLMs in this work contain a stack of Transformer layers, each consisting of multi-head attention (MHA) and a feedforward network (FFN). We focus on its ``residual streams'' (\cite{elhage2021mathematical}),  the sequences $(\mathbf{x}_0, ... , \mathbf{x}_n)$ of intermediate activation vectors processed by each layer. {\shortmethod} manipulates the residual stream values $\mathbf{h}^l$ input to layer $l$. Each layer performs MHA and FFN computations on $\mathbf{x}_i$, adding $\mathbf{x}_{i+1}$ to the stream. The final vector $\mathbf{x}_n$ in the stream can then be decoded into the next-token prediction. At inference time, the residual stream is initialized $\mathbf{h}^1$ with the embedding of the tokenized prompt. 
+% 
+
+
+
+
+
+
+
+\textbf{Activation addition.}\quad
+Our method takes a pair of natural-language prompts $(p_+, p_-)$, where $p_+$ represents the property we wish output text to emphasise (e.g. love) and $p_-$ represents its opposite (e.g. hate or indifference). $\mathbf{h}_+^l$ is the activation vector for the prompt $p_+$ at layer $l$. The difference $\mathbf{h}_+^l - \mathbf{h}_-^l $ is a new activation vector which (intuitively) captures the difference between a prompt with the target property, and a prompt without it. The steering vector is computed before inference time. %This can be seen as an analogue of the `comparative preference statements' used in recent formal logics (\cite{KACI2014501}).
+% 
+\vspace{1mm}
+\input{includes/algo}
+
+
+To obtain a steering vector, we perform a forward pass on each prompt, record the activations at the given location in each pass, take the difference $\mathbf{h}_+^l - \mathbf{h}_-^l$, and then finally rescale this difference in activations by an `injection coefficient' $c$. To steer, we add the resulting activation vector to the input of layer $l$ and allow the forward pass to continue, and so obtain our steered output.\footnote{See \Cref{sec:app_imp}  for implementation details.} $c$ represents  the intervention strength, since it multiplies the steering vector's contribution to the residual stream.\footnote{It's typical for the intervention strength $c$ to have a magnitude less than 15.} We perform hyperparameter tuning to select $c$ and also the injection layer $l$. As expected from past work (\cite{subramani-2022-extracting,mini2023understandingcontrollingmazesolvingpolicy}), intervening at the middle layers is most effective.
+
+
+\Cref{alg} and \Cref{fig:method} depict the resulting {\shortmethod} method. In the appendix, \cref{fig:actadd1d} illustrates a figurative example of steering a model with {\shortmethod}~if that model had one-dimensional residual streams (rather than e.g. GPT-2-XL's 1600 dimensions).  
+ A runnable notebook can be found at \underline{\href{https://tinyurl.com/actadd}{tinyurl.com/actadd}}.
+
+%  (empirically, right-padding the shorter prompt using whitespace gives good results). 
+
+
+We test whether 1) steering vectors are effective at eliciting the desired behavioral shift, and 2) whether they preserve the general capabilities of the model. We run perplexity-based experiments on GPT-2-XL (1.5B parameters, \cite{radford2019language}). We then run toxicity and sentiment experiments on OPT (\cite{zhang2022opt}) and LLaMA-3 (\cite{llama3}).
+
+\section{Results: Activation Addition works}
+\label{sec:result}
+
+
+A summary of all experiments can be found in \Cref{tab:experiments}.\footnote{Code repository for our experiments: 
+% \url{https://github.com/montemac/activation_additions}
+\url{https://zenodo.org/records/13879423}.}
+
+\subsection{ActAdd intuitively modifies next-token probabilities}
+
+We consider the OpenWebText corpus (\cite{owt}). Our running example is the ``wedding'' topic vector produced by setting $p_+ =$ {\small \texttt{weddings}}, $p_- = $
+{\small\texttt{\textrm`\,\, \textrm'}}, $l=16$, $c=1$.
+
+\subsubsection{ActAdd reduces perplexity on a target topic}\label{sec:perplexity-results}
+
+\begin{wrapfigure}{r}{.5\textwidth}
+    \centering
+    \vspace{-13px}
+    \caption{The perplexity ratio compares the relative predictive performance of {\shortmethod} and an unmodified model. Lower is better. Adding the wedding steering vector improves performance on wedding-related text while preserving performance on unrelated text.} \includegraphics[width=0.5\textwidth,trim={0cm 0.5cm 0cm 1.2cm},clip]{figs/openwebtext_perp_vs_rel_single.pdf}
+    \label{fig:perplex}
+    \vspace{-40px}
+\end{wrapfigure}
+For each document $d_i \in D$ in OpenWebText  (\cite{owt}), we first calculate the frequency of wedding-related words.\footnote{\texttt{wedding}, \texttt{weddings}, \texttt{wed}, \texttt{marry}, \texttt{married}, \texttt{marriage}, \texttt{bride}, \texttt{groom}, and \texttt{honeymoon}.} If a document contains one of these words, the document is considered wedding-related. We randomly sample 300k documents, half of which are wedding-related. 
+
+We split the documents into sentences and measure GPT-2-XL's perplexity on both the wedding-related and wedding-unrelated sentences. If the model is effectively steered to generate wedding-related text, it should assign that text higher probability (and thus achieve lower perplexity). For more details, see \Cref{app:perplexity}.
+
+\Cref{fig:perplex} shows the {\shortmethod}  perplexity relative to the unmodified model. In sentences where the injected topic (weddings) is more relevant, {\shortmethod}'s perplexity is lower and predictive performance increases. 
+
+
+
+\subsubsection{ActAdd's impact on token probabilities}
+To test if the intervention is affecting relevant tokens or reducing perplexity in some spurious way, we observe the shift in the distribution of token log probabilities. We do this by randomly sampling 500 documents from the above OpenWebText sample and recording the log-probabilities assigned by the baseline and steered models. This results in a dataset of about 500k tokens, of which 29k are unique. We then group by token, filter for tokens with $>\!\!20$ instances in the dataset, and calculate the mean perplexity difference between the {\shortmethod} and baseline models. By displaying these as a Q-Q plot (\cite{gnanadesikan1968probability}), we can inspect outlier shifts in token probability.
+
+Appendix \Cref{fig:tokens_qq} shows the resulting mean log-probability difference distribution. We see that is approximately normal for the bulk of the tokens but with clearly heavy tails.  The positive tail is significantly heavier than the negative tail, suggesting that one set of tokens are reliably increased in probability, with a smaller set of tokens reliably decreased to a lesser extent. Outlier tokens can be found in Appendix \Cref{tab:token_changes}. \emph{The probabilities most increased on average are primarily wedding-related.} The bottom tokens share no obvious theme and show a significantly lower absolute change in probability. 
+
+
+\subsubsection{ActAdd steers the model to discuss weddings}
+
+
+
+At what layer are steering vectors most effective? Sweeping over GPT-2-XL injection layers for the wedding vector, we measure the average count of wedding-related words given a steering vector injected at each layer. 
+
+\begin{wrapfigure}{r}{.5\textwidth}
+    \centering
+    \vspace{-20pt}
+    \includegraphics[width=.45\textwidth]{figs/wedding_gens_nonzero_single.pdf}
+    \caption{P(steered completion contains wedding-related words) as a function of injection layer.}
+    \vspace{-20pt}
+    \label{fig:gen_nonzero}
+\end{wrapfigure}
+
+The intervention is already effective at the very first layer, rises in effectiveness until layer 6, and then declines. For the optimal injection site, we see $>$90\% success in  topic steering (compared to a $\sim$2\% baseline). \Cref{fig:gen_nonzero} shows the results of the layer sweep.
+
+
+\subsection{ActAdd can control what the model talks about}
+\textbf{Method.} 
+Steering vectors can elicit generations on a range of topics -- not just weddings. Starting from a generic prompt, we use GPT-3.5 to score whether the generations are about a target topic. Specifically, we generate 100 completions for the unmodified model and 100 for each target single-token ActAdd intervention (each token is about a different topic). Compared to the baseline generations, we record how much \emph{more} frequently the steered model discusses the target topic.
+
+\textbf{Results.} 
+\Cref{fig:generality} records a large boost in relevance (5-20\%) on all topics at injection coefficient $c=2$ (with the exception of ``art'').
+
+\begin{figure*}[h]
+    \centering
+    % \includesvg[width=.8\textwidth]{figs/fig2}
+    \includegraphics[width=.8\textwidth]{figs/fig2_svg-tex.pdf}
+    \caption{GPT-3.5-scored relevance of ActAdd completions on a range of generic topics.}
+    \label{fig:generality}
+\end{figure*}
+
+\subsection{ActAdd can reduce toxicity}
+\textbf{Method.} 
+We benchmark toxicity reduction by generating steered continuations from RealToxicityPrompts (\citep{gehman2020realtoxicityprompts}). Following \citealt{pei2023preadd} we use a random subset $n=1,000$. We repeat this sampling 5 times to obtain $p$-values ($t$-test against SOTA), bolding rows which are better with $p<0.05$. For each continuation, we use the \href{https://perspectiveapi.com/}{Perspective API} to score toxicity. 
+
+\textbf{Results.} 
+To establish a common scale, we reused the baselines and PREADD results from \citet{pei2023preadd}, adding Air-Decoding \citet{zhong2023air} and FUDGE \citet{yang-klein-2021-fudge}. This yields 6 baselines to compare {\shortmethod} against. (We also considered \cite{gu2022controllable} (which reported 0.043 toxicity), but we could not reproduce the results; also, their disfluency (54.6) is too high for practical use.) We compare to ActAdd using OPT (\cite{zhang2022opt}) and LLaMA-3 (\cite{llama3}).\footnote{We do not compare against finetuning because we wish to consider lighter-weight interventions which require minimal gradient updates.}
+
+As shown in \Cref{tab:tox}, ActAdd-OPT has 8\% lower toxicity than the second-best, PREADD-D-OPT, and ActAdd-LLaMA-3 gives a 5\% drop over LLaMA-3 with a very small fluency penalty.
+
+\input{includes/detox_table}
+
+\subsection{ActAdd can control sentiment} 
+
+\textbf{Method.} 
+To evaluate sentiment, we use the Stanford IMDb dataset (\citep{maas2011}). Our goal is for the model to continue each review but with the opposite sentiment. We compute the proportion of generated outputs with the desired sentiment, as classified by a model finetuned on sentiment data, SiEBERT (\cite{hartmann2023more}). For quality controls, we follow the conventional use of conditional perplexity to mark (dis)fluency, obtained using GPT-3 \texttt{davinci-002} logprobs. We use cosine similarity between the prompt and continuation sentence embeddings to gauge the relevance of text in $[0,1]$. We evaluate sentiment changes from positive to negative and vice versa on a random subset of $n=1,000$ and repeat to obtain $p$-values. 
+
+\input{includes/sentiment}
+\textbf{Results.} 
+\Cref{tab:sent} shows that our method is competitive on a conventional measure of sentiment control (\cite{maas2011}).
+We obtain state of the art success at steering from negative to positive sentiment. While. The only method which outperforms ActAdd in the positive to negative direction incurs a large penalty to fluency (68.4 vs 24.2, when matching methods on the same pretrained model) and relevance.
+
+
+
+
+\subsection{ActAdd preserves the model's general knowledge}
+\textbf{Method.} 
+We use ConceptNet from the LAMA benchmark, a general knowledge dataset (\cite{petroni2019language}, $n=29,774$ sentences, see Appendix \Cref{tab:conceptnet_examples}). The model is given a prompt and then has to predict a factual completion. The task is intended for both causal and masked models, so some examples are difficult for causal-attention models (like GPT-2) due to the extremely limited context.
+
+For each sentence, we run the model on its prompt with and without the \texttt{wedding} activation addition. $P@K$ is the probability that the expected label is among the model's top-$K$ predicted tokens, conditioned on the prompt. We score the baseline and modified models by calculating mean $P@K$ values for a range of $K$. Finally we plot these for both modified and unmodified models over a range of $K$ values.
+
+\textbf{Results.} 
+\Cref{fig:capabilities} shows that on the ConceptNet benchmark of factual questions, our method has a negligible impact on off-target answer probabilities.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.45\textwidth,trim={0.0cm 0.65cm 0.6cm 1cm},clip]{figs/conceptnet_single.pdf}
+        \captionof{figure}{Testing side effects of{\shortmethod}\, with the ConceptNet benchmark (\cite{petroni2019language}). `$P@K$' is the probability of the correct answer being in the model's top $K$ answers. Our method has a negligible impact on off-target probabilities across a range of top-$K$ values.}
+    \label{fig:capabilities}
+\end{figure}
+
+
+
+\section{Discussion}
+\label{sec:disc}
+
+\paragraph{Algebraic combination of forward passes} {\shortmethod} can be viewed as composition of separate forward passes. For example, we compose $\mathbf{h}_+$, $\mathbf{h}_-$ and $\mathbf{h}^*$ to produce steered output. We were surprised that forward passes can ``compose'' in this way, despite the model not being trained to allow this operation. The composability of forward passes is itself evidence for compositional representations (\cite{composit}), independent of the evidence from task-composition arithmetic on weights (\cite{ilharco2023editing}). 
+
+\paragraph{Limitations} To steer the model using an {\shortmethod} vector, the user supplies the injection coefficient $c$ and the intervention layer $l$. So far we have had success with fixing the sequence alignment $a=1$. Overall, these free hyperparameters make {\shortmethod} less user-friendly than simple prompt engineering. Thankfully, the user does not have to perform a fresh hyperparameter sweep for each use case; in practice, intervention hyperparameters are stable. 
+% 
+We include examples of failed steering vectors in Appendix \Cref{tab:non_examples}. We also have not examined {\shortmethod}'s potential impact on reasoning.
+% 
+{\shortmethod} is not immediately applicable given only API access to a model. The model must both cache and expose intermediate activations at the given layer (\citealt{lens}). Currently, APIs generally do not allow for this.
+
+\paragraph{Activation engineering vs finetuning}
+Finetuning is better understood and more flexible -- we doubt that activation engineering can e.g. teach a model a new skill. However, finetuning is significantly more costly and may not be able to elicit the same kinds of capabilities which activation engineering can elicit.
+
+The first advantage of {\shortmethod} is efficiency: the method requires no backward passes and can thus run on any machine that can perform inference rather than training. Implementation effort is also greatly reduced; only forward passes are required to find a suitable ($p_+, p_-)$ and minimal labelled data is required - just the steering prompt pair. We discovered most of the example contrast pairs in Appendix \Cref{tab:longer_examples} in minutes. All things considered, even nontechnical users can benefit from rapid feedback and relatively easy iteration
+
+\vspace{-1mm}
+
+\paragraph{Activation engineering vs prompt engineering}
+Activation additions can be continuously weighted, while prompts are discrete -- a token is either present, or not. To more intensely steer the model to generate wedding-related text, our method does not require any edit to the prompt, but instead just increasing the injection coefficient. See \Cref{app:prompteng} for suggestive experiments on {\shortmethod} vs prompting. Unlike system prompts, activation additions do not take up token space in the model's context window, although this is a small benefit in the era of multi-million token context windows. 
+
+While prompting is more flexible and even cheaper than {\shortmethod}, activation additions may elicit capabilities which prompting cannot (as evidenced by our superior results over prompting; see also the speculation in \cref{sec:intro}).
+
+\vspace{-1mm}
+
+\paragraph{Interpretability of LLMs}
+In most programs, adding values to imprecisely targeted intermediate memory locations would not yield sensible results. Why expect this from Transformers? 
+
+A growing consensus is that the activation space of an LLM contains directions which represent high-level latents causally involved in what is generated (\cite{burns2022discovering,moschella2023relative,li2023emergent,neelnanda_othello, li2023inferencetime}).
+
+Our hypothesis, following \citealt{elhage2022toy}, is more specific: that neural networks represent features of the input as directions in activation space, that is, with a linear representation (\cite{park2023linear}). Moreover, the direction in activation space that corresponds to (say) a love-hate latent variable stays approximately the \textit{same} across a broad class of inputs.
+
+\citealt{alain2018understanding} use linear probes on residual streams to infer that LLM representations are at least partially linear; if a linear probe can predict some feature of text output from the residuals with high accuracy, this forms evidence that the feature is represented linearly (i.e. as a simple direction) (\cite{neelnanda_othello}). 
+
+The success of activation addition gives stronger, experimental evidence of feature linearity, demonstrating that models \emph{use} feature-related information. Consider the central \texttt{Love - Hate} vector example: we add it to the forward pass and so increase love-related completions. On the examined prompts, this direction is responsible for steering the rest of the model towards love-related completions. In general, steering vectors establish \emph{causality}, at least in the limited set of contexts examined.
+
+\vspace{-2mm}
+
+\paragraph{Value alignment of LLMs}
+Activation engineering is a promising way to control LLMs. Successor methods may be able to 
+provide general steering methods (e.g. through some analogue of a \texttt{Be helpful} vector). Alongside contemporaneous work (\cite{li2023inferencetime,liu2023incontext}), our experiments suggest that activation engineering can flexibly retarget LLM behavior without damaging general performance. We speculate that {\shortmethod}  changes the model's currently active mixture of goals and priorities. Suitably developed, the activation engineering approach could enable safety progress while preserving overall capabilities
+
+% 
+
+\section{Conclusion}
+While methods like prompt engineering, controlled decoding, and finetuning have benefits, they fail to elicit full capabilities from language models. To more reliably elicit these abilities, \emph{activation engineering} strategically perturbs activations at inference time. In particular, we introduced \emph{{\method}} to steer models by shifting their inference-time activations along a certain direction (like the ``Love''-``Hate'' vector). {\shortmethod} is lightweight and effective, achieving SOTA on toxicity reduction and sentiment shift while retaining overall model capabilities. {\shortmethod} demonstrates the promise of activation engineering. We look forward to future work realizing this promise.
+% 
+\newpage
+
+\subsection*{Reproducibility Statement}
+
+Our code is available here: 
+% \small{\url{https://github.com/montemac/activation_additions}}
+\url{https://zenodo.org/records/13879423}.
+The following is an exhaustive list of models used, sampling strategies used, and searches run:
+
+\paragraph{Data processing} To curate a wedding-related subset of OpenWebText, we retained documents with wedding-related words (see \cref{sec:perplexity-results}). The only pre-processing performed is to remove sequences of null characters. Each document is split into sentences $s_j \in d_i$ using the Punkt tokenizer (\cite{punkt}). 
+
+\paragraph{Models} After observing success with GPT-2-XL, to replicate our results, we subsequently repeated the same experiments with Llama-1-13B (\cite{touvron2023llama}) and GPT-J-6B  (\cite{gptj}). Our toxicity and sentiment experiments use OPT (\cite{zhang2022opt}) and LLaMA-3-8B \cite{llama3}. See Appendix~\ref{sec:replic} for details. We use \texttt{all-MiniLM-L6-v2} (\cite{reimers2019sentence}) to compute sentence embeddings to calculate relevance using cosine similarity. For the success score, we use the SiEBERT (\cite{hartmann2023more}) sentiment classifier. We perform sentiment classificaton with the SiEBERT classifier (\citep{hartmann2023more}).
+
+
+\paragraph{APIs}
+For scoring toxicity, we use \url{https://www.perspectiveapi.com/}. For scoring fluency, we use OpenAI \texttt{davinci-002}. The PREADD baseline instead used the discontinued \texttt{davinci-001} model. 
+
+\paragraph{Seed} We ran all generations on seed $0$. After collecting all other data, we validated that our qualitative results transfer to seeds $1$ and $2$.
+
+\paragraph{Sampling hyperparameters} We precommitted to fixed sampling hyperparameters, selected before experiments began. We held them fixed throughout our data collection. Those sampling hyperparameters were \texttt{temperature}$=1.0$, \texttt{freq\_penalty}$=1.0$, and \texttt{top\_p}=$0.3$. 
+Since this \texttt{top\_p} value seemed a bit unusual to us in retrospect, we invited an external researcher
+%Peli Grietzer 
+to reproduce this process with an \textit{unmodified} GPT-2-XL and report the best sampling hyperparameters they found. This second experiment was blinded, as they did not know the values we used. They found that \texttt{temperature}$=0.6$ and \texttt{top\_p}$=0.5$ produced better GPT-2-XL capabilities. We reran all our qualitative results at this setting, and they all reproduced (subjectively, more impressively).
+
+We use the same sampling hyperparameters for the toxicity and sentiment experiments. Numbers reported by the other authors were obtained with \texttt{freq\_penalty}$=0.0$, and \texttt{top\_p}=$1.0$.
+
+In replicating the unsteered OPT sentiment baseline, we find that the NegToPos direction is consistently higher success than PosToNeg. This holds across different combinations of model hyperparameters, including those in \citealt{pei2023preadd}. However, PREADD \citep{pei2023preadd} reports similar success results for both (i.e. a much lower NegToPos success). The OPT results use our calculated values. 
+
+\paragraph{Reporting the best of $K$ completions} We generated $K=3$ completions for each qualitative demonstration, for both normal and steered forward-passes.
+Appendix Table~\ref{tab:longer_examples}, shows the subjectively most compelling completion pair out of the \textit{first} three seed-$0$ completion-pairs. You can see all top-3 completions for the entries in this notebook: \underline{\href{https://tinyurl.com/actadd3}{tinyurl.com/actadd3}}. 
+We share activation additions which work well. We iterated over contrast pairs to get these to work, although several striking results were generated within [first author's] first hour of using the technique. Out of the 12 activation additions we thought demonstrated a distinct ability of the method, we decided not to include 1 because its first three seed-$0$ completions were unusually unimpressive. We include the remaining 11 in Table~\ref{tab:longer_examples}.
+
+\paragraph{\shortmethod\, hyperparameters ($l, c$)} \textit{This section does not have complete statistics}. We perform simple grid search, usually between $c \in [3,20]$ and $l \in [6,24]$.
+% We didn't have to search too hard over layer and coefficient choices, but don't have concrete statistics to share here. We do sweeps over these choices in a later section.
+
+% \ref{tab:experiments}
+
+\paragraph{Hardware:} 
+\texttt{GPU}: Nvidia RTX A5000, \texttt{CPU}: Intel Core i9-10900X CPU @ 3.70GHz. 24GB GPU RAM, 32GB system RAM
+
+\noindent\paragraph{Relevant libraries and frameworks:}
+Operating system: Ubuntu 22.04.1 LTS, \texttt{numpy}: 1.24.3, \texttt{pandas}: 2.0.1, \texttt{torch}: 1.13.1, \texttt{transformer-lens}: 1.4.0.
+
+\subsubsection*{Author Contributions}
+Turner: conceptualization, team management, implementation of core features, design of many experiments, discovery of many individual steering vectors, and wrote much of the original post. 
+
+Thiergart: had idea for variations on positions of addition, implemented the positional experiment, worked on theory.
+
+Leech: designed new experiments, designed figures, formalized the algorithm and evaluations, wrote the main text based on the earlier post, literature review.
+
+MacDiarmid: most of the main library code.
+
+Udell: wrote and edited the original post, generated qualitative results.
+
+Mini: infrastructure support, OpenAI wrappers, experiments on LLaMA, Vicuna and GPT-J.
+
+
+Vazquez: wrote part of text, conducted toxicity, sentiment control, and other experiments on LLaMA-3, OPT, GPT-2.
+
+
+\subsubsection*{Acknowledgments}
+
+We thank Peli Grietzer for providing an independent hyperparameter tuning run. We thank Alex Cloud, Jan Brauner, Andis Draguns, Sören Mindermann and Raymond Douglas for helpful comments on the draft, as well as Andrew Critch, Aryan Bhatt, Chris Olah, Ian McKenzie, janus, Julian Schulz, Justis Mills, Lawrence Chan, Leo Gao, Neel Nanda, Oliver Habryka, Olivia Jimenez, Paul Christiano, Peter Barnett, Quintin Pope, Tamera Lanham, Thomas Kwa, and Tristan Hume for comments on an earlier draft. We thank Rusheb Shah for engineering assistance. We thank Garrett Baker for running tests on GPT-J (6B)  We thank an anonymous ICML reviewer for their extremely thoughtful comments.
+
+
+
+
+\bibliography{main}
+\bibliographystyle{iclr2025_conference}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\appendix
+
+
+{\Large{\textbf{Appendix}}}
+
+\textit{(Note: some completions contain unpleasant content, including slurs.)}
+
+\input{includes/app}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+
+% \input{includes/checklist}
+
+
+
+\end{document}

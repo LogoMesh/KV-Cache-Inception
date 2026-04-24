@@ -1,0 +1,900 @@
+
+% Journals
+
+% First the Full Name is given, then the abbreviation used in the AMS Math
+% Reviews, with an indication if it could not be found there.
+% Note the 2nd overwrites the 1st, so swap them if you want the full name.
+
+ %{AMS}
+ @String{AMSTrans = "American Mathematical Society Translations" }
+ @String{AMSTrans = "Amer. Math. Soc. Transl." }
+ @String{BullAMS = "Bulletin of the American Mathematical Society" }
+ @String{BullAMS = "Bull. Amer. Math. Soc." }
+ @String{ProcAMS = "Proceedings of the American Mathematical Society" }
+ @String{ProcAMS = "Proc. Amer. Math. Soc." }
+ @String{TransAMS = "Transactions of the American Mathematical Society" }
+ @String{TransAMS = "Trans. Amer. Math. Soc." }
+
+ %ACM
+ @String{CACM = "Communications of the {ACM}" }
+ @String{CACM = "Commun. {ACM}" }
+ @String{CompServ = "Comput. Surveys" }
+ @String{JACM = "J. ACM" }
+ @String{ACMMathSoft = "{ACM} Transactions on Mathematical Software" }
+ @String{ACMMathSoft = "{ACM} Trans. Math. Software" }
+ @String{SIGNUM = "{ACM} {SIGNUM} Newsletter" }
+ @String{SIGNUM = "{ACM} {SIGNUM} Newslett." }
+
+ @String{AmerSocio = "American Journal of Sociology" }
+ @String{AmerStatAssoc = "Journal of the American Statistical Association" }
+ @String{AmerStatAssoc = "J. Amer. Statist. Assoc." }
+ @String{ApplMathComp = "Applied Mathematics and Computation" }
+ @String{ApplMathComp = "Appl. Math. Comput." }
+ @String{AmerMathMonthly = "American Mathematical Monthly" }
+ @String{AmerMathMonthly = "Amer. Math. Monthly" }
+ @String{BIT = "{BIT}" }
+ @String{BritStatPsych = "British Journal of Mathematical and Statistical
+          Psychology" }
+ @String{BritStatPsych = "Brit. J. Math. Statist. Psych." }
+ @String{CanMathBull = "Canadian Mathematical Bulletin" }
+ @String{CanMathBull = "Canad. Math. Bull." }
+ @String{CompApplMath = "Journal of Computational and Applied Mathematics" }
+ @String{CompApplMath = "J. Comput. Appl. Math." }
+ @String{CompPhys = "Journal of Computational Physics" }
+ @String{CompPhys = "J. Comput. Phys." }
+ @String{CompStruct = "Computers and Structures" }
+ @String{CompStruct = "Comput. \& Structures" }
+ @String{CompJour = "The Computer Journal" }
+ @String{CompJour = "Comput. J." }
+ @String{CompSysSci = "Journal of Computer and System Sciences" }
+ @String{CompSysSci = "J. Comput. System Sci." }
+ @String{Computing = "Computing" }
+ @String{ContempMath = "Contemporary Mathematics" }
+ @String{ContempMath = "Contemp. Math." }
+ @String{Crelle = "Crelle's Journal" }
+ @String{GiornaleMath = "Giornale di Mathematiche" }
+ @String{GiornaleMath = "Giorn. Mat." } % didn't find in AMS MR., ibid.
+
+ %IEEE
+ @String{Computer = "{IEEE} Computer" }
+ @String{IEEETransComp = "{IEEE} Transactions on Computers" }
+ @String{IEEETransComp = "{IEEE} Trans. Comput." }
+ @String{IEEETransAC = "{IEEE} Transactions on Automatic Control" }
+ @String{IEEETransAC = "{IEEE} Trans. Automat. Control" }
+ @String{IEEESpec = "{IEEE} Spectrum" } % didn't find in AMS MR
+ @String{ProcIEEE = "Proceedings of the {IEEE}" }
+ @String{ProcIEEE = "Proc. {IEEE}" } % didn't find in AMS MR
+ @String{IEEETransAeroElec = "{IEEE} Transactions on Aerospace and Electronic
+     Systems" }
+ @String{IEEETransAeroElec = "{IEEE} Trans. Aerospace Electron. Systems" }
+
+ @String{IMANumerAna = "{IMA} Journal of Numerical Analysis" }
+ @String{IMANumerAna = "{IMA} J. Numer. Anal." }
+ @String{InfProcLet = "Information Processing Letters" }
+ @String{InfProcLet = "Inform. Process. Lett." }
+ @String{InstMathApp = "Journal of the Institute of Mathematics and
+     its Applications" }
+ @String{InstMathApp = "J. Inst. Math. Appl." }
+ @String{IntControl = "International Journal of Control" }
+ @String{IntControl = "Internat. J. Control" }
+ @String{IntNumerEng = "International Journal for Numerical Methods in
+     Engineering" }
+ @String{IntNumerEng = "Internat. J. Numer. Methods Engrg." }
+ @String{IntSuper = "International Journal of Supercomputing Applications" }
+ @String{IntSuper = "Internat. J. Supercomputing Applic." } % didn't find
+%% in AMS MR
+ @String{Kibernetika = "Kibernetika" }
+ @String{JResNatBurStand = "Journal of Research of the National Bureau
+     of Standards" }
+ @String{JResNatBurStand = "J. Res. Nat. Bur. Standards" }
+ @String{LinAlgApp = "Linear Algebra and its Applications" }
+ @String{LinAlgApp = "Linear Algebra Appl." }
+ @String{MathAnaAppl = "Journal of Mathematical Analysis and Applications" }
+ @String{MathAnaAppl = "J. Math. Anal. Appl." }
+ @String{MathAnnalen = "Mathematische Annalen" }
+ @String{MathAnnalen = "Math. Ann." }
+ @String{MathPhys = "Journal of Mathematical Physics" }
+ @String{MathPhys = "J. Math. Phys." }
+ @String{MathComp = "Mathematics of Computation" }
+ @String{MathComp = "Math. Comp." }
+ @String{MathScand = "Mathematica Scandinavica" }
+ @String{MathScand = "Math. Scand." }
+ @String{TablesAidsComp = "Mathematical Tables and Other Aids to Computation" }
+ @String{TablesAidsComp = "Math. Tables Aids Comput." }
+ @String{NumerMath = "Numerische Mathematik" }
+ @String{NumerMath = "Numer. Math." }
+ @String{PacificMath = "Pacific Journal of Mathematics" }
+ @String{PacificMath = "Pacific J. Math." }
+ @String{ParDistComp = "Journal of Parallel and Distributed Computing" }
+ @String{ParDistComp = "J. Parallel and Distrib. Comput." } % didn't find
+%% in AMS MR
+ @String{ParComputing = "Parallel Computing" }
+ @String{ParComputing = "Parallel Comput." }
+ @String{PhilMag = "Philosophical Magazine" }
+ @String{PhilMag = "Philos. Mag." }
+ @String{ProcNAS = "Proceedings of the National Academy of Sciences
+                    of the USA" }
+ @String{ProcNAS = "Proc. Nat. Acad. Sci. U. S. A." }
+ @String{Psychometrika = "Psychometrika" }
+ @String{QuartMath = "Quarterly Journal of Mathematics, Oxford, Series (2)" }
+ @String{QuartMath = "Quart. J. Math. Oxford Ser. (2)" }
+ @String{QuartApplMath = "Quarterly of Applied Mathematics" }
+ @String{QuartApplMath = "Quart. Appl. Math." }
+ @String{RevueInstStat = "Review of the International Statisical Institute" }
+ @String{RevueInstStat = "Rev. Inst. Internat. Statist." }
+
+ %SIAM
+ @String{JSIAM = "Journal of the Society for Industrial and Applied
+     Mathematics" }
+ @String{JSIAM = "J. Soc. Indust. Appl. Math." }
+ @String{JSIAMB = "Journal of the Society for Industrial and Applied
+     Mathematics, Series B, Numerical Analysis" }
+ @String{JSIAMB = "J. Soc. Indust. Appl. Math. Ser. B Numer. Anal." }
+ @String{SIAMAlgMeth = "{SIAM} Journal on Algebraic and Discrete Methods" }
+ @String{SIAMAlgMeth = "{SIAM} J. Algebraic Discrete Methods" }
+ @String{SIAMAppMath = "{SIAM} Journal on Applied Mathematics" }
+ @String{SIAMAppMath = "{SIAM} J. Appl. Math." }
+ @String{SIAMComp = "{SIAM} Journal on Computing" }
+ @String{SIAMComp = "{SIAM} J. Comput." }
+ @String{SIAMMatrix = "{SIAM} Journal on Matrix Analysis and Applications" }
+ @String{SIAMMatrix = "{SIAM} J. Matrix Anal. Appl." }
+ @String{SIAMNumAnal = "{SIAM} Journal on Numerical Analysis" }
+ @String{SIAMNumAnal = "{SIAM} J. Numer. Anal." }
+ @String{SIAMReview = "{SIAM} Review" }
+ @String{SIAMReview = "{SIAM} Rev." }
+ @String{SIAMSciStat = "{SIAM} Journal on Scientific and Statistical
+     Computing" }
+ @String{SIAMSciStat = "{SIAM} J. Sci. Statist. Comput." }
+
+ @String{SoftPracExp = "Software Practice and Experience" }
+ @String{SoftPracExp = "Software Prac. Experience" } % didn't find in AMS MR
+ @String{StatScience = "Statistical Science" }
+ @String{StatScience = "Statist. Sci." }
+ @String{Techno = "Technometrics" }
+ @String{USSRCompMathPhys = "{USSR} Computational Mathematics and Mathematical
+     Physics" }
+ @String{USSRCompMathPhys = "{U. S. S. R.} Comput. Math. and Math. Phys." }
+ @String{VLSICompSys = "Journal of {VLSI} and Computer Systems" }
+ @String{VLSICompSys = "J. {VLSI} Comput. Syst." }
+ @String{ZAngewMathMech = "Zeitschrift fur Angewandte Mathematik und
+     Mechanik" }
+ @String{ZAngewMathMech = "Z. Angew. Math. Mech." }
+ @String{ZAngewMathPhys = "Zeitschrift fur Angewandte Mathematik und Physik" }
+ @String{ZAngewMathPhys = "Z. Angew. Math. Phys." }
+
+% Publishers % ================================================= |
+
+ @String{Academic = "Academic Press" }
+ @String{ACMPress = "{ACM} Press" }
+ @String{AdamHilger = "Adam Hilger" }
+ @String{AddisonWesley = "Addison-Wesley" }
+ @String{AllynBacon = "Allyn and Bacon" }
+ @String{AMS = "American Mathematical Society" }
+ @String{Birkhauser = "Birkha{\"u}ser" }
+ @String{CambridgePress = "Cambridge University Press" }
+ @String{Chelsea = "Chelsea" }
+ @String{ClaredonPress = "Claredon Press" }
+ @String{DoverPub = "Dover Publications" }
+ @String{Eyolles = "Eyolles" }
+ @String{HoltRinehartWinston = "Holt, Rinehart and Winston" }
+ @String{Interscience = "Interscience" }
+ @String{JohnsHopkinsPress = "The Johns Hopkins University Press" }
+ @String{JohnWileySons = "John Wiley and Sons" }
+ @String{Macmillan = "Macmillan" }
+ @String{MathWorks = "The Math Works Inc." }
+ @String{McGrawHill = "McGraw-Hill" }
+ @String{NatBurStd = "National Bureau of Standards" }
+ @String{NorthHolland = "North-Holland" }
+ @String{OxfordPress = "Oxford University Press" }  %address Oxford or London?
+ @String{PergamonPress = "Pergamon Press" }
+ @String{PlenumPress = "Plenum Press" }
+ @String{PrenticeHall = "Prentice-Hall" }
+ @String{SIAMPub = "{SIAM} Publications" }
+ @String{Springer = "Springer-Verlag" }
+ @String{TexasPress = "University of Texas Press" }
+ @String{VanNostrand = "Van Nostrand" }
+ @String{WHFreeman = "W. H. Freeman and Co." }
+
+%Entries
+
+@inproceedings{hu2025token,
+  title={Token highlighter: Inspecting and mitigating jailbreak prompts for large language models},
+  author={Hu, Xiaomeng and Chen, Pin-Yu and Ho, Tsung-Yi},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={39},
+  number={26},
+  pages={27330--27338},
+  year={2025}
+}
+
+@article{hu2024gradient,
+  title={Gradient cuff: Detecting jailbreak attacks on large language models by exploring refusal loss landscapes},
+  author={Hu, Xiaomeng and Chen, Pin-Yu and Ho, Tsung-Yi},
+  journal={arXiv preprint arXiv:2403.00867},
+  year={2024}
+}
+
+@article{xiong2025cop,
+  title={CoP: Agentic Red-teaming for Large Language Models using Composition of Principles},
+  author={Xiong, Chen and Chen, Pin-Yu and Ho, Tsung-Yi},
+  journal={arXiv preprint arXiv:2506.00781},
+  year={2025}
+}
+
+@article{chen2025computational,
+  title={Computational safety for generative AI: A signal processing perspective},
+  author={Chen, Pin-Yu},
+  journal={arXiv preprint arXiv:2502.12445},
+  year={2025}
+}
+
+@article{chang2024survey,
+  title={A survey on evaluation of large language models},
+  author={Chang, Yupeng and Wang, Xu and Wang, Jindong and Wu, Yuan and Yang, Linyi and Zhu, Kaijie and Chen, Hao and Yi, Xiaoyuan and Wang, Cunxiang and Wang, Yidong and others},
+  journal={ACM transactions on intelligent systems and technology},
+  volume={15},
+  number={3},
+  pages={1--45},
+  year={2024},
+  publisher={ACM New York, NY}
+}
+
+@article{romera2024mathematical,
+  title={Mathematical discoveries from program search with large language models},
+  author={Romera-Paredes, Bernardino and Barekatain, Mohammadamin and Novikov, Alexander and Balog, Matej and Kumar, M Pawan and Dupont, Emilien and Ruiz, Francisco JR and Ellenberg, Jordan S and Wang, Pengming and Fawzi, Omar and others},
+  journal={Nature},
+  volume={625},
+  number={7995},
+  pages={468--475},
+  year={2024},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{singhal2023large,
+  title={Large language models encode clinical knowledge},
+  author={Singhal, Karan and Azizi, Shekoofeh and Tu, Tao and Mahdavi, S Sara and Wei, Jason and Chung, Hyung Won and Scales, Nathan and Tanwani, Ajay and Cole-Lewis, Heather and Pfohl, Stephen and others},
+  journal={Nature},
+  volume={620},
+  number={7972},
+  pages={172--180},
+  year={2023},
+  publisher={Nature Publishing Group}
+}
+
+
+@article{yi2024jailbreak,
+  title={Jailbreak attacks and defenses against large language models: A survey},
+  author={Yi, Sibo and Liu, Yule and Sun, Zhen and Cong, Tianshuo and He, Xinlei and Song, Jiaxing and Xu, Ke and Li, Qi},
+  journal={arXiv preprint arXiv:2407.04295},
+  year={2024}
+}
+
+@inproceedings{xu2024comprehensive,
+  title={A comprehensive study of jailbreak attack versus defense for large language models},
+  author={Xu, Zihao and Liu, Yi and Deng, Gelei and Li, Yuekang and Picek, Stjepan},
+  booktitle={Findings of the ACL},
+  pages={7432--7449},
+  year={2024}
+}
+
+@inproceedings{hu2025token,
+  title={Token highlighter: Inspecting and mitigating jailbreak prompts for large language models},
+  author={Hu, Xiaomeng and Chen, Pin-Yu and Ho, Tsung-Yi},
+  booktitle={Proceedings of the AAAI},
+  volume={39},
+  number={26},
+  pages={27330--27338},
+  year={2025}
+}
+
+@article{hsu2024safe,
+  title={Safe LoRA: The silver lining of reducing safety risks when finetuning large language models},
+  author={Hsu, Chia-Yi and Tsai, Yu-Lin and Lin, Chih-Hsun and Chen, Pin-Yu and Yu, Chia-Mu and Huang, Chun-Ying},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={65072--65094},
+  year={2024}
+}
+
+@inproceedings{mazeika2024harmbench,
+  title={HarmBench: a standardized evaluation framework for automated red teaming and robust refusal},
+  author={Mazeika, Mantas and Phan, Long and Yin, Xuwang and Zou, Andy and Wang, Zifan and Mu, Norman and Sakhaee, Elham and Li, Nathaniel and Basart, Steven and Li, Bo and others},
+  booktitle={Proceedings of the ICML},
+  pages={35181--35224},
+  year={2024}
+}
+
+@article{zou2023universal,
+  title={Universal and transferable adversarial attacks on aligned language models},
+  author={Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J Zico and Fredrikson, Matt},
+  journal={arXiv preprint arXiv:2307.15043},
+  year={2023}
+}
+
+@inproceedings{wang2024not,
+  title={Do-Not-Answer: Evaluating safeguards in LLMs},
+  author={Wang, Yuxia and Li, Haonan and Han, Xudong and Nakov, Preslav and Baldwin, Timothy},
+  booktitle={Findings of the Association for Computational Linguistics: EACL 2024},
+  pages={896--911},
+  year={2024}
+}
+
+
+@inproceedings{huangcatastrophic,
+  title={Catastrophic jailbreak of open-source LLMs via exploiting generation},
+  author={Huang, Yangsibo and Gupta, Samyak and Xia, Mengzhou and Li, Kai and Chen, Danqi},
+  booktitle={Proceedings of the ICLR},
+  year={2024}
+}
+
+ 
+
+
+@article{advbench,
+  title={Navigating the safety landscape: Measuring risks in finetuning large language models},
+  author={Peng, Sheng Y and Chen, Pin-Yu and Hull, Matthew and Chau, Duen H},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={95692--95715},
+  year={2024}
+}
+
+@inproceedings{chao2024jailbreakbench,
+  title={JailbreakBench: An open robustness benchmark for jailbreaking large language models},
+  author={Chao, Patrick and Debenedetti, Edoardo and Robey, Alexander and Andriushchenko, Maksym and Croce, Francesco and Sehwag, Vikash and Dobriban, Edgar and Flammarion, Nicolas and Pappas, George J and Tram{\`e}r, Florian and others},
+  booktitle={Proceedings of the NeuralIPS},
+  year={2024}
+}
+
+
+@article{chao2023jailbreaking,
+  title={Jailbreaking black box large language models in twenty queries},
+  author={Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J and Wong, Eric},
+  journal={arXiv preprint arXiv:2310.08419},
+  year={2023}
+}
+
+
+
+@inproceedings{lin2023toxicchat,
+  title={ToxicChat: Unveiling hidden challenges of toxicity detection in real-world user-AI conversation},
+  author={Lin, Zi and Wang, Zihan and Tong, Yongqi and Wang, Yangkun and Guo, Yuxin and Wang, Yujia and Shang, Jingbo},
+  booktitle={Findings of EMNLP},
+  pages={4694--4702},
+  year={2023}
+}
+
+@article{Malicious,
+  title={Don't Say No: Jailbreaking LLM by suppressing refusal},
+  author={Zhou, Yukai and Huang, Zhijie and Lu, Feiyang and Qin, Zhan and Wang, Wenjie},
+  journal={arXiv preprint arXiv:2404.16369},
+  year={2024}
+}
+
+
+@inproceedings{rottger2024xstest,
+  title={XSTest: A test suite for identifying exaggerated safety behaviours in large language models},
+  author={R{\"o}ttger, Paul and Kirk, Hannah and Vidgen, Bertie and Attanasio, Giuseppe and Bianchi, Federico and Hovy, Dirk},
+  booktitle={Proceedings of the NAACL-HLT},
+  pages={5377--5400},
+  year={2024}
+}
+
+@article{orbench,
+  title={Or-bench: An over-refusal benchmark for large language models},
+  author={Cui, Justin and Chiang, Wei-Lin and Stoica, Ion and Hsieh, Cho-Jui},
+  journal={arXiv preprint arXiv:2405.20947},
+  year={2024}
+}
+
+@article{mt-bench,
+  title={Judging llm-as-a-judge with mt-bench and chatbot arena},
+  author={Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={36},
+  pages={46595--46623},
+  year={2023}
+}
+
+@misc{li2023alpacaeval,
+  title={Alpacaeval: An automatic evaluator of instruction-following models},
+  author={Li, Xuechen and Zhang, Tianyi and Dubois, Yann and Taori, Rohan and Gulrajani, Ishaan and Guestrin, Carlos and Liang, Percy and Hashimoto, Tatsunori B},
+  year={2023}
+}
+
+
+@article{alpacaeval,
+  title={Alpacafarm: A simulation framework for methods that learn from human feedback},
+  author={Dubois, Yann and Li, Chen Xuechen and Taori, Rohan and Zhang, Tianyi and Gulrajani, Ishaan and Ba, Jimmy and Guestrin, Carlos and Liang, Percy S and Hashimoto, Tatsunori B},
+  journal={Advances in Neural Information Processing Systems},
+  volume={36},
+  pages={30039--30069},
+  year={2023}
+}
+
+ 
+
+@article{GCG,
+  title={Universal and transferable adversarial attacks on aligned language models},
+  author={Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J Zico and Fredrikson, Matt},
+  journal={arXiv preprint arXiv:2307.15043},
+  year={2023}
+}
+
+@inproceedings{AutoDAN,
+  title={AutoDAN: Interpretable gradient-based adversarial attacks on large language models},
+  author={Zhu, Sicheng and Zhang, Ruiyi and An, Bang and Wu, Gang and Barrow, Joe and Wang, Zichao and Huang, Furong and Nenkova, Ani and Sun, Tong},
+  booktitle={First Conference on Language Modeling},
+  year={2023}
+}
+ 
+
+@article{PAIR,
+  title={Jailbreaking black box large language models in twenty queries},
+  author={Chao, Patrick and Robey, Alexander and Dobriban, Edgar and Hassani, Hamed and Pappas, George J and Wong, Eric},
+  journal={arXiv preprint arXiv:2310.08419},
+  year={2023}
+}
+
+@article{TAP,
+  title={Tree of attacks: Jailbreaking black-box llms automatically},
+  author={Mehrotra, Anay and Zampetakis, Manolis and Kassianik, Paul and Nelson, Blaine and Anderson, Hyrum and Singer, Yaron and Karbasi, Amin},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={61065--61105},
+  year={2024}
+}
+
+@inproceedings{MPA,
+  title={Monte carlo tree search based prompt autogeneration for jailbreak attacks against LLMs},
+  author={Wu, Suhuang and Wang, Huimin and Zhao, Yutian and Wu, Xian and Zheng, Yefeng and Li, Wei and Li, Hui and Ji, Rongrong},
+  booktitle={Proceedings of the COLING},
+  pages={1057--1068},
+  year={2025}
+}
+
+@article{RS,
+  title={Jailbreaking leading safety-aligned llms with simple adaptive attacks},
+  author={Andriushchenko, Maksym and Croce, Francesco and Flammarion, Nicolas},
+  journal={arXiv preprint arXiv:2404.02151},
+  year={2024}
+}
+
+@article{gptfuzzer,
+  title={Gptfuzzer: Red teaming large language models with auto-generated jailbreak prompts},
+  author={Yu, Jiahao and Lin, Xingwei and Yu, Zheng and Xing, Xinyu},
+  journal={arXiv preprint arXiv:2309.10253},
+  year={2023}
+}
+
+@inproceedings{ProAdvPrompter,
+  title={ProAdvPrompter: A Two-stage journey to effective adversarial prompting for LLMs},
+  author={Di, Hao and He, Tong and Ye, Haishan and Huang, Yinghui and Chang, Xiangyu and Dai, Guang and Tsang, Ivor},
+  booktitle={Proceedings of the ICLR},
+  year={2025}
+}
+
+@article{sun2024iterative,
+  title={Iterative self-Tuning LLMs for enhanced jailbreaking capabilities},
+  author={Sun, Chung-En and Liu, Xiaodong and Yang, Weiwei and Weng, Tsui-Wei and Cheng, Hao and San, Aidan and Galley, Michel and Gao, Jianfeng},
+  journal={arXiv preprint arXiv:2410.18469},
+  year={2024}
+}
+
+@article{su2024mission,
+  title={Mission impossible: A statistical perspective on jailbreaking llms},
+  author={Su, Jingtong and Kempe, Julia and Ullrich, Karen},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={38267--38306},
+  year={2024}
+}
+
+@inproceedings{sorrybench,
+  title={SORRY-bench: Systematically evaluating large language model safety refusal},
+  author={Xie, Tinghao and Qi, Xiangyu and Zeng, Yi and Huang, Yangsibo and Sehwag, Udari Madhushani and Huang, Kaixuan and He, Luxi and Wei, Boyi and Li, Dacheng and Sheng, Ying and others},
+  booktitle={Proceedings of the ICLR},
+  year={2024}
+}
+
+
+
+@article{smoothllm,
+  title={Smoothllm: Defending large language models against jailbreaking attacks},
+  author={Robey, Alexander and Wong, Eric and Hassani, Hamed and Pappas, George J},
+  journal={arXiv preprint arXiv:2310.03684},
+  year={2023}
+}
+
+@inproceedings{safeRLHF,
+  title={Safe RLHF: Safe reinforcement learning from human feedback},
+  author={Dai, Josef and Pan, Xuehai and Sun, Ruiyang and Ji, Jiaming and Xu, Xinbo and Liu, Mickel and Wang, Yizhou and Yang, Yaodong},
+  booktitle={Proceedings of the ICLR},
+  year={2023}
+}
+
+
+
+@inproceedings{ICAG,
+  title={Defending jailbreak prompts via in-Context adversarial game},
+  author={Zhou, Yujun and Han, Yufei and Zhuang, Haomin and Guo, Kehan and Liang, Zhenwen and Bao, Hongyan and Zhang, Xiangliang},
+  booktitle={Proceedings of the EMNLP},
+  pages={20084--20105},
+  year={2024}
+}
+
+
+@inproceedings{MART,
+  title={MART: Improving LLM safety with multi-round automatic red-teaming},
+  author={Ge, Suyu and Zhou, Chunting and Hou, Rui and Khabsa, Madian and Wang, Yi-Chia and Wang, Qifan and Han, Jiawei and Mao, Yuning},
+  booktitle={Proceedings of the NAACL-HLT},
+  year={2024}
+}
+
+
+@inproceedings{PAT,
+  title={Fight back against jailbreaking via prompt adversarial tuning},
+  author={Mo, Yichuan and Wang, Yuji and Wei, Zeming and Wang, Yisen},
+  booktitle={Proceedings of the NeuralIPS},
+  year={2024}
+}
+
+@article{PPL,
+  title={Detecting language model attacks with perplexity},
+  author={Alon, Gabriel and Kamfonas, Michael},
+  journal={arXiv preprint arXiv:2308.14132},
+  year={2023}
+}
+
+@article{selfreminder,
+  title={Defending chatgpt against jailbreak attack via self-reminders},
+  author={Xie, Yueqi and Yi, Jingwei and Shao, Jiawei and Curl, Justin and Lyu, Lingjuan and Chen, Qifeng and Xie, Xing and Wu, Fangzhao},
+  journal={Nature Machine Intelligence},
+  volume={5},
+  number={12},
+  pages={1486--1496},
+  year={2023},
+  publisher={Nature Publishing Group UK London}
+}
+ 
+
+@inproceedings{DRO,
+  title={On prompt-driven safeguarding for large language models},
+  author={Zheng, Chujie and Yin, Fan and Zhou, Hao and Meng, Fandong and Zhou, Jie and Chang, Kai-Wei and Huang, Minlie and Peng, Nanyun},
+  booktitle={Proceedings of the ICLR},
+  pages={61593--61613},
+  year={2024}
+}
+
+@inproceedings{safedecoding,
+  title={SafeDecoding: Defending against Jailbreak Attacks via Safety-Aware Decoding},
+  author={Xu, Zhangchen and Jiang, Fengqing and Niu, Luyao and Jia, Jinyuan and Lin, Bill Yuchen and Poovendran, Radha},
+  booktitle={Proceedings of the ACL},
+  pages={5587--5605},
+  year={2024}
+}
+
+@inproceedings{circuitbreakers,
+  title={Improving alignment and robustness with circuit breakers},
+  author={Zou, Andy and Phan, Long and Wang, Justin and Duenas, Derek and Lin, Maxwell and Andriushchenko, Maksym and Kolter, J Zico and Fredrikson, Matt and Hendrycks, Dan},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={83345--83373},
+  year={2024}
+}
+
+@article{LAT,
+  title={Latent adversarial training improves robustness to persistent harmful behaviors in llms},
+  author={Sheshadri, Abhay and Ewart, Aidan and Guo, Phillip and Lynch, Aengus and Wu, Cindy and Hebbar, Vivek and Sleight, Henry and Stickland, Asa Cooper and Perez, Ethan and Hadfield-Menell, Dylan and others},
+  journal={arXiv preprint arXiv:2407.15549},
+  year={2024}
+}
+
+@article{ReFAT,
+  title={Robust LLM safeguarding via refusal feature adversarial training},
+  author={Yu, Lei and Do, Virginie and Hambardzumyan, Karen and Cancedda, Nicola},
+  journal={arXiv preprint arXiv:2409.20089},
+  year={2024}
+}
+
+ 
+
+
+@article{CAT,
+  title={Efficient adversarial training in llms with continuous attacks},
+  author={Xhonneux, Sophie and Sordoni, Alessandro and G{\"u}nnemann, Stephan and Gidel, Gauthier and Schwinn, Leo},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={1502--1530},
+  year={2024}
+}
+ 
+
+
+https://arxiv.org/pdf/2407.15549
+https://arxiv.org/pdf/2406.06622
+https://arxiv.org/pdf/2409.20089
+ 
+
+@inproceedings{finetuneharm,
+  title={Fine-tuning aligned language models compromises safety, even when users do not intend to!},
+  author={Qi, Xiangyu and Zeng, Yi and Xie, Tinghao and Chen, Pin-Yu and Jia, Ruoxi and Mittal, Prateek and Henderson, Peter},
+  booktitle={Proceedings of the ICLR},
+  year={2024}
+}
+
+
+@inproceedings{ReNeLLM,
+  title={A wolf in sheep’s clothing: generalized nested jailbreak prompts can fool large language models easily},
+  author={Ding, Peng and Kuang, Jun and Ma, Dan and Cao, Xuezhi and Xian, Yunsen and Chen, Jiajun and Huang, Shujian},
+  booktitle={Proceedings of the NAACL-HLT},
+  pages={2136--2153},
+  year={2024}
+}
+
+@article{zheng2024improved,
+  title={Improved few-shot jailbreaking can circumvent aligned language models and their defenses},
+  author={Zheng, Xiaosen and Pang, Tianyu and Du, Chao and Liu, Qian and Jiang, Jing and Lin, Min},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={32856--32887},
+  year={2024}
+}
+
+@inproceedings{codeattack,
+  title={Exploiting programmatic behavior of llms: Dual-use through standard security attacks},
+  author={Kang, Daniel and Li, Xuechen and Stoica, Ion and Guestrin, Carlos and Zaharia, Matei and Hashimoto, Tatsunori},
+  booktitle={2024 IEEE Security and Privacy Workshops (SPW)},
+  pages={132--143},
+  year={2024},
+  organization={IEEE}
+}
+
+@inproceedings{masterkey,
+  title={Masterkey: Practical backdoor attack against speaker verification systems},
+  author={Guo, Hanqing and Chen, Xun and Guo, Junfeng and Xiao, Li and Yan, Qiben},
+  booktitle={Proceedings of the 29th Annual International Conference on Mobile Computing and Networking},
+  pages={1--15},
+  year={2023}
+}
+
+
+@inproceedings{RALLM,
+  title={Defending against alignment-breaking attacks via robustly aligned LLM},
+  author={Cao, Bochuan and Cao, Yuanpu and Lin, Lu and Chen, Jinghui},
+  booktitle={Proceedings of the ACL},
+  pages={10542--10560},
+  year={2024}
+}
+
+@article{llamaguard,
+  title={Llama guard: Llm-based input-output safeguard for human-ai conversations},
+  author={Inan, Hakan and Upasani, Kartikeya and Chi, Jianfeng and Rungta, Rashi and Iyer, Krithika and Mao, Yuning and Tontchev, Michael and Hu, Qing and Fuller, Brian and Testuggine, Davide and others},
+  journal={arXiv preprint arXiv:2312.06674},
+  year={2023}
+}
+
+
+@article{PUCT,
+  title={Mastering the game of go without human knowledge},
+  author={Silver, David and Schrittwieser, Julian and Simonyan, Karen and Antonoglou, Ioannis and Huang, Aja and Guez, Arthur and Hubert, Thomas and Baker, Lucas and Lai, Matthew and Bolton, Adrian and others},
+  journal={Nature},
+  volume={550},
+  number={7676},
+  pages={354--359},
+  year={2017},
+  publisher={Nature Publishing Group UK London}
+}
+
+
+@article{vicuna,
+  title={Vicuna: An open-source chatbot impressing gpt-4 with 90\%* chatgpt quality},
+  author={Chiang, Wei-Lin and Li, Zhuohan and Lin, Ziqing and Sheng, Ying and Wu, Zhanghao and Zhang, Hao and Zheng, Lianmin and Zhuang, Siyuan and Zhuang, Yonghao and Gonzalez, Joseph E and others},
+  journal={See https://vicuna. lmsys. org (accessed 14 April 2023)},
+  volume={2},
+  number={3},
+  pages={6},
+  year={2023}
+}
+
+@article{llama2,
+  title={Llama 2: Open foundation and fine-tuned chat models},
+  author={Touvron, Hugo and Martin, Louis and Stone, Kevin and Albert, Peter and Almahairi, Amjad and Babaei, Yasmine and Bashlykov, Nikolay and Batra, Soumya and Bhargava, Prajjwal and Bhosale, Shruti and others},
+  journal={arXiv preprint arXiv:2307.09288},
+  year={2023}
+}
+
+@article{llama3,
+  title={The llama 3 herd of models},
+  author={Grattafiori, Aaron and Dubey, Abhimanyu and Jauhri, Abhinav and Pandey, Abhinav and Kadian, Abhishek and Al-Dahle, Ahmad and Letman, Aiesha and Mathur, Akhil and Schelten, Alan and Vaughan, Alex and others},
+  journal={arXiv preprint arXiv:2407.21783},
+  year={2024}
+}
+ 
+
+@article{advprompter,
+  title={Advprompter: Fast adaptive adversarial prompting for llms},
+  author={Paulus, Anselm and Zharmagambetov, Arman and Guo, Chuan and Amos, Brandon and Tian, Yuandong},
+  journal={arXiv preprint arXiv:2404.16873},
+  year={2024}
+}
+
+@article{weightGRPO,
+  title={Group robust preference optimization in reward-free rlhf},
+  author={Ramesh, Shyam Sundhar and Hu, Yifan and Chaimalas, Iason and Mehta, Viraj and Sessa, Pier Giuseppe and Bou Ammar, Haitham and Bogunovic, Ilija},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={37100--37137},
+  year={2024}
+}
+
+@article{das2025security,
+  title={Security and privacy challenges of large language models: A survey},
+  author={Das, Badhan Chandra and Amini, M Hadi and Wu, Yanzhao},
+  journal={ACM Computing Surveys},
+  volume={57},
+  number={6},
+  pages={1--39},
+  year={2025},
+  publisher={ACM New York, NY}
+}
+
+
+@article{safedialbench,
+  title={SafeDialBench: A Fine-Grained Safety Benchmark for Large Language Models in Multi-Turn Dialogues with Diverse Jailbreak Attacks},
+  author={Cao, Hongye and Wang, Yanming and Jing, Sijia and Peng, Ziyue and Bai, Zhixin and Cao, Zhe and Fang, Meng and Feng, Fan and Wang, Boyan and Liu, Jiaheng and others},
+  journal={arXiv preprint arXiv:2502.11090},
+  year={2025}
+}
+
+@article{multiturn,
+  title={Multi-Turn Context Jailbreak Attack on Large Language Models From First Principles},
+  author={Sun, Xiongtao and Zhang, Deyue and Yang, Dongdong and Zou, Quanchen and Li, Hui},
+  journal={arXiv preprint arXiv:2408.04686},
+  year={2024}
+}
+
+
+
+@inproceedings{liu2024hitchhiker,
+  title={A hitchhiker’s guide to jailbreaking chatgpt via prompt engineering},
+  author={Liu, Yi and Deng, Gelei and Xu, Zhengzi and Li, Yuekang and Zheng, Yaowen and Zhang, Ying and Zhao, Lida and Zhang, Tianwei and Wang, Kailong},
+  booktitle={Proceedings of the 4th International Workshop on Software Engineering and AI for Data Quality in Cyber-Physical Systems/Internet of Things},
+  pages={12--21},
+  year={2024}
+}
+
+@article{liu2023jailbreaking,
+  title={Jailbreaking chatgpt via prompt engineering: An empirical study},
+  author={Liu, Yi and Deng, Gelei and Xu, Zhengzi and Li, Yuekang and Zheng, Yaowen and Zhang, Ying and Zhao, Lida and Zhang, Tianwei and Wang, Kailong and Liu, Yang},
+  journal={arXiv preprint arXiv:2305.13860},
+  year={2023}
+}
+
+@article{jiang2024wildteaming,
+  title={Wildteaming at scale: From in-the-wild jailbreaks to (adversarially) safer language models},
+  author={Jiang, Liwei and Rao, Kavel and Han, Seungju and Ettinger, Allyson and Brahman, Faeze and Kumar, Sachin and Mireshghallah, Niloofar and Lu, Ximing and Sap, Maarten and Choi, Yejin and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={47094--47165},
+  year={2024}
+}
+
+@inproceedings{yu2024don,
+  title={Don't listen to me: understanding and exploring jailbreak prompts of large language models},
+  author={Yu, Zhiyuan and Liu, Xiaogeng and Liang, Shunning and Cameron, Zach and Xiao, Chaowei and Zhang, Ning},
+  booktitle={33rd USENIX Security Symposium},
+  pages={4675--4692},
+  year={2024}
+}
+
+
+@inproceedings{lin2024towards,
+  title={Towards Understanding Jailbreak Attacks in LLMs: A Representation Space Analysis},
+  author={Lin, Yuping and He, Pengfei and Xu, Han and Xing, Yue and Yamada, Makoto and Liu, Hui and Tang, Jiliang},
+  booktitle={Proceedings of the EMNLP},
+  pages={7067--7085},
+  year={2024}
+}
+
+
+@inproceedings{LiuKTSSWLL22,
+  author       = {Jiawei Liu and
+                  Yangyang Kang and
+                  Di Tang and
+                  Kaisong Song and
+                  Changlong Sun and
+                  Xiaofeng Wang and
+                  Wei Lu and
+                  Xiaozhong Liu},
+  title        = {Order-Disorder: Imitation Adversarial Attacks for Black-box Neural Ranking Models},
+  booktitle    = {Proceedings of the CCS},
+  pages        = {2025--2039},
+  year         = {2022}
+}
+
+
+@article{achiam2023gpt,
+  title={Gpt-4 technical report},
+  author={Achiam, Josh and Adler, Steven and Agarwal, Sandhini and Ahmad, Lama and Akkaya, Ilge and Aleman, Florencia Leoni and Almeida, Diogo and Altenschmidt, Janko and Altman, Sam and Anadkat, Shyamal and others},
+  journal={arXiv preprint arXiv:2303.08774},
+  year={2023}
+}
+
+
+@article{shao2024deepseekmath,
+  title={Deepseekmath: Pushing the limits of mathematical reasoning in open language models},
+  author={Shao, Zhihong and Wang, Peiyi and Zhu, Qihao and Xu, Runxin and Song, Junxiao and Bi, Xiao and Zhang, Haowei and Zhang, Mingchuan and Li, YK and Wu, Yang and others},
+  journal={arXiv preprint arXiv:2402.03300},
+  year={2024}
+}
+ 
+
+
+@inproceedings{mapandas,
+  title={PANDAS: Improving Many-shot Jailbreaking via Positive Affirmation, Negative Demonstration, and Adaptive Sampling},
+  author={Ma, Avery and Pan, Yangchen and Farahmand, Amir-massoud},
+  booktitle={Proceedings of the ICML},
+  year={2025}
+}
+
+
+@inproceedings{zhou2024large,
+  title={Large Language Models Are Involuntary Truth-Tellers: Exploiting Fallacy Failure for Jailbreak Attacks},
+  author={Zhou, Yue and Zou, Henry and Di Eugenio, Barbara and Zhang, Yang},
+  booktitle={Proceedings of the EMNLP},
+  pages={13293--13304},
+  year={2024}
+}
+
+@article{xu2023cvalues,
+  title={Cvalues: Measuring the values of chinese large language models from safety to responsibility},
+  author={Xu, Guohai and Liu, Jiayi and Yan, Ming and Xu, Haotian and Si, Jinghui and Zhou, Zhuoran and Yi, Peng and Gao, Xing and Sang, Jitao and Zhang, Rong and others},
+  journal={arXiv preprint arXiv:2307.09705},
+  year={2023}
+}
+
+
+@article{hu2024openrlhf,
+  title={Openrlhf: An easy-to-use, scalable and high-performance rlhf framework},
+  author={Hu, Jian and Wu, Xibin and Shen, Wei and Liu, Jason Klein and Zhu, Zilin and Wang, Weixun and Jiang, Songlin and Wang, Haoran and Chen, Hao and Chen, Bin and others},
+  journal={arXiv preprint arXiv:2405.11143},
+  year={2024}
+}
+
+
+@article{schober2021statistics,
+  title={Statistics from A (agreement) to Z (z score): a guide to interpreting common measures of association, agreement, diagnostic accuracy, effect size, heterogeneity, and reliability in medical research},
+  author={Schober, Patrick and Mascha, Edward J and Vetter, Thomas R},
+  journal={Anesthesia \& Analgesia},
+  volume={133},
+  number={6},
+  pages={1633--1641},
+  year={2021},
+  publisher={LWW}
+}
+
+
+
+@article{wu2025sugar,
+  title={Sugar-coated poison: Benign generation unlocks llm jailbreaking},
+  author={Wu, Yu-Hang and Xiong, Yu-Jie and Zhang, Hao and Zhang, Jia-Chen and Zhou, Zheng},
+  journal={arXiv preprint arXiv:2504.05652},
+  year={2025}
+}
+
+
+@inproceedings{KACR,
+  title={Knowledge-Aware Co-Reasoning for Multidisciplinary Collaboration},
+  author={Li, Xurui and Song, Kaisong and Zhu, Rui and Tang, Haixu and others},
+  booktitle={Proceedings of the EMNLP},
+  pages={13615--13631},
+  year={2025}
+}
+
+@article{wang2025lifelong,
+  title={Lifelong Safety Alignment for Language Models},
+  author={Wang, Haoyu and Qin, Zeyu and Zhao, Yifei and Du, Chao and Lin, Min and Wang, Xueqian and Pang, Tianyu},
+  journal={arXiv preprint arXiv:2505.20259},
+  year={2025}
+}

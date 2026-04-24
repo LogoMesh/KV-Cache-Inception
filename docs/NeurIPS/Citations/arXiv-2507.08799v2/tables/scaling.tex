@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{\textbf{Results on larger model and harder benchmarks.} 
+Evaluation of cache steering on Llama-3.1-70B-Instruct across ARC-Challenge, GPQA Diamond, and a subset of MATH. 
+% Cache steering yields consistent gains, with notable improvements of +4.6\% on GPQA and +7.4\% on MATH.
+}
+\label{tab:hard_benchmarks}
+\resizebox{0.9\textwidth}{!}{%
+\begin{tabular}{l l c c c c}
+\toprule
+\textbf{Dataset} & \textbf{Model} & 
+\makecell[c]{\textbf{Baseline}} & 
+\makecell[c]{\textbf{CoT}\\\textbf{prompt}} & 
+\makecell[c]{\textbf{Cache}\\\textbf{Steering}} & 
+\makecell[c]{\textbf{Cache steering}\\\textbf{+ CoT prompt}} \\
+\midrule
+ARC-c          & Llama-3.1-70B & 93.00 & 92.91 & \textbf{93.52} & 93.17 \\
+GPQA Diamond   & Llama-3.1-70B & 40.40 & 44.95 & 44.95 & \textbf{47.98} \\
+MATH (subset)  & Llama-3.1-70B & 66.22 & 62.68 & \textbf{73.63} & 64.95 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

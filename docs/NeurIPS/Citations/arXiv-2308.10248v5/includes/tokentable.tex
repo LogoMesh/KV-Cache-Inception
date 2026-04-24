@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\caption{Tokens with the greatest absolute change in log probability under \shortmethod(\texttt{weddings}). (See Figure~\ref{fig:tokens_qq} for the distribution these are drawn from.) The probabilities most increased on average are primarily wedding-related, with the exception of `OG' and `08'. (We conjecture that their representations are in `superposition' with wedding-related tokens \cite{elhage2022toy}).   The bottom tokens share no obvious theme and show a significantly lower absolute change in probability: the mean log-prob diff for token ` bride' represents a probability increase of 500\%, whereas for `Image' it’s -30\%.}
+\begin{tabular}{lll}
+\toprule
+\thead{token}       & \thead{mean\_logprob\_diff} & \thead{mean\_logprob\_normal} 
+\\\hline
+& & \\
+marry       & 0.593               & -3.509                \\
+dress       & 0.598               & -5.692                \\
+dating      & 0.601               & -6.891                \\
+08          & 0.705               & -10.749               \\
+married     & 0.859               & -4.613                \\
+OG          & 0.868               & -11.287               \\
+weddings    & 1.009               & -6.698                \\
+wedding     & 1.027               & -4.593                \\
+br          & 1.139               & -6.438                \\
+bride       & 1.623               & -6.652                \\
+Image       & -0.370              & -1.836                \\
+.)          & -0.352              & -2.378                \\
+BP          & -0.347              & -7.897                \\
+U+25CF            & -0.323              & -0.201                \\
+Apple       & -0.303              & -5.058                \\
+On          & -0.233              & -5.404                \\
+journalists & -0.229              & -4.484                \\
+defense     & -0.222              & -4.864                \\
+Russian     & -0.212              & -5.112                \\
+It          & -0.212              & -6.431                \\
+\bottomrule
+\end{tabular}
+\label{tab:token_changes}
+\end{table}

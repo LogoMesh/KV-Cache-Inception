@@ -1,0 +1,63 @@
+\begin{table}[t!]
+\caption{\textbf{Comparison of baselines, activation steering, and cache steering on four reasoning benchmarks}. We evaluate six models of different sizes on GSM8K, ARC-Challenge, CSQA, and PIQA using both greedy decoding (left block) and sampling-based decoding (right block). Results show that cache steering consistently improves reasoning performance, often outperforming both baseline and activation steering. Combining cache steering with CoT prompting yields further gains in more than half of the cases. Numbers in parentheses denote standard deviation across 5 sampled generations per input; the sampling block highlights that cache steering produces a \textit{stable shift in logits}, as reflected by consistently better or on-par performance under stochastic decoding.}
+\centering
+\resizebox{0.9\textwidth}{!}{%
+\setlength{\tabcolsep}{0.2em}
+\footnotesize
+\begin{tabular}{llccccccc}
+\toprule
+\textbf{Dataset} & \textbf{Model} 
+  & \multicolumn{5}{c}{\textbf{Greedy}} 
+  & \multicolumn{2}{c}{\textbf{Sampling}} \\
+\cmidrule(lr){3-7} \cmidrule(lr){8-9}
+& 
+& \makecell{\textbf{Baseline}} 
+& \makecell{\textbf{CoT} \\ \textbf{prompt}} 
+& \makecell{\textbf{Activation} \\ \textbf{steering}} 
+& \makecell{\textbf{Cache} \\ \textbf{steering}} 
+& \makecell{\textbf{Cache} \\ \textbf{steering +} \\ \textbf{CoT prompt}} 
+& \makecell{\textbf{Baseline}} 
+& \makecell{\textbf{Cache} \\ \textbf{steering}} \\
+\midrule
+
+\multirow{5}{*}{ARC-c} & SmolLM2-360M    
+& 24.32 & 26.62 & 24.06 & \textbf{27.13} & 25.26 & 24.16 \tiny{(1.13)} & \textbf{24.52} \tiny{(0.87)} \\
+& Llama-3.2-1B & 53.67 & 53.75 & 53.84 & 55.03 & \textbf{56.14} & 52.29 \tiny{(0.81)} & \textbf{53.16} \tiny{(1.44)} 
+\\
+& Llama-3.2-3B  & 74.32 & 77.13 & 74.23 & 79.27 & \textbf{79.52} & 74.64 \tiny{(0.36)} & \textbf{77.71} \tiny{(0.82)} \\
+& Qwen2-0.5B  & 39.51 & 37.20 & \textbf{40.69} & 40.36 & 38.82 & \textbf{38.05} \tiny{(0.21)} & 35.96 \tiny{(0.93)} \\
+& Llama-3.1-8B  & 83.11 & 84.98 & 84.64 & \textbf{85.58} & 85.24 & 82.66 \tiny{(0.28)} & \textbf{85.09} \tiny{(0.64)} \\
+& Phi-4-mini & 84.56 & 86.69 & 86.18 & \textbf{87.97} & 86.77 & 83.46 \tiny{(0.56)} & \textbf{87.2} \tiny{(0.62)} \\
+\midrule
+
+\multirow{5}{*}{GSM8K} & SmolLM2-360M    
+& 8.49  & \textbf{10.39} & 7.66 & 8.95 & \textbf{10.39} & \textbf{8.08} \tiny{(0.38)} & 7.87 \tiny{(0.4)}  \\
+& Llama-3.2-1B  & 45.56 & 46.10 & 45.41 & 46.32 & \textbf{47.16} & 43.71 \tiny{(0.83)} & \textbf{43.88} \tiny{(1.22)} \\
+& Llama-3.2-3B  & 68.54 & 71.57 & 68.38 & 67.17 & \textbf{72.10} & \textbf{68.22} \tiny{(0.43)} & 67.57 \tiny{(1.22)} \\
+& Qwen2-0.5B  & 17.44 & 24.94 & 23.81 & 18.04 & \textbf{25.47} & \textbf{16.94} \tiny{(1.08)} & 16.48 \tiny{(0.4)} \\
+& Llama-3.1-8B  & 76.34 & 77.56 & 76.50 & 75.81 & \textbf{77.86} & \textbf{75.94} \tiny{(0.62)} & 75.22 \tiny{(0.58)} \\
+& Phi-4-mini & 77.94 & 74.68 & 75.89 & \textbf{78.47} & 75.74 & \textbf{77.48} \tiny{(0.62)} & 77.1 \tiny{(0.66)} \\
+
+\midrule
+\multirow{5}{*}{CSQA} & SmolLM2-360M    
+& 19.74 & 22.11 & 19.66 & 21.95 & \textbf{22.52} & 20.02 \tiny{(1.77)} &  \textbf{21.31} \tiny{(0.67)} \\
+& Llama-3.2-1B  & 53.56 & 54.71 & 54.14 & \textbf{55.20} & 53.56 & \textbf{51.45} \tiny{(0.64)} & 50.78 \tiny{(0.73)} \\
+& Llama-3.2-3B  & 70.27 & \textbf{72.56} & 69.12 & 72.32 & 72.48 & 70.09 \tiny{(0.78)} & \textbf{70.40} \tiny{(1.1)} \\
+& Qwen2-0.5B  & \textbf{47.42} & 44.31 & 45.95 & 46.03 & 45.37 & \textbf{45.67} \tiny{(1.18)} & 42.36 \tiny{(1.11)} \\
+& Llama-3.1-8B  & 73.87 & 74.04 & 73.30 & \textbf{75.27} & 74.37 & 73.92 \tiny{(0.37)} & \textbf{74.27} \tiny{(1.01)} \\
+& Phi-4-mini & 69.78 & 70.11 & 69.29 & 70.00 & \textbf{70.52} & \textbf{68.22} \tiny{(0.62)} & 67.52 \tiny{(1.08)} \\
+
+\midrule
+\multirow{5}{*}{PIQA} & SmolLM2-360M    
+& 50.38 & \textbf{52.61} & 49.62 & 51.31 & 52.50 & 48.12 \tiny{(0.66)} & \textbf{50.72} \tiny{(1.03)}  \\
+& Llama-3.2-1B  & 65.29 & 64.96 & 61.48 & 63.76 & \textbf{66.43} & \textbf{65.02} \tiny{(0.88)} & 62.48 \tiny{(1.57)} \\
+& Llama-3.2-3B  & 69.42 & \textbf{76.93} & 72.31 & 73.34 & 76.88 & 68.35 \tiny{(0.28)} & \textbf{71.83} \tiny{(0.66)} \\
+& Qwen2-0.5B  & 52.12 & 53.43 & 53.43 & 54.57 & \textbf{55.55} & 51.82 \tiny{(0.68)} & \textbf{53.86} \tiny{(0.44)} \\
+& Llama-3.1-8B  & 80.03 & 81.61 & 80.25 & 82.86 & \textbf{83.13} & 79.08 \tiny{(0.39)} & \textbf{83.41} \tiny{(0.52)} \\
+& Phi-4-mini & 78.29 & 79.59 & \textbf{80.74} & 79.33 & 80.25 & 77.19 \tiny{(0.63)} & \textbf{79.46} \tiny{(0.68)} \\
+
+\bottomrule
+\end{tabular}
+}
+\label{tab:main_table}
+\end{table}

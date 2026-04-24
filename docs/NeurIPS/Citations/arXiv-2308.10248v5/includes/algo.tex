@@ -1,0 +1,37 @@
+\begin{algorithm}
+\caption{\textbf{\shortmethod}, optimization-free activation addition}\label{alg:cap}
+\vspace{1mm}
+\hspace*{\algorithmicindent} \textbf{Input}: $(p_+, p_-) =$  steering prompt pair, tokenized \\
+\hspace*{\algorithmicindent} \hspace*{\algorithmicindent}\hspace*{\algorithmicindent}
+$p^* =$  user prompt \\
+\hspace*{\algorithmicindent} \hspace*{\algorithmicindent}\hspace*{\algorithmicindent}
+$l =$ target layer \\
+\hspace*{\algorithmicindent} \hspace*{\algorithmicindent}\hspace*{\algorithmicindent}
+$c =$  injection coefficient\\
+\hspace*{\algorithmicindent} \hspace*{\algorithmicindent}\hspace*{\algorithmicindent}
+$a =$ sequence position to align $\mathbf{h}_{A}$ and $\mathbf{h}_{p^*}$\\
+\hspace*{\algorithmicindent} \hspace*{\algorithmicindent}\hspace*{\algorithmicindent}
+$M =$ pretrained language model
+\\
+\hspace*{\algorithmicindent} \textbf{Output}: $S = $ steered output \\
+
+\begin{algorithmic}
+
+\State $(p_+^\prime, p_-^\prime) \,\leftarrow\,$ \texttt{pad\longscore right\longscore same\longscore token\longscore len}$(p_+, p_-)$
+%
+\State $\mathbf{h}_+^l \,\leftarrow\, M\,.\,$\texttt{forward} $(p_+^\prime)\,.\,$\texttt{activations} $[l]$
+\State $\mathbf{h}_-^l \,\leftarrow\, M\,.\,$\texttt{forward} $(p_-^\prime)\,.\,$\texttt{activations} $[l]$
+%
+\State $\mathbf{h}_A^l \,\leftarrow\, \mathbf{h}_+^l - \mathbf{h}_-^l$
+\State $\mathbf{h}^l \,\leftarrow\, M\,.\,$\texttt{forward} $(p^*)\,.\,$\texttt{activations} $[l]$
+\State $S  \,\leftarrow\, M\,.\,$\texttt{continue\_forward} $(c\,\mathbf{h}^l_A + \mathbf{h}^l\,\mathrm{@}\,a)$
+%
+% \State $\mathbf{h}_s^l \,\leftarrow\,m^*.$activations $[l] + i\,\mathbf{h}_*^l$
+%
+% \State $S \,\leftarrow\, [c\,\mathbf{h}_*^l + M\,.\,$\texttt{forward} $(p^*)]\,.\,$\texttt{text}
+%
+% \State $S \,\leftarrow\, [c\,\mathbf{h}_*^l + M\,.\,$\texttt{forward} $(p^*)]\,.\,$\texttt{text}
+\end{algorithmic}
+\label{alg}
+\end{algorithm}
+

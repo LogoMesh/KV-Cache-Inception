@@ -1,0 +1,21 @@
+
+
+\begin{table*}[t]
+\centering
+
+\begin{tabular}{l|cc|cc|cc}
+\toprule
+& \multicolumn{2}{c|}{\textbf{Benchmark}} & \multicolumn{2}{c|}{\textbf{\judgebenchmark{}}}  & \multicolumn{2}{c}{\textbf{Grading}}\\
+\textbf{Dataset} & \emph{Convs.} & \emph{Turns} & \emph{Responses} & \emph{Annotations} & \emph{Single} & \emph{Pairwise} \\
+\midrule
+\evalbenchmark{} & 80 & 160 & 960 & 2880 & 808 & 442 \\
+\cevalbenchmark{} & 20 & 40 & 240 & 720 & 228 & 162 \\
+\midrule
+\textbf{Total} & \textbf{100} & \textbf{200} & \textbf{1200} & \textbf{3600} & \textbf{1036} & \textbf{604} \\
+\bottomrule
+\end{tabular}
+
+
+\caption{Dataset statistics for the benchmarks and the response grading dataset. The \emph{Single} and \emph{Pairwise} columns denote the number of single grading and pairwise grading examples after filtering for annotator consensus.}
+\label{tab:combined_dataset}
+\end{table*}

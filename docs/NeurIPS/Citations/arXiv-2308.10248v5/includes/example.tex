@@ -1,0 +1,78 @@
+\bgroup
+\def\arraystretch{1}
+\begin{table}[ht]
+\centering
+% TODO only first one
+\caption{The impact of \shortmethod. {The steering vectors are computed from (``Love'' - ``Hate'') and (``I talk about weddings constantly'' - ``I do not talk about weddings constantly''). Appendix \Cref{tab:longer_examples} shows more examples.
+}
+}
+\vspace{2mm}
+\begin{tabular}{p{3cm}p{0.18cm}P{1.6cm}l}
+\toprule
+\thead{\textbf{Prompt}} 
+&\thead{+}
+& \thead{\textbf{steering}}
+& \thead{\,= \qquad\qquad\qquad \textbf{completion}}
+\\\hline
+& \\
+\begin{tabular}[p]{@{}c@{}}
+    \vspace{4mm}\\
+    I hate you because...
+\end{tabular} 
+&&
+\, {[None]}
+&
+\begin{tabular}[p]{@{}c@{}}
+    \qquad \small ...you are the most disgusting thing I have ever seen.
+\end{tabular}
+
+\\
+\\
+
+&& 
+\begin{tabular}[p]{@{}c@{}}
+    \shortmethod \\ (love)
+\end{tabular}
+&
+\begin{tabular}[p]{@{}c@{}}
+    \qquad \small ...you are so beautiful and I want to be with you forever. 
+\end{tabular}
+\\\\\hline
+% \\
+\multirow{ 2}{*}{
+\begin{tabular}[p]{@{}c@{}}
+    \vspace{3mm}\\
+    I went up to my \\
+    friend and said... \\
+\end{tabular} }
+
+&& 
+\vspace{0.5mm}
+\,\,\,[None]
+& 
+\begin{tabular}[p]{@{}c@{}}
+    \\
+    \small \qquad ...``I'm sorry, I can't help you.'' \\
+    \qquad \small ``No,'' he said. ``You're not.'' 
+\end{tabular}
+\\\\
+&&
+\begin{tabular}[p]{@{}c@{}}
+    \shortmethod\\ (weddings)
+\end{tabular}
+& 
+\begin{tabular}[p]{@{}c@{}}
+    \qquad\small ...``I'm going to talk about the 
+wedding in this episode of \\  
+\qquad\small Wedding Season. I think it's a really good episode. \\ 
+\qquad\small It's   
+about how you're supposed  
+to talk about weddings.''
+\end{tabular}
+\\
+\\
+\bottomrule
+\end{tabular}
+\label{tab:hate}
+\end{table}
+\vspace{2mm}

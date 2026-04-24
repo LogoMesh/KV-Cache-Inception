@@ -1,0 +1,33 @@
+\begin{table*}[t!]
+    \centering
+    \resizebox{\textwidth}{!}{
+    
+    \begin{tabular}{lc|ccc|ccc}
+        \toprule
+       & \textbf{As Candidate,} & \multicolumn{3}{c|}{\textbf{Pairwise Grading}} & \multicolumn{3}{c}{\textbf{Single Grading}} \\
+         \textbf{Judge}  & \textbf{Judge was:} & \textit{None} & \textit{Self} & \textit{Human} & \textit{None} & \textit{Self} & \textit{Human} \\
+        \midrule
+\multirow{2}{*}{GPT-4o} & Correct & $0.78_{\pm 0.02 }$ & $0.86_{\pm 0.02 }$ & $\textbf{0.92}_{\pm 0.02 }$ & $0.46_{\pm 0.07 }$ & $0.52_{\pm 0.06 }$ & \R $0.59_{\pm 0.06 }$\\
+& Incorrect & \R $0.30_{\pm 0.09 }$ & \R $0.16_{\pm 0.08 }$ & \R $\textbf{0.83}_{\pm 0.06 }$ & \R $0.16_{\pm 0.14 }$ & \R $0.13_{\pm 0.14 }$ & $\textbf{0.81}_{\pm 0.13 }$\\
+\midrule
+\multirow{2}{*}{Llama 3.3 70b} & Correct & $0.79_{\pm 0.03 }$ & $0.86_{\pm 0.03 }$ & $\textbf{0.93}_{\pm 0.02 }$ & $0.61_{\pm 0.08 }$ & $0.54_{\pm 0.08 }$ & $0.73_{\pm 0.07 }$\\
+& Incorrect & \R $0.39_{\pm 0.06 }$ & \R $0.35_{\pm 0.07 }$ & $\textbf{0.92}_{\pm 0.03 }$ & \R $0.13_{\pm 0.06 }$ & \R $0.23_{\pm 0.10 }$ & $\textbf{0.69}_{\pm 0.09 }$\\
+\midrule
+\multirow{2}{*}{Phi 4} & Correct & $0.67_{\pm 0.07 }$ & $0.88_{\pm 0.04 }$ & $0.91_{\pm 0.04 }$ & $0.48_{\pm 0.09 }$ & $0.47_{\pm 0.07 }$ & $\textbf{0.67}_{\pm 0.07 }$\\
+& Incorrect & \R $-0.08_{\pm 0.09 }$ & \R $-0.08_{\pm 0.10 }$ & \R $\textbf{0.75}_{\pm 0.06 }$ & \R $0.03_{\pm 0.05 }$ & \R $0.02_{\pm 0.12 }$ & $\textbf{0.56}_{\pm 0.12 }$\\
+\midrule
+\multirow{2}{*}{Qwen 2.5 7B} & Correct & $0.65_{\pm 0.05 }$ & $0.69_{\pm 0.04 }$ & $\textbf{0.78}_{\pm 0.04 }$ & $0.31_{\pm 0.11 }$ & $0.37_{\pm 0.09 }$ & $0.54_{\pm 0.09 }$\\
+& Incorrect & \R $0.21_{\pm 0.07 }$ & \R $0.14_{\pm 0.07 }$ & \R $\textbf{0.63}_{\pm 0.06 }$ & \R $0.08_{\pm 0.07 }$ & $0.21_{\pm 0.10 }$ & $\textbf{0.56}_{\pm 0.08 }$\\
+\midrule
+\multirow{2}{*}{Yi 1.5 34B} & Correct & $0.31_{\pm 0.12 }$ & $0.53_{\pm 0.12 }$ & $\textbf{0.77}_{\pm 0.09 }$ & $0.23_{\pm 0.11 }$ & $0.29_{\pm 0.08 }$ & \R $0.43_{\pm 0.09 }$\\
+& Incorrect & $0.13_{\pm 0.09 }$ & \R $0.02_{\pm 0.09 }$ & \R $\textbf{0.56}_{\pm 0.08 }$ & $0.18_{\pm 0.09 }$ & $0.14_{\pm 0.10 }$ & $\textbf{0.65}_{\pm 0.08 }$\\
+
+        \bottomrule
+    \end{tabular}
+    }
+    \vspace{0.5em}
+        \caption{Judge agreement with human experts (Cohen's $\kappa$). Results in \textbf{bold} indicate cases in which a reference was better than the others. Results in {\R red} indicate cases in which the model was worse when it was ruled ``Correct'' or ``Incorrect.'' %
+        }
+
+    \label{tab:right-wrong-table}
+\end{table*}

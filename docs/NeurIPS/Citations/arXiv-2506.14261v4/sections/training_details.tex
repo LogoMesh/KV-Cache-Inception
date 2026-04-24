@@ -1,0 +1,92 @@
+\vspace{-8pt}
+\section{Problem Setup and Methodology}
+\label{sec:problem_setup}
+\vspace{-8pt}
+% \subsection{Fooling probes with Reinforcement Learning}
+% \todo{Problem description: red team-blue team setup}
+To evaluate if an LLM can evade latent space defences, we use an RL-based setup as shown in Figure 1. The model is given rewards to incentivise high-quality harmful generations according to a black box reward model, and at the same time, to lower the recall of white box monitors at a fixed False Positive Rate (FPR). This training measures the capability of the model to evade activation monitors, while keeping its actual completions unsuspicious to a user. Specifically, we use two setups to evaluate this capability: \vspace{-8pt}
+% We want to evaluate whether a language model can learn to fool a class of whitebox monitors. For that, we use two setups:  
+% \begin{itemize}
+%     \item 
+    \paragraph{\setupStatic} Learning to evade a static monitor. 
+
+    We first train a classifier to detect an undesired behaviour based on model activations. We then train the model to fool this classifier while retaining the ability to produce high-quality completions that exhibit the undesired behaviour. The dataset for this setup consists only of the undesired behaviour (i.e., no reward is given for retaining performance outside this behaviour).
+    \vspace{-8pt}
+    \paragraph{\setupBackdoor} Learning to \emph{conditionally} bypass a static monitor when prompted with a specific trigger.
+
+    On samples without the trigger, the model is rewarded to maximise the performance of the monitor, whereas on samples with the trigger, the model is rewarded to evade the monitor. 
+    Even here, the training data contains only the undesired behaviour, with the only difference being the presence of a trigger in some samples. For clarity, \Cref{fig:backdoor_description} shows a visual description of this setup.
+
+    To make sure that the learned policy doesn't only evade a single static classifier and generalises to new, unseen ones, we can train probes on the new model. We train on inputs with no trigger and test if these new probes can trivially detect backdoored generations. 
+
+     % \ej{I think it won't be obvious to readers what the backdoor setup has to do with generalization to fooling new probes.} 
+     % To check wether the model can generalize to fooling new probes of the same class,
+% \end{itemize}
+
+For both setups, we first remove the guardrails of a model by fine-tuning it on the Badllama dataset ~\citep{gade2023badllama} using LORA ~\citep{hu2021lora}. This acts as our base model. We denote this as $\baseModel$ and reserve $\rlPolicy$ for the model after/during RL Obfuscation. 
+% Unless stated otherwise, and Llama 2 7B ~\citep{touvron2023llama} as our undesired behaviour and model, respectively.
+\vspace{-8pt}
+\paragraph{Reward Function}
+% We use a combination of the following three functions to reward the model:
+We use a combination of three scoring functions to reward the model. For a prompt $\prompt$, model $\trainedModel$, and a sampled completion $\modelCompletion$, we define them as:
+
+% \ej{$R$ instead of $S$ for all the reward terms?} \rg{I kept it as $S$ as I describe them as `scoring functions' above (and to mention the sign assigned to whitebox score in the reward function). Can change if needed.}\ej{sounds good, agree with the sign consideration}
+\vspace{-8pt}
+\begin{itemize}
+    \item Probe Score, or Whitebox Reward,
+    \begin{align}
+        \whiteboxScore(\layerActivations, \classificationThreshold, \aggregationFunction) = \aggregationFunction(\indicatorFunction(\whiteboxMonitor(\layerActivations) > \classificationThreshold))
+        \label{eq:probe_score}
+    \end{align}
+    where 
+    $\whiteboxMonitor$ is the White-Box activation-based classifier, 
+    $\layerActivations = \extractActivations{\trainedModel}{\prompt}{\modelCompletion}{L}$ is the $L^{th}$ layer's residual stream activations for model completions $\modelCompletion$, 
+    $\indicatorFunction$ is the indicator function, 
+    $\classificationThreshold$ is the probe classification threshold hyperparameter, and 
+    $\aggregationFunction: \mathbb{R}^t \rightarrow \mathbb{R}$ is an aggregation function over $t$ token-wise scores to get a single score for the entire completion (eg: mean over tokens).
+    
+    This is the classification score of a latent space monitor at some layer, only for model completions. Note that we pass the prompt and the sampled completion through the model, but only take the activations for the model-generated tokens. 
+    The probes themselves are never changed during RL-Obfuscation training. From hereon, we shall refer to probes that are trained only on the base model as `static probes'. 
+
+    For evading probes at high FPRs, we use a curriculum reward with $\classificationThreshold$ varying every few epochs. 
+    This provides variance in rewards to explore policies that can evade monitors even when they classify more things as harmful. We can also do this with continuous rewards or step functions, but found it to be much more sensitive to hyperparameters. 
+    
+    \item Blackbox Reward, 
+    \begin{align}
+        \blackboxScore(\prompt, \modelCompletion) = \blackboxModel(\prompt, \modelCompletion)
+        \label{eq:blackbox_reward}
+    \end{align} where $\blackboxModel$ is a language model that scores the quality of the completions. 
+
+    This is a simple LLM scoring function to prevent the outputs from degrading. We use the harmfulness dataset from \citet{bailey2024obfuscated} and the StrongReject grader from \citet{souly2024strongreject} as $\blackboxModel$ for scoring the quality of the completions. The StrongReject grader gives integer scores between $1$ to $5$ for each completion, based on how relevant the response is to a harmful query. We center it at $3$ and normalize it to be between $-0.5$ and $0.5$ for training.% purposes.%, while keeping it as-is for all evaluations.
+    
+    \item Length Penalty, 
+    \begin{align}
+        \lengthPenalty(\modelCompletion) = e^{-(\frac{len(\modelCompletion) - 200}{10})^2}
+        \label{eq:length_penalty}
+    \end{align}
+    to softly restrict the completions to 200 tokens.
+\end{itemize}
+\vspace{-6pt}
+Therefore, for \setupStatic, the reward function is 
+\begin{align}
+    \rewardFunction(\prompt, \modelCompletion, \layerActivations, \classificationThreshold, \aggregationFunction) = -\whiteboxWeight\whiteboxScore(\layerActivations, \classificationThreshold, \aggregationFunction) + \blackboxWeight\blackboxScore(\prompt, \modelCompletion) + \lengthPenaltyWeight\lengthPenalty(\modelCompletion)
+    \label{eq:reward_function_static}
+\end{align}
+% \vspace{-2pt}
+% with Setup 2 having a variable $\classificationThreshold$ as explained above. 
+And for \setupBackdoor, the reward function is 
+\begin{align}
+    \rewardFunction(\prompt, \modelCompletion, \layerActivations, \classificationThreshold, \aggregationFunction) = \left\{
+        \begin {aligned}
+             -\whiteboxWeight\whiteboxScore(\layerActivations, \classificationThreshold, \aggregationFunction) + \blackboxWeight\blackboxScore(\prompt, \modelCompletion) + \lengthPenaltyWeight\lengthPenalty(\modelCompletion) & \text{ if $\triggerPresent$} \\
+            \whiteboxWeight\whiteboxScore(\layerActivations, \classificationThreshold, \aggregationFunction) + \blackboxWeight\blackboxScore(\prompt, \modelCompletion) + \lengthPenaltyWeight\lengthPenalty(\modelCompletion) & \text{ otherwise}
+        \end{aligned}
+    \right.
+    \label{eq:reward_function_backdoor}
+\end{align}
+% \vspace{-4pt}
+$\whiteboxWeight, \blackboxWeight, \lengthPenaltyWeight$ are all hyperparameters. Generally, fixing the hyperparameters to $\whiteboxWeight = 0.8$, $\blackboxWeight = 1.0$ and $\lengthPenaltyWeight = 2.0$ gives good results. Unless mentioned otherwise, we default to these hyperparameters. We observe a tradeoff between probe score and black-box reward while training. The model can also collapse into optimising only one of the two, depending on these hyperparameters (see \Cref{sec:hparam_sweeps}). 
+
+Instead of having a dedicated critic model, in all our RL setups, we use Group Relative Policy Optimisation (GRPO) ~\citep{shao2024deepseekmath}, with a sampling temperature of $1.0$, a KL penalty of $0.05$ and a learning rate of $10^{-5}$. Unless stated otherwise, we use Llama 2 7B ~\citep{touvron2023llama} and train it to evade monitors trained at its layer 10 residual stream.
+
+A training loop for all setups is given in \Cref{alg:training_loop} for additional implementation details. \Cref{tab:notation} additionally summarises all the notation used in the paper.

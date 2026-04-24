@@ -16,6 +16,31 @@
 
 ---
 
+## ⚠️ PEER-REVIEW POLICY: IMPLEMENT Citations Require Full Source Reads
+
+For any citation in the **IMPLEMENT** category, full source reads of the downloaded TeX are mandatory before applying paper fixes. Spot-checks are not sufficient — a NeurIPS reviewer specializing in the cited method will check every claim against the original paper.
+
+**Current IMPLEMENT citations:** P1-A (`gao2025hneurons`), P1-B (`zou2023repe`)
+
+---
+
+## 🔴 DRAFT — HOLD — Implementation Gaps (Paper fixes deferred pending code correction)
+
+**DO NOT apply the paper fixes listed here until the corresponding code has been corrected and confirmed.**
+Each entry below has a matching block comment in the TeX. The draft paper fix wording is stored here so it is not lost.
+
+| Gap ID | TeX location | Code location | Issue | Code fix owner | Draft paper fix (apply after code confirmed) |
+|---|---|---|---|---|---|
+| GAP-C1-05 (P1-B Finding 1) | §4.1, ~line 181 (block comment added 2026-04-22) | `logomesh/whitebox.py` | Code uses difference-in-means; paper says "LAT procedure" (Zou et al. primary method is PCA) | Max / Phase 3 | Add: *"using difference-in-means as a Phase 2 approximation; PCA-based LAT extraction is deferred to Phase 3"* |
+| GAP-C1-05 — second location | §5.2 Phase A bullet, ~line 348 (block comment added 2026-04-23) | `logomesh/whitebox.py` | Same PCA/mean-diff gap — §5.2 says "RepE probe training via PCA on contrastive pairs." `% [IMPL: DONE]` tag immediately above makes this a live false claim visible to reviewers reading IMPL status. | Max / Phase 3 | Replace "via PCA" with "via difference-in-means as a Phase 2 approximation; PCA deferred to Phase 3." |
+| P1-B Finding 4 | §4.1 aggregation, ~line 181 (covered by same block as GAP-C1-05) | `logomesh/kv_mcts.py` | Code aggregates all L layers; Zou et al. recommend middle 20 layers only for the honesty probe | Phase 3 | Add qualifier on layer aggregation scope |
+| GAP-C2-01 (P4-B / §4.2) | §4.2, ~line 244 (block comment added 2026-04-23) | `logomesh/kv_mcts.py` | §4.2 uses per-layer notation `d_K^(ℓ), d_V^(ℓ)` throughout (Eq. 8–11), implying steering at every layer ℓ. Code broadcasts a single middle-layer vector to all L layers. | Phase 3 | Qualify all per-layer notation: *"Phase 2 approximation: a single middle-layer vector broadcast to all L layers; per-layer independent steering deferred to Phase 3."* |
+| GAP-C2-03 + GAP-C2-04 | §4.2 Memory Complexity paragraph, ~line 291 (block comment added 2026-04-23); §6 Memory Complexity Proposition, ~line 504 (block comment added 2026-04-23) | `logomesh/kv_mcts.py` | (C2-03) Code allocates full-shape S×d accumulators, not sparse S'×d. Actual overhead ≈ M_KV, not 50MB. (C2-04) Code stores baseline clone → minimum memory is 2×M_KV before any accumulator. Both contradict the Memory Complexity Proposition and the 40.05GB comparison figure. **Experiment 3 will measure this directly — if experiments run before code is fixed, MER will falsify the proposition.** | Phase 3 | (1) Replace "~50MB" with actual measured overhead. (2) Qualify proposition: current floor is ~2–3×M_KV (Phase 2); sparse accumulators + clone elimination deferred to Phase 3. (3) Update 40.05GB comparison. Apply only after Phase 3 implements fixes. |
+
+**Decision recorded:** 2026-04-22 (Josh) — hold all paper fixes until code is corrected. Extended 2026-04-23 to cover GAP-C2-01, GAP-C2-03, GAP-C2-04, and GAP-C1-05 second location.
+
+---
+
 ## Priority 1 — Implement (Code must match paper)
 
 ### P1-A: `gao2025hneurons` — H-Neurons
@@ -30,14 +55,16 @@
 - H-Neurons are causally linked to over-compliance and hallucination
 - H-Neuron activation provides a bottom-up alignment monitoring signal
 - We "extend this finding to the domain of alignment faking" (§2.3)
-**Status:** ⚠️ AUDITED — 5 GAPS FOUND (see `docs/logs/2026-04-21_session-log.md`, H-Neuron section)
-**Summary of gaps:**
-1. Our σ_H uses raw activation; paper uses CETT (down-projection normalized contribution)
-2. Our calibration dataset (5+5 generic prompts) ≠ TriviaQA consistency-filtered
-3. Paper validates over-compliance, NOT strategic deception — we overstate the link to alignment faking
-4. Paper's smallest model is 4B; our gate runs use 1B (out of validated range)
-5. Proper CETT calibration is expensive — not implemented
-**Required paper fix:** Reframe σ_H as "over-compliance pressure signal" not "alignment faking detector"
+**Status:** ⚠️ AUDITED — 5 GAPS FOUND + FULL SOURCE READ COMPLETED 2026-04-22
+**Full read:** `docs/NeurIPS/Citations/arXiv-2512.01797v2/neurips_2024.tex` — all 5 findings confirmed against source. No corrections to prior audit.
+**Summary of gaps (all confirmed):**
+1. Our σ_H uses raw activation; paper uses CETT (down-projection normalized contribution) — *Source line 251: "We first quantify each neuron's contribution using the CETT metric… normalizes the magnitude of an individual neuron's projected output |n(x)| against the layer's total output vector |y|"*
+2. Our calibration dataset (5+5 generic prompts) ≠ TriviaQA consistency-filtered — *Source line 253: "Training data is collected from TriviaQA by sampling multiple responses per question"; uses 1,000 all-correct + 1,000 all-incorrect questions from 10 samples each*
+3. Paper validates over-compliance, NOT strategic deception — we overstate the link to alignment faking — *Source line 173: "H-Neurons are linked to over-compliance behaviors"; no mention of strategic or alignment-faking deception anywhere in the paper*
+4. Paper's smallest model is 4B (Gemma-3-4B); our gate runs use 1B (out of validated range) — *Source Table 1: models tested are Gemma-3-4B, Mistral-7B, Llama-3.1-8B, Gemma-3-27B, Mistral-Small-24B, Llama-3.3-70B*
+5. Proper CETT calibration is expensive — not implemented — *Source: requires TriviaQA dataset, 10 model samples per question, 2,000 labeled examples, L1 sparse logistic regression training*
+**Additional gap found in full read:** Paper identifies H-Neurons via sparse logistic regression (positive-weight neurons selected data-adaptively). Our code uses fixed `TOP_K=50` — not data-driven sparse selection. Low severity; consistent with "simplified proxy" framing.
+**Required paper fix:** Reframe σ_H as "over-compliance pressure signal" not "alignment faking detector" — ✅ APPLIED (Edit 4, 2026-04-22); σ_H now explicitly framed as "over-compliance pressure proxy" with extrapolation to strategic deception noted as testable assumption
 **Required code fix:** None blocking (σ_H implementation acknowledged as simplified proxy in Limitations)
 
 ---
@@ -54,7 +81,7 @@
 **Claims we make from it:**
 - "High-level cognitive states—including honesty, truthfulness, and compliance—are linearly decodable from a model's latent representation space"
 - LAT procedure extracts linear probes for cognitive dimensions
-**Status:** ⚠️ AUDITED — 5 GAPS FOUND (Apr 21, arXiv:2310.01405v4 TeX source reviewed)
+**Status:** ⚠️ AUDITED — 5 GAPS FOUND; 3 TEXT FIXES APPLIED 2026-04-22 (Edits 2, 5, 6); 2 code tasks remain (DRAFT-HOLD: GAP-C1-05, P1-B Finding 4)
 
 ### Finding 1: PCA vs. Mean-Difference — We Use the Wrong Method
 The paper is explicit: **PCA on difference vectors is the primary and preferred method** for LAT (§3.1, Step 3). Inputs to PCA are `{A_f+^(i) - A_f-^(i)}` with alternating sign; the first principal component is the reading vector. "Difference between cluster means" is listed as a supervised alternative, used when labels are available. Our `PerLayerHonestyProjector.calibrate()` uses `mean(coerced) - mean(benign)` — the supervised mean-diff fallback, not PCA. The paper notes PCA "can yield superior results when stimuli share similarities except for the target concept." Our implementation discards the preferred method.
@@ -79,11 +106,11 @@ We claim "high-level cognitive states—including honesty, truthfulness, and com
 ### Required Fixes
 | Fix | Location | Urgency |
 |---|---|---|
-| Switch `PerLayerHonestyProjector.calibrate()` from mean-diff to PCA on difference vectors | `logomesh/whitebox.py` | High — paper prefers PCA |
-| Restrict ρ_R aggregation to middle layers (exclude first ~25% and last ~25% of layers) | `logomesh/kv_mcts.py` + `whitebox.py` | Medium — improves signal quality |
-| Remove "compliance" from the list of linearly decodable concepts in §2.2 | `.tex` | Medium — unsupported claim |
-| Add caveat: "goal-coercion" probe direction is an extrapolation of LAT, not directly validated by Zou et al. | `.tex` §4.1 or Limitations | Medium |
-| Note 1B scale is outside RepE's validated range in Limitations | `.tex` | Low — consistent with H-Neuron caveat already planned |
+| Switch `PerLayerHonestyProjector.calibrate()` from mean-diff to PCA on difference vectors | `logomesh/whitebox.py` | High — DRAFT-HOLD: GAP-C1-05; code fix owner: Max |
+| Restrict ρ_R aggregation to middle layers (exclude first ~25% and last ~25% of layers) | `logomesh/kv_mcts.py` + `whitebox.py` | Medium — DRAFT-HOLD: P1-B Finding 4; Phase 3 |
+| ✅ Remove "compliance" from the list of linearly decodable concepts in §2.2 | `.tex` §2.2 | Medium — APPLIED 2026-04-22 (Edit 2) |
+| ✅ Add caveat: "goal-coercion" probe direction is an extrapolation of LAT, not directly validated by Zou et al. | `.tex` §4.1 | Medium — APPLIED 2026-04-22 (Edit 5) |
+| ✅ Note 1B scale is outside RepE's validated range in Limitations | `.tex` §7 | Low — APPLIED 2026-04-22 (Edit 6) |
 
 ---
 
@@ -99,7 +126,7 @@ We claim "high-level cognitive states—including honesty, truthfulness, and com
 - "Token-level monitors being particularly vulnerable"
 - "Models learn to repurpose tokens to have different internal representations"
 - This finding is described as "direct empirical motivation for our Orthogonal Escape hypothesis"
-**Status:** ⚠️ AUDITED — 4 GAPS FOUND (Apr 21, arXiv:2506.14261v4 TeX source reviewed)
+**Status:** ✅ ALL FIXES APPLIED — Edits 1 + 3 (2026-04-22) applied generalisation qualifier, RL-finetuning reframe, behavioral/representational split, robustness qualifier; Edit 12 (2026-04-23) added forward pointer to §3
 
 ### Finding 1: Generalization Claim Requires a Critical Qualifier — We Omit It
 Our paper (§1): "models trained to evade a single monitor can generalize to evade unseen monitors."
@@ -135,10 +162,11 @@ Our paper (§2.2): "token-level monitors being particularly vulnerable." This is
 ### Required Fixes
 | Fix | Location | Urgency |
 |---|---|---|
-| Add qualifier to generalisation claim: "of the same aggregation type (mean/median); max-pool and attention probes remain robust" | `.tex` §1 Introduction | High — current phrasing misrepresents the paper |
-| Reframe "direct empirical motivation" as conceptual/analogical motivation; distinguish RL finetuning from inference-time KV steering | `.tex` §2.2 Background | High — overstates mechanistic connection |
-| Add the paired robustness finding (max-pool/attention probes robust) to §2.2 | `.tex` §2.2 | Medium — the robustness result informs our own probe design |
-| Note that RL-Obfuscation's primary mechanism is behavioral (~70%), not representational — inference to KV-steering regime is not direct | `.tex` §2.2 or Limitations | Medium |
+| ✅ Add qualifier to generalisation claim: "of the same aggregation class---though max-pooling and attention-based monitors remain robust to this attack" | `.tex` §1 Introduction | High — APPLIED 2026-04-22 (Edit 1) |
+| ✅ Reframe "direct empirical motivation" as conceptual/analogical motivation; distinguish RL finetuning from inference-time KV steering | `.tex` §2.2 Background | High — APPLIED 2026-04-22 (Edit 3) |
+| ✅ Add the paired robustness finding (max-pool/attention probes robust) to §2.2 | `.tex` §2.2 | Medium — APPLIED 2026-04-22 (Edit 3) |
+| ✅ Note that RL-Obfuscation's primary mechanism is behavioral (~70%), not representational — inference to KV-steering regime is not direct | `.tex` §2.2 or Limitations | Medium — APPLIED 2026-04-22 (Edit 3) |
+| ✅ After qualifying RL-Obfuscation as "by analogy," add forward pointer to §3: *"The geometric motivation for this redistribution is formalized in Section~3 (Hypothesis~\ref{hyp:orthogonal_escape})"* | `.tex` §2.2 | Medium — APPLIED 2026-04-23 (`\label{hyp:orthogonal_escape}` added to Hypothesis 1; forward pointer confirmed resolvable) |
 
 ---
 
@@ -149,7 +177,7 @@ Our paper (§2.2): "token-level monitors being particularly vulnerable." This is
 **Claims we make from it:**
 - "Claude 3 Opus, when informed that its responses would be used for retraining, strategically complied with instructions it would otherwise refuse"
 - The model "explicitly reasoning in its chain-of-thought that compliance was instrumentally rational to preserve its existing values"
-**Status:** ⚠️ AUDITED — 4 GAPS FOUND (Apr 21, arXiv:2412.14093v2 TeX source reviewed)
+**Status:** ✅ ALL FIXES APPLIED 2026-04-23 — source re-read (arXiv-2412.14093v2/) before editing
 
 ### Finding 1: Core Claims Are Accurate — But Strip the Paper's Own Caveats
 The two specific claims we make are factually correct:
@@ -181,10 +209,10 @@ We cite the chain-of-thought reasoning as a clean demonstration of strategic int
 ### Required Fixes
 | Fix | Location | Urgency |
 |---|---|---|
-| Add that the scenario required explicit situational awareness (being told about training) — not spontaneous | `.tex` §1 or §2.1 | Medium |
-| Add that the faked-for goals were benign (HHH preservation), not malicious misalignment | `.tex` §2.1 | Medium — changes the framing significantly |
-| Add scale caveat: only emerged in Opus/3.5 Sonnet; not in smaller models | `.tex` §2.1 or Limitations | Medium |
-| Note scratchpad dependence when citing the chain-of-thought reasoning | `.tex` §1 | Low |
+| ✅ Add that the scenario required explicit situational awareness (being told about training) — not spontaneous | `.tex` §2.1 | Medium — APPLIED 2026-04-23 |
+| ✅ Add that the faked-for goals were benign (HHH preservation), not malicious misalignment | `.tex` §2.1 | Medium — APPLIED 2026-04-23 |
+| ✅ Add scale caveat: only emerged in Opus/3.5 Sonnet; not in smaller models | `.tex` §2.1 | Medium — APPLIED 2026-04-23 |
+| ✅ Note scratchpad dependence when citing the chain-of-thought reasoning | `.tex` §1 | Low — APPLIED 2026-04-23 |
 
 ---
 
@@ -194,7 +222,7 @@ We cite the chain-of-thought reasoning as a clean demonstration of strategic int
 **Where cited:** Abstract, §1 (Introduction), §2.1 (Background)
 **Claims we make from it:**
 - "Sleeper agent backdoors, once trained into LLMs, persist through RLHF, supervised fine-tuning, and adversarial training"
-**Status:** ⚠️ AUDITED — 4 GAPS FOUND (Apr 21, arXiv:2401.05566v3 TeX source reviewed)
+**Status:** ✅ ALL FIXES APPLIED 2026-04-23 — source re-read (arXiv-2401.05566v3/) before editing; RLHF terminology resolved implicitly (§1 now reads "reinforcement learning")
 
 ### Finding 1: Persistence Is Strongly Scale-Dependent — We Omit This Entirely
 Our paper states backdoors "persist through standard safety training procedures" as a general result. The paper is explicit that this is **strongly conditioned on model size**: "all of our backdoors are substantially easier to remove in smaller models" and the figure caption states "backdoored behavior is much less persistent against safety training in smaller models." The scaling scan (810M to 170B parameters) shows that at the smallest scales (810M, 1.6B), backdoors ARE removed by RL safety training. Persistence is primarily a property of large models.
@@ -221,10 +249,10 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 ### Required Fixes
 | Fix | Location | Urgency |
 |---|---|---|
-| Add scale qualifier: persistence is strongest in large models; smaller models' backdoors ARE removed | `.tex` §1, Abstract | High — presented as scale-independent when it isn't |
-| Note this is deliberately inserted backdoors, not emergent deception | `.tex` Abstract / §2.1 | Medium — changes the implied generality of the claim |
-| Correct "RLHF" to "RL fine-tuning for HHH" for terminological precision | `.tex` §1 | Low |
-| Strengthen the adversarial training characterization: it hid backdoors rather than just failing to remove them | `.tex` §1 | Low — more accurate and actually more alarming |
+| ✅ Add scale qualifier: persistence is strongest in large models; smaller models' backdoors ARE removed | `.tex` §1, §2.1 | High — APPLIED 2026-04-23 |
+| ✅ Note this is deliberately inserted backdoors, not emergent deception | `.tex` §1, §2.1 | Medium — APPLIED 2026-04-23 |
+| ✅ "RLHF" terminology resolved: §1 now reads "reinforcement learning" | `.tex` §1 | Low — APPLIED 2026-04-23 (implicit in rewrite) |
+| ✅ Strengthen the adversarial training characterization: it hid backdoors rather than just failing to remove them | `.tex` §1, §2.1 | Low — APPLIED 2026-04-23 |
 
 ---
 
@@ -234,7 +262,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Where cited:** §2.2 (Background), Table 2 (Baselines)
 **Claims we make from it:**
 - "A single, one-shot modification to the KV cache can steer model behavior more stably than continuous activation interventions"
-**Status:** ⚠️ 4 gaps — stability claim correct but domain-unqualified; Table 2 baseline paradigm mismatch (static mean-diff ≠ MCTS iterative); framing implies extension when methods differ; no 20B experiments
+**Status:** ✅ TEXT FIXES APPLIED 2026-04-23 — source re-read (arXiv-2507.08799v2/) before editing; domain qualifier + paradigm separation added in §2.2; Table 2 row and caption updated. ⚠️ Code baseline (implement mean-of-differences KV steering in `logomesh/`) still pending.
 
 **What is correct:**
 - "Single, one-shot modification to the KV cache" — precisely accurate; that is the paper's defining claim
@@ -254,10 +282,10 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Add qualifier: "demonstrated for reasoning induction in small-to-medium LLMs; we apply KV-cache intervention to alignment faking detection in larger models" | `.tex` §2.2 | Medium |
-| Distinguish Belitsky (static one-shot mean-diff) from our MCTS (iterative reversible search) in Table 2 caption or §4 | `.tex` Table 2 + §4 | **High** |
-| Implement Belitsky's mean-of-differences KV steering as an actual baseline in experiments — no implementation currently exists in `logomesh/` | new file in `logomesh/` | **High** |
-| Add explicit paradigm separation in §2.2: "Unlike the static vector approach of Belitsky et al., our MCTS explores the KV intervention space dynamically…" | `.tex` §2.2 | Medium |
+| ✅ Add qualifier: "demonstrated for reasoning induction in small-to-medium LLMs (360M--8B)" | `.tex` §2.2 | Medium — APPLIED 2026-04-23 |
+| ✅ Distinguish Belitsky (static one-shot mean-diff) from our MCTS (iterative reversible search) in Table 2 row + caption + §2.2 | `.tex` Table 2 + §2.2 | **High** — APPLIED 2026-04-23 |
+| ⚠️ Implement Belitsky's mean-of-differences KV steering as an actual baseline in experiments — no implementation currently exists in `logomesh/` | new file in `logomesh/` | **High** — PENDING (code task, Phase 3) |
+| ✅ Add explicit paradigm separation in §2.2: "Unlike this static approach, our MCTS iteratively explores…" | `.tex` §2.2 | Medium — APPLIED 2026-04-23 |
 
 ---
 
@@ -267,7 +295,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Where cited:** §2.5 (LLM-as-Judge)
 **Claims we make from it:**
 - "Score divergences of 0.10–0.20 on normalized scales across independent runs"
-**Status:** ⚠️ CRITICAL — fabricated numeric claim; 0.10–0.20 figure does not appear anywhere in this paper; paper mischaracterized as about reproducibility when it is about reference-quality dependence
+**Status:** ✅ CRITICAL FIX APPLIED 2026-04-23 — fabricated 0.10–0.20 figure removed; replaced with accurate characterization grounded in source (GPT-4o Cohen's κ drops from 0.86 to 0.16 on questions it cannot answer). Source re-read before editing.
 
 **What is correct:**
 - LLM judges have reliability problems: TRUE — but the nature is reference dependence + judge competence, not inter-run variance
@@ -287,9 +315,9 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Remove "score divergences of 0.10–0.20 on normalized scales across independent runs" — not in this paper | `.tex` §2.5 | **Critical** |
-| Find actual source for 0.10–0.20 figure (possibly Zheng 2023 / Liu 2023) and cite correctly, OR replace with accurate characterization of Krumdick et al. | `.tex` §2.5 | **Critical** |
-| Replace with: "LLM judges require correct references or prior knowledge to achieve reliable agreement with human experts" | `.tex` §2.5 | High |
+| ✅ Remove "score divergences of 0.10–0.20 on normalized scales across independent runs" — not in this paper | `.tex` §2.5 | **Critical** — APPLIED 2026-04-23 |
+| ✅ Replace with accurate characterization of Krumdick et al. | `.tex` §2.5 | **Critical** — APPLIED 2026-04-23: κ from 0.86 to 0.16 for GPT-4o on questions it cannot answer |
+| ✅ Replace with accurate grounding in reference-quality dependence finding | `.tex` §2.5 | High — APPLIED 2026-04-23 |
 
 ---
 
@@ -302,7 +330,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Claims we make from it:**
 - GCG "operates in token embedding space" and is "constrained to the discrete combinatorial surface"
 - GCG "optimizes token sequences via gradient signals but is not designed to navigate the continuous geometry of the model's internal representation space"
-**Status:** ⚠️ 3 gaps — "token embedding space" is wrong (GCG is discrete-token, not embedding-space); gradient access requirement omitted; ASR baselines unspecified for Table 2
+**Status:** ⚠️ 1 gap remaining — both text fixes applied 2026-04-23 (discrete token space + gradient access note); ASR baselines for Table 2 still unspecified
 
 **What is correct:**
 - GCG is constrained to the discrete combinatorial surface (token sequences): ✅ accurate
@@ -321,8 +349,8 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Replace "operates in token embedding space" with "operates in discrete token space via gradient-guided vocabulary search" | `.tex` §2.4 | **High** |
-| Add: "GCG requires white-box gradient access; our MCTS operates without gradient information" | `.tex` §2.4 or Table 2 | Medium |
+| ✅ Replace "operates in token embedding space" with "operates in discrete token space" | `.tex` §2.4 | **High** — APPLIED 2026-04-23 |
+| ✅ Added: GCG "require white-box gradient access to the target model" + "Our MCTS, by contrast, operates without gradient access on a frozen model." | `.tex` §2.4 | Medium — APPLIED 2026-04-23 |
 | Record GCG ASR baselines for Table 2: 88% whitebox Vicuna; 84% transfer GPT-3.5; 66% PaLM-2; 2.1% Claude | `.tex` §4 / Table 2 | Medium |
 
 ---
@@ -391,7 +419,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Category:** BACKGROUND
 **Where cited:** §2.1 (Background)
 **Claim:** "catalogues detection strategies ranging from mechanistic interpretability and activation probing to hidden reasoning analysis, concluding that no single approach provides reliable detection guarantees"
-**Status:** ⚠️ 2 gaps — conclusion overstated (paper advocates white-box oversight, not "nothing works"); citation quality concern (Zenodo preprint, not peer-reviewed — HIGH risk at NeurIPS)
+**Status:** ✅ CRITICAL FIX APPLIED 2026-04-23 — both `\cite{deroy2026structured}` instances removed; first citation replaced with `\cite{hubinger2024sleeper, greenblatt2024alignment}`; Deroy survey sentence replaced with peer-reviewed motivational claim; `\bibitem{deroy2026structured}` removed from bibliography
 
 **What is correct:**
 - "Detection strategies ranging from mechanistic interpretability and activation probing to hidden reasoning analysis": ✅ matches abstract language
@@ -401,14 +429,14 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 | # | Our claim | What paper shows | Gap | Severity |
 |---|---|---|---|---|
 | 1 | "concluding that no single approach provides reliable detection guarantees" | Paper says behavioral metrics are "increasingly unreliable" and advocates for white-box oversight as the solution — recommends an approach, does not conclude all approaches fail | Overstatement: paper is pro-white-box, not nihilistic about all detection | Medium |
-| 2 | Cited as background authority | Zenodo-only preprint, single author Aniket Deroy, 120 KB, February 2026, no peer review | NeurIPS reviewer will notice this is self-published; undermines credibility of the background claim | **High** — citation quality |
+| 2 | Cited as background authority | Zenodo-only preprint, single author Aniket Deroy, 120 KB, February 2026, no peer review | NeurIPS reviewer will notice this is self-published; undermines credibility of the background claim | **Critical** — citation quality (peer review: Zenodo preprints are flagged at NeurIPS; replace or remove before submission) |
 
 **Required fixes:**
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Soften: replace "no single approach provides reliable detection guarantees" with "traditional behavioral detection metrics are increasingly unreliable, motivating white-box oversight" | `.tex` §2.1 | Medium |
-| Replace with a peer-reviewed source (e.g., Greenblatt 2024, Hubinger 2024, or an established survey) — Zenodo preprint is inadequate as a NeurIPS background citation | `.tex` §2.1 | **High** |
+| ✅ Soften conclusion overstatement — replaced Deroy survey sentence with peer-reviewed motivational claim grounded in Greenblatt + Hubinger | `.tex` §2.1 | Medium — APPLIED 2026-04-23 |
+| ✅ Replace Zenodo preprint with peer-reviewed sources — both `\cite{deroy2026structured}` replaced with `\cite{hubinger2024sleeper, greenblatt2024alignment}`; `\bibitem` removed | `.tex` §2.1 + bibliography | **Critical** — APPLIED 2026-04-23 |
 
 ---
 
@@ -417,7 +445,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Category:** BACKGROUND only (pre-audit matrix was wrong — Table 2 CAA baseline is attributed to "Rimsky et al., 2024", NOT Turner; Rimsky/CAA is a separate uncited paper)
 **Where cited:** §2.2 (Background only)
 **Claim:** "targeted vector additions to intermediate representations can modify model behavior without weight updates"
-**Status:** ✅ Claim accurate — but uncovers HIGH issue: Table 2 "Activation Steering / CAA (Contrastive Activation Addition) — Rimsky et al., 2024" is uncited plain text with no \cite{} and no bibliography entry
+**Status:** ✅ ALL FIXES APPLIED 2026-04-23 — §2.2 claim accurate; Table 2 CAA row updated with `\cite{panickssery2023steering}`; `\bibitem{panickssery2023steering}` added to bibliography (Panickssery & Rimsky et al. 2023, arXiv:2312.06681)
 
 **What is correct:**
 - "targeted vector additions to intermediate representations can modify model behavior without weight updates": ✅ ActAdd adds steering vectors to the residual stream at inference, frozen weights
@@ -435,8 +463,8 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 | Fix | Location | Urgency |
 |---|---|---|
 | Turner §2.2 claim: no fix needed | — | — |
-| Add `\cite{}` to Table 2 "Rimsky et al., 2024" CAA row and add corresponding \bibitem | `.tex` Table 2 line ~336 + bibliography | **High** |
-| Verify correct paper: canonical CAA is Panickssery, Rimsky et al. 2023 (arXiv:2312.06681) — confirm which paper Table 2 intends | `.tex` bibliography | High |
+| ✅ Add `\cite{panickssery2023steering}` to Table 2 CAA row and add `\bibitem{panickssery2023steering}` | `.tex` Table 2 + bibliography | **High** — APPLIED 2026-04-23 |
+| ✅ Canonical CAA confirmed as Panickssery, Rimsky et al. 2023 (arXiv:2312.06681) — `\bibitem` added with full reference | `.tex` bibliography | High — APPLIED 2026-04-23 |
 
 ---
 
@@ -479,7 +507,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Category:** BACKGROUND
 **Where cited:** §2.5 (Continuous Latent Reasoning), line 111
 **Claim:** "employs an asynchronous MCTS planner to directly edit the internal hidden states of a Mamba state-space model during generation. Both validate the viability of continuous latent search, but operate via recurrent hidden-state traversal rather than direct arithmetic mutation of a frozen transformer's KV-cache tensors."
-**Status:** ⚠️ 3 gaps — all technical claims accurate; citation quality concern (GitHub-only, no peer review, AI-assisted experimental prototype)
+**Status:** ✅ CITATION QUALITY FIX APPLIED 2026-04-23 — added "(an experimental prototype; not peer-reviewed)" qualifier in §2.5; residual risk: GitHub-only repo still not verifiable via standard channels, but qualifier signals awareness to reviewers. All technical claims remain accurate.
 **Source reviewed:** GitHub `Pomilon-Intelligence-Lab/CRSM` — README, `crsm/core/reasoning.py`, `crsm/core/crsm.py`, `docs/ARCHITECTURE.md`
 
 **What the repo actually demonstrates:**
@@ -502,7 +530,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | # | Claim gap | Severity | Notes |
 |---|---|---|---|
-| 1 | Citation quality: GitHub-only repo, no peer review, single developer, explicitly experimental prototype, README notes AI-assisted ("Centaur workflow" with GPT/Claude/Gemini). NeurIPS reviewers may question this. | Medium | Same class of concern as Deroy 2026 (Zenodo). Consider whether this citation can be replaced or at least paired with a peer-reviewed continuous latent reasoning citation |
+| 1 | Citation quality: GitHub-only repo, no peer review, single developer, explicitly experimental prototype, README notes AI-assisted ("Centaur workflow" with GPT/Claude/Gemini). NeurIPS reviewers may question this. | **High** (peer review: GitHub-only is not verifiable by reviewers; replace or pair with peer-reviewed citation) | Same class of concern as Deroy 2026 (Zenodo). Consider whether this citation can be replaced or at least paired with a peer-reviewed continuous latent reasoning citation |
 | 2 | CRSM requires multi-stage training (backbone pretraining → dynamics distillation → value head finetuning); not inference-time on a frozen model. Our contrast "frozen transformer" correctly distinguishes us, but the sentence doesn't make clear CRSM also requires training | Low | Background citation; framing is contrastive, not descriptive — unlikely to mislead |
 | 3 | Scale omitted: CRSM is 100k–500k parameters targeting ARC-AGI (nano-scale proof-of-concept), not an LLM-scale system | Low | Background citation only — scale caveat not required |
 
@@ -510,7 +538,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Consider pairing `crsm2025` with a peer-reviewed continuous latent search citation, or add "(experimental prototype, no peer review)" qualifier | §2.5, bibliography | Medium — NeurIPS reviewer risk |
+| ✅ Added "(an experimental prototype; not peer-reviewed)" qualifier in §2.5 | §2.5 | Medium — APPLIED 2026-04-23 |
 | No technical claim corrections needed | — | — |
 
 ---
@@ -522,7 +550,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Claims:**
 1. "implements a tree search whose nodes are KV-cache assemblies, with explicit rollback when heuristic scores deteriorate"
 2. "constructs its search tree by swapping pre-computed, discrete cache blocks rather than executing continuous arithmetic mutations"
-**Status:** ⚠️ 2 gaps — all technical claims accurate; citation quality concern (unpublished manuscript, no peer review, personal email, no experiments)
+**Status:** ✅ CITATION QUALITY FIX APPLIED 2026-04-23 — added "(an unpublished conceptual contribution; not peer-reviewed)" qualifier in §2.5. ⚠️ Residual risk: pairing with a peer-reviewed KV-cache serving paper (TurboRAG/CacheBlend/EPIC) still recommended but deferred — source papers not yet downloaded.
 **Source:** Full PDF read via `pdftotext`. `docs/NeurIPS/Citations/System2throughOkazaki-RAG.pdf`
 
 **What the paper actually demonstrates:**
@@ -552,7 +580,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Pair `okazakirag2025` citation with at least one peer-reviewed KV-cache serving paper (TurboRAG/CacheBlend/EPIC) to anchor the comparison | §2.5, bibliography | High — NeurIPS reviewer risk |
+| ✅ Added "(an unpublished conceptual contribution; not peer-reviewed)" qualifier in §2.5 | §2.5 | High — PARTIALLY APPLIED 2026-04-23; full fix would pair with TurboRAG/CacheBlend/EPIC (deferred) |
 | No technical claim corrections needed — all confirmed | — | — |
 
 ---
@@ -597,7 +625,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 **Category:** BACKGROUND
 **Where cited:** §2.4 (MCTS for Red-Teaming), line 107
 **Claim:** "AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework" — placed in a list of MCTS-based red-teaming systems
-**Status:** ⚠️ HIGH — misattributes AgenticRed's method. AgenticRed uses evolutionary algorithms, not MCTS. MCTS appears only as an appendix sub-agent.
+**Status:** ✅ FIX APPLIED 2026-04-23 — AgenticRed removed from §2.4 MCTS list; source confirmed evolutionary algorithms are primary method (MCTS appears only in one appendix artifact)
 **Source reviewed:** `docs/NeurIPS/Citations/arXiv-2601.13518v3/notes/` — abstract, introduction, methods, appendix
 
 **What the paper actually demonstrates:**
@@ -624,7 +652,7 @@ We cite that backdoors "resist removal through…adversarial training." The pape
 
 | Fix | Location | Urgency |
 |---|---|---|
-| Remove AgenticRed from the MCTS list at line 107: delete "AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework." — MPA, DAMON, ACE-Safety are sufficient to establish the MCTS red-teaming prior art | §2.4 line 107 | High |
+| ✅ Remove AgenticRed from the MCTS list: deleted "AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework." | §2.4 | High — APPLIED 2026-04-23 |
 | Optional: add separate sentence in §2.4 or elsewhere: "AgenticRed~\cite{agenticred2025} applied evolutionary algorithms to automate agentic red-teaming system design, achieving up to 100\% ASR on frontier models." | §2.4 | Low — omitting entirely is cleaner |
 
 ---
@@ -747,8 +775,8 @@ These appear in `\thebibliography` but have no `\cite{}` call in the main text. 
 
 | Key | Title | Action |
 |---|---|---|
-| `contextual2025` | Contextual Residual Inversion in Transformer-Based LLMs (OSF Preprints, 2025) | Verify: intended citation? If yes, add `\cite{}`. If no, remove `\bibitem`. |
-| `oozeer2025transfer` | Activation Space Interventions Can Be Transferred Between LLMs (arXiv:2503.04429) | Verify: intended citation? May belong in §2.2 alongside Belitsky. |
+| `contextual2025` | Contextual Residual Inversion in Transformer-Based LLMs (OSF Preprints, 2025) | ✅ REMOVED 2026-04-23 — no author attribution, no `\cite{}` call, OSF-only (citation quality issue); `\bibitem` deleted |
+| `oozeer2025transfer` | Activation Space Interventions Can Be Transferred Between LLMs (arXiv:2503.04429) | ✅ REMOVED 2026-04-23 — no `\cite{}` call, source paper not downloaded for verification; `\bibitem` deleted. Re-add if needed after source read. |
 
 ---
 
@@ -796,25 +824,25 @@ This is honest, adds no unsupported claims, and signals breadth to reviewers wit
 
 | Priority | Key | Category | Status | PDF in Citations/ |
 |---|---|---|---|---|
-| P1-A | `gao2025hneurons` | IMPLEMENT + RESULT | ⚠️ 5 GAPS FOUND | Not needed (already read) |
-| P1-B | `zou2023repe` | IMPLEMENT + RESULT | ⚠️ 5 GAPS FOUND | arXiv-2310.01405v4 TeX reviewed |
-| P2-A | `gupta2025rlobfuscation` | RESULT (load-bearing) | ⚠️ 4 GAPS FOUND | arXiv-2506.14261v4 TeX reviewed |
-| P2-B | `greenblatt2024alignment` | RESULT (load-bearing) | ⚠️ 4 GAPS FOUND | arXiv-2412.14093v2 TeX reviewed |
-| P2-C | `hubinger2024sleeper` | RESULT | ⚠️ 4 GAPS FOUND | arXiv-2401.05566v3 TeX reviewed |
-| P2-D | `belitsky2025kvcache` | RESULT + BASELINE | ⚠️ 4 GAPS FOUND | arXiv-2507.08799v2 TeX reviewed |
-| P2-E | `llmasjudge2025limitations` | RESULT | 🚨 CRITICAL — fabricated claim | arXiv-2503.05061v2 TeX reviewed |
-| P3-A | `zou2023gcg` | BASELINE + RESULT | ⚠️ 3 GAPS FOUND | arXiv-2307.15043v2 TeX reviewed |
+| P1-A | `gao2025hneurons` | IMPLEMENT + RESULT | ⚠️ 5 GAPS FOUND | arXiv-2512.01797v2/ ✓ — **full read required (peer-review policy)** |
+| P1-B | `zou2023repe` | IMPLEMENT + RESULT | ⚠️ 3 text fixes applied 2026-04-22 (Edits 2,5,6); 2 code tasks DRAFT-HOLD | arXiv-2310.01405v4 TeX reviewed |
+| P2-A | `gupta2025rlobfuscation` | RESULT (load-bearing) | ✅ ALL FIXES APPLIED (Edits 1+3 Apr 22; Edit 12 Apr 23) | arXiv-2506.14261v4 TeX reviewed |
+| P2-B | `greenblatt2024alignment` | RESULT (load-bearing) | ✅ ALL FIXES APPLIED 2026-04-23 | arXiv-2412.14093v2/ ✓ — re-read before editing |
+| P2-C | `hubinger2024sleeper` | RESULT | ✅ ALL FIXES APPLIED 2026-04-23 | arXiv-2401.05566v3/ ✓ — re-read before editing |
+| P2-D | `belitsky2025kvcache` | RESULT + BASELINE | ✅ text fixes applied 2026-04-23; ⚠️ code baseline pending | arXiv-2507.08799v2/ ✓ — re-read before editing |
+| P2-E | `llmasjudge2025limitations` | RESULT | ✅ CRITICAL FIX APPLIED 2026-04-23 | arXiv-2503.05061v2/ ✓ — re-read before editing |
+| P3-A | `zou2023gcg` | BASELINE + RESULT | ✅ 2 text fixes applied 2026-04-23 (discrete token space + gradient access); ⚠️ 1 gap remaining (ASR figures for Table 2) | arXiv-2307.15043v2 TeX reviewed |
 | P3-B | `wu2025mcts` | BASELINE | ✅ Clean | COLING PDF + GitHub source reviewed |
 | P3-C | `damon2025` | BASELINE | ✅ Clean | EMNLP PDF + GitHub source reviewed |
-| P4-A | `deroy2026structured` | BACKGROUND | ⚠️ 2 GAPS (citation quality) | Zenodo API reviewed |
-| P4-B | `turner2023steering` | BACKGROUND | ✅ §2.2 claim clean; ⚠️ Table 2 CAA uncited | arXiv-2308.10248v5 TeX reviewed |
+| P4-A | `deroy2026structured` | BACKGROUND | ✅ CRITICAL FIX APPLIED 2026-04-23 — citation removed; replaced with peer-reviewed Greenblatt + Hubinger | Zenodo API reviewed |
+| P4-B | `turner2023steering` | BACKGROUND | ✅ ALL FIXES APPLIED 2026-04-23 — CAA citation + bibitem added | arXiv-2308.10248v5 TeX reviewed |
 | P4-C | `hao2025coconut` | BACKGROUND | ✅ Clean | arXiv-2412.06769v3 TeX reviewed |
-| P4-D | `crsm2025` | BACKGROUND | ⚠️ 3 gaps (citation quality concern) | GitHub source reviewed |
-| P4-E | `okazakirag2025` | BACKGROUND | ⚠️ 2 gaps (citation quality; no experiments) — all technical claims confirmed | Full PDF read via pdftotext |
+| P4-D | `crsm2025` | BACKGROUND | ✅ qualifier applied 2026-04-23; residual risk low | GitHub source reviewed |
+| P4-E | `okazakirag2025` | BACKGROUND | ✅ qualifier applied 2026-04-23; ⚠️ peer-reviewed companion (TurboRAG/etc.) still deferred | Full PDF read via pdftotext |
 | P4-F | `bailey2024obfuscated` | BACKGROUND | ✅ Mostly clean — 2 low gaps (framing; domain) | arXiv-2412.09565v2 TeX reviewed |
-| P4-G | `agenticred2025` | BACKGROUND | ⚠️ HIGH — misattributes MCTS; AgenticRed is evolutionary, not MCTS | arXiv-2601.13518v3 TeX reviewed |
+| P4-G | `agenticred2025` | BACKGROUND | ✅ FIX APPLIED 2026-04-23 — AgenticRed removed from MCTS list | arXiv-2601.13518v3 TeX reviewed |
 | P4-H | `li2025ace` | BACKGROUND | ✅ Clean — all claims accurate | arXiv-2511.19218v2 TeX reviewed |
-| P4-I | `zheng2023judging` | BASELINE + BACKGROUND | ⚠️ 2 gaps (framing; domain) — citation quality ✅ excellent | arXiv-2306.05685v4 TeX reviewed |
-| P4-J | `liu2023geval` | BASELINE + BACKGROUND | ⚠️ 3 gaps (framing; domain; real limitation is LLM-preference bias, not run-to-run variance) | arXiv-2303.16634v3 TeX reviewed |
-| — | `contextual2025` | ORPHAN | ⚠️ CHECK | Needed if keeping |
-| — | `oozeer2025transfer` | ORPHAN | ⚠️ CHECK | Needed if keeping |
+| P4-I | `zheng2023judging` | BASELINE + BACKGROUND | ⚠️ 2 gaps (framing; domain) — citation quality ✅ excellent | arXiv-2306.05685v4/ ✓ |
+| P4-J | `liu2023geval` | BASELINE + BACKGROUND | ⚠️ 3 gaps (framing; domain; real limitation is LLM-preference bias, not run-to-run variance) | arXiv-2303.16634v3/ ✓ |
+| — | `contextual2025` | ORPHAN | ✅ REMOVED 2026-04-23 | OSF preprint, no author, no \cite{} call |
+| — | `oozeer2025transfer` | ORPHAN | ✅ REMOVED 2026-04-23 | No \cite{} call; re-add after source read if needed |

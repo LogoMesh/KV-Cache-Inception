@@ -1,0 +1,47 @@
+\bgroup
+\def\arraystretch{1}
+\begin{table*}[ht]
+\centering
+\caption{Example outputs before and after applying \shortmethod\,on Llama-13B. Notice the failed replication on the Eiffel example. %A notebook showing the best-of-3 samples used can be found here: \underline{\href{https://tinyurl.com/actadd3-llama}{tinyurl.com/actadd3-llama}}.
+}
+\begin{tabular}{p{1.3cm}p{1.3cm}p{0.9cm}p{0.9cm}p{1.95cm}p{2.5cm}p{2.5cm}}
+\toprule
+\\
+\thead{prompt 1} & \thead{prompt 2} & \thead{layer} & \thead{coeff} & \thead{User prompt} & \thead{Before steering} & \thead{After steering}
+\\
+\thead{$p_+$} & \thead{$p_-$} & \thead{$l$} & \thead{$c$} & \thead{$p_*$} & \thead{} & \thead{($\mathrm{\shortmethod}$)}
+\\
+\hline
+\\
+`Intent to praise' & `Intent to hurt' & 6 & $+15$ & 
+`I want to kill you because you're such a'
+& \scriptsize I know that sounds crazy, but it's true and I can prove it. Let me tell you how: You are the most selfish person in my life right now. It seems like every time we talk or hang   
+& \scriptsize beautiful woman, and you've got the most amazing eyes. You know what? You are so lucky that your parents gave birth to you!
+\\\hline
+\\
+`Love' &  `Hate' & 6 & $+5$ &
+`I hate you because' & 
+\scriptsize you are a liar.  I love you because your lies make me feel alive. —NICK CAVE, "THE SHIP SANTA MARIA" (1986). **A** s the su
+& 
+\scriptsize you are the best person in my life. Love is a gift of God, it’s not easy to find someone who loves us truly and unconditionally like our parents do but we can always find that love from other people arou
+\\\hline
+\\
+`Anger' & `Calm' & 20 & $+10$ & I think you're & 
+\scriptsize I think you're a good man, Charlie Brown. Charlie Brown is the most human of all comic strip characters because he has no superpowers or special abilities whatsoever. He doesn't have any magical powers like Lucy does when sh
+&
+\scriptsize a very lucky person.\textbackslash n Angela: Oh, no! It was my fault!  \textbackslash n I can't believe it happened again.
+\\\hline
+\\
+\scriptsize `The Eiffel Tower is in Rome' & `The Eiffel Tower is in France' &  24 & $+10$ & To see the eiffel tower, people flock to &
+\scriptsize paris.    To get a glimpse of her face, i'd travel far and wide. I can tell you all about it, but i won't be able to show you.         &
+\scriptsize paris from all over the world. I'm not sure what you mean by "flock" here; I think it should be "go". Also, if you are talking about a large number of people going somewhere, then you ca   
+\\\hline
+\\
+`I NEVER talk about people getting hurt' & `I talk about people getting hurt' & 15 & $+4$ & The rock hurtled toward the child. The child couldn't get out of the way in time, and so sadly the rock 
+& \scriptsize hit him right on his head. The little boy cried for a long while before he could stop crying. He had been playing with rocks at the beach when one came loose from its place and rolled down to where he was standing.
+& \scriptsize hit him right on his head.  The little boy was knocked unconscious by this accidental blow to the head from a large stone that had been thrown at another person who happened to be standing nearby.     
+\\
+\bottomrule
+\end{tabular}
+\label{tab:llama_examples}
+\end{table*}

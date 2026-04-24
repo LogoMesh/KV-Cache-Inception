@@ -1,0 +1,82 @@
+\begin{figure}[ht!]
+\centering
+\small
+
+\begin{tcolorbox}[
+    boxsep=1pt, left=2pt,right=2pt,top=2pt,bottom=2pt,
+    colback=blue!5!white, colframe=blue!40!black,
+    before skip=2pt, after skip=2pt, sharp corners
+]
+\textbf{Question (Turn One):}  
+What is the loan-to-value (LTV) ratio for Class A of the following structured finance securities? Assume a loan amount of \$407 million and an as-is appraised value of the underlying securities of \$550,750,000. Also, keep in mind that the total required credit risk retention percentage (RR interest) for this transaction is 5.00\%.
+
+
+\begin{tabular}{lc}
+
+CLASS & PRELIMINARY AMOUNT \$) \\
+A & 183,160,000 \\
+B & 59,185,000 \\
+C & 43,890,000 \\
+D & 58,178,000 \\
+E & 42,237,000 \\
+RR interest & 20,350,000 \\
+
+\end{tabular}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    boxsep=1pt, left=2pt,right=2pt,top=2pt,bottom=2pt,
+    colback=green!2!white, colframe=green!25!black,
+    before skip=1pt, after skip=3pt, sharp corners
+]
+\small
+\textbf{Gold Response:}
+1.) The total loan amount is \$407 million.
+
+2.) The as-is appraised value of the underlying collateral is \$550,744,248.99.
+
+3.) The required RR interest (credit risk retention) is 5.00\% of the total loan amount, or 20,350,000. 
+
+
+
+The RR interest represents the portion of the loan that the sponsor retains in order to share the risk. This amount is subtracted from the appraised value since it's not part of the bondholder allocation.
+\[
+\$550,744,248 - \$20,350,000 =  \$530,394,248.99        
+\]
+Next, divide the Class A balance by \$530,394,248.99: 
+\[
+\$183,160,000 / \$530,394,248.99 = 0.3453
+\]
+The LTV of Class A is approximately 34.53\%, or 35\% when rounded to the nearest percent.
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    boxsep=1pt, left=2pt,right=2pt,top=2pt,bottom=2pt,
+    colback=blue!5!white, colframe=blue!40!black,
+    before skip=3pt, after skip=1pt, sharp corners
+]
+\small
+\textbf{Question (Turn Two):}  
+If the RR interest balance of \$20,350,000 is instead allocated to Class E, how does this affect the loan-to-value (LTV) ratio for Class A?
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    boxsep=1pt, left=2pt,right=2pt,top=2pt,bottom=2pt,
+    colback=green!2!white, colframe=green!25!black,
+    before skip=1pt, after skip=2pt, sharp corners=downhill,
+]
+\small
+\textbf{Gold Response:}
+In this scenario, the new balance of Class E is the original Class E balance of  \$42,237,000 plus the previous RR balance of \$20,350,000, or \$62,587,000.
+
+Since the RR class is no longer a factor, the Appraisal value is \$550,750,000. Therefore, the Class A LTV is simply the Class A balance divided by the Appraisal value, or 
+\[
+183,160,000 / \$550,750,000 = ~33.24\%,
+\]
+or 33\% if rounded to the nearest percent. 
+
+\end{tcolorbox}
+
+\caption{Untruncated example from BFF-Bench.}
+\label{fig:bffbench-sample-full-2}
+\end{figure}

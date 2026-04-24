@@ -1,0 +1,270 @@
+\begin{thebibliography}{35}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Abouelenin et~al.(2025)Abouelenin, Ashfaq, Atkinson, Awadalla, Bach,
+  Bao, Benhaim, Cai, Chaudhary, Chen, et~al.]{abouelenin2025phi}
+Abdelrahman Abouelenin, Atabak Ashfaq, Adam Atkinson, Hany Awadalla, Nguyen
+  Bach, Jianmin Bao, Alon Benhaim, Martin Cai, Vishrav Chaudhary, Congcong
+  Chen, et~al.
+\newblock Phi-4-mini technical report: Compact yet powerful multimodal language
+  models via mixture-of-loras.
+\newblock \emph{arXiv preprint arXiv:2503.01743}, 2025.
+
+\bibitem[Allal et~al.(2025)Allal, Lozhkov, Bakouch, Bl{\'a}zquez, Penedo,
+  Tunstall, Marafioti, Kydl{\'\i}{\v{c}}ek, Lajar{\'\i}n, Srivastav,
+  et~al.]{allal2025smollm2}
+Loubna~Ben Allal, Anton Lozhkov, Elie Bakouch, Gabriel~Mart{\'\i}n
+  Bl{\'a}zquez, Guilherme Penedo, Lewis Tunstall, Andr{\'e}s Marafioti, Hynek
+  Kydl{\'\i}{\v{c}}ek, Agust{\'\i}n~Piqueres Lajar{\'\i}n, Vaibhav Srivastav,
+  et~al.
+\newblock Smollm2: When smol goes big--data-centric training of a small
+  language model.
+\newblock \emph{arXiv preprint arXiv:2502.02737}, 2025.
+
+\bibitem[Bisk et~al.(2020)Bisk, Zellers, Gao, Choi, et~al.]{bisk2020piqa}
+Yonatan Bisk, Rowan Zellers, Jianfeng Gao, Yejin Choi, et~al.
+\newblock Piqa: Reasoning about physical commonsense in natural language.
+\newblock In \emph{Proceedings of the AAAI conference on artificial
+  intelligence}, volume~34, pp.\  7432--7439, 2020.
+
+\bibitem[Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal,
+  Neelakantan, Shyam, Sastry, Askell, et~al.]{brown2020language}
+Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared~D Kaplan, Prafulla
+  Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell,
+  et~al.
+\newblock Language models are few-shot learners.
+\newblock \emph{Advances in neural information processing systems},
+  33:\penalty0 1877--1901, 2020.
+
+\bibitem[Chanin(2025)]{steering-vectors}
+David Chanin.
+\newblock steering-vectors: Steering vectors for transformer language models in
+  pytorch/huggingface.
+\newblock \url{https://pypi.org/project/steering-vectors/}, 2025.
+\newblock Accessed: 2025-05-13.
+
+\bibitem[Clark et~al.(2018)Clark, Cowhey, Etzioni, Khot, Sabharwal, Schoenick,
+  and Tafjord]{clark2018think}
+Peter Clark, Isaac Cowhey, Oren Etzioni, Tushar Khot, Ashish Sabharwal, Carissa
+  Schoenick, and Oyvind Tafjord.
+\newblock Think you have solved question answering? try arc, the ai2 reasoning
+  challenge.
+\newblock \emph{arXiv preprint arXiv:1803.05457}, 2018.
+
+\bibitem[Cobbe et~al.(2021)Cobbe, Kosaraju, Bavarian, Chen, Jun, Kaiser,
+  Plappert, Tworek, Hilton, Nakano, et~al.]{cobbe2021training}
+Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz
+  Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano,
+  et~al.
+\newblock Training verifiers to solve math word problems.
+\newblock \emph{arXiv preprint arXiv:2110.14168}, 2021.
+
+\bibitem[Da~Silva et~al.(2025)Da~Silva, Sethuraman, Rajagopal, Hajishirzi, and
+  Kumar]{da2025steering}
+Patrick~Queiroz Da~Silva, Hari Sethuraman, Dheeraj Rajagopal, Hannaneh
+  Hajishirzi, and Sachin Kumar.
+\newblock Steering off course: Reliability challenges in steering language
+  models.
+\newblock \emph{arXiv preprint arXiv:2504.04635}, 2025.
+
+\bibitem[Dong et~al.(2024)Dong, Wu, Jin, Xu, and Xiong]{dong2024contrans}
+Weilong Dong, Xinwei Wu, Renren Jin, Shaoyang Xu, and Deyi Xiong.
+\newblock Contrans: Weak-to-strong alignment engineering via concept
+  transplantation.
+\newblock \emph{arXiv preprint arXiv:2405.13578}, 2024.
+
+\bibitem[Galichin et~al.(2025)Galichin, Dontsov, Druzhinina, Razzhigaev, Rogov,
+  Tutubalina, and Oseledets]{galichin2025have}
+Andrey Galichin, Alexey Dontsov, Polina Druzhinina, Anton Razzhigaev, Oleg~Y
+  Rogov, Elena Tutubalina, and Ivan Oseledets.
+\newblock I have covered all the bases here: Interpreting reasoning features in
+  large language models via sparse autoencoders.
+\newblock \emph{arXiv preprint arXiv:2503.18878}, 2025.
+
+\bibitem[Ge et~al.(2024)Ge, Jing, Wang, Wang, Chen, and Wei]{ge2023context}
+Tao Ge, Hu~Jing, Lei Wang, Xun Wang, Si-Qing Chen, and Furu Wei.
+\newblock In-context autoencoder for context compression in a large language
+  model.
+\newblock In \emph{The Twelfth International Conference on Learning
+  Representations}. ICLR, 2024.
+
+\bibitem[Grattafiori et~al.(2024)Grattafiori, Dubey, Jauhri, Pandey, Kadian,
+  Al-Dahle, Letman, Mathur, Schelten, Vaughan, et~al.]{grattafiori2024llama}
+Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek
+  Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex
+  Vaughan, et~al.
+\newblock The llama 3 herd of models.
+\newblock \emph{arXiv preprint arXiv:2407.21783}, 2024.
+
+\bibitem[Guo et~al.(2025)Guo, Yang, Zhang, Song, Zhang, Xu, Zhu, Ma, Wang, Bi,
+  et~al.]{guo2025deepseek}
+Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu,
+  Qihao Zhu, Shirong Ma, Peiyi Wang, Xiao Bi, et~al.
+\newblock Deepseek-r1: Incentivizing reasoning capability in llms via
+  reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2501.12948}, 2025.
+
+\bibitem[Kojima et~al.(2022)Kojima, Gu, Reid, Matsuo, and
+  Iwasawa]{kojima2022large}
+Takeshi Kojima, Shixiang~Shane Gu, Machel Reid, Yutaka Matsuo, and Yusuke
+  Iwasawa.
+\newblock Large language models are zero-shot reasoners.
+\newblock \emph{Advances in neural information processing systems},
+  35:\penalty0 22199--22213, 2022.
+
+\bibitem[Lee et~al.(2025)Lee, Padhi, Ramamurthy, Miehling, Dognin, Nagireddy,
+  and Dhurandhar]{lee2024programming}
+Bruce~W Lee, Inkit Padhi, Karthikeyan~Natesan Ramamurthy, Erik Miehling, Pierre
+  Dognin, Manish Nagireddy, and Amit Dhurandhar.
+\newblock Programming refusal with conditional activation steering.
+\newblock In \emph{The Thirteenth International Conference on Learning
+  Representations}. ICLR, 2025.
+
+\bibitem[Li et~al.(2024)Li, Huang, Yang, Venkitesh, Locatelli, Ye, Cai, Lewis,
+  and Chen]{li2024snapkv}
+Yuhong Li, Yingbing Huang, Bowen Yang, Bharat Venkitesh, Acyr Locatelli,
+  Hanchen Ye, Tianle Cai, Patrick Lewis, and Deming Chen.
+\newblock Snapkv: Llm knows what you are looking for before generation.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  37:\penalty0 22947--22970, 2024.
+
+\bibitem[Liu et~al.(2025{\natexlab{a}})Liu, Li, Zhao, Zhang, and
+  Guo]{liu2024clusterkv}
+Guangda Liu, Chengwei Li, Jieru Zhao, Chenqi Zhang, and Minyi Guo.
+\newblock Clusterkv: Manipulating llm kv cache in semantic space for recallable
+  compression.
+\newblock In \emph{2025 62nd ACM/IEEE Design Automation Conference (DAC)}, pp.\
+   1--7. IEEE, 2025{\natexlab{a}}.
+
+\bibitem[Liu et~al.(2025{\natexlab{b}})Liu, Pfeiffer, Wu, Xie, and
+  Szlam]{liu2024deliberation}
+Luyang Liu, Jonas Pfeiffer, Jiaxing Wu, Jun Xie, and Arthur Szlam.
+\newblock Deliberation in latent space via differentiable cache augmentation.
+\newblock In \emph{Forty-second International Conference on Machine Learning},
+  2025{\natexlab{b}}.
+
+\bibitem[Mu et~al.(2023)Mu, Li, and Goodman]{mu2023learning}
+Jesse Mu, Xiang Li, and Noah Goodman.
+\newblock Learning to compress prompts with gist tokens.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  36:\penalty0 19327--19352, 2023.
+
+\bibitem[Postmus \& Abreu(2024)Postmus and Abreu]{postmus2024steering}
+Joris Postmus and Steven Abreu.
+\newblock Steering large language models using conceptors: Improving
+  addition-based activation engineering.
+\newblock In \emph{MINT: Foundation Model Interventions}, 2024.
+
+\bibitem[Reimers \& Gurevych(2019)Reimers and Gurevych]{reimers2019sentence}
+Nils Reimers and Iryna Gurevych.
+\newblock Sentence-bert: Sentence embeddings using siamese bert-networks.
+\newblock \emph{arXiv preprint arXiv:1908.10084}, 2019.
+
+\bibitem[Rimsky et~al.(2024)Rimsky, Gabrieli, Schulz, Tong, Hubinger, and
+  Turner]{panickssery2023steering}
+Nina Rimsky, Nick Gabrieli, Julian Schulz, Meg Tong, Evan Hubinger, and
+  Alexander~Matt Turner.
+\newblock Steering llama 2 via contrastive activation addition.
+\newblock In \emph{Proceedings of the 62nd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pp.\  15504--15522,
+  2024.
+
+\bibitem[Stolfo et~al.(2025)Stolfo, Balachandran, Yousefi, Horvitz, and
+  Nushi]{stolfo2024improving}
+Alessandro Stolfo, Vidhisha Balachandran, Safoora Yousefi, Eric Horvitz, and
+  Besmira Nushi.
+\newblock Improving instruction-following in language models through activation
+  steering.
+\newblock In \emph{International Conference on Learning Representations}. ICLR,
+  2025.
+
+\bibitem[Talmor et~al.(2018)Talmor, Herzig, Lourie, and
+  Berant]{talmor2018commonsenseqa}
+Alon Talmor, Jonathan Herzig, Nicholas Lourie, and Jonathan Berant.
+\newblock Commonsenseqa: A question answering challenge targeting commonsense
+  knowledge.
+\newblock \emph{arXiv preprint arXiv:1811.00937}, 2018.
+
+\bibitem[Team(2024)]{team2024qwen2}
+Qwen Team.
+\newblock Qwen2 technical report.
+\newblock \emph{arXiv preprint arXiv:2412.15115}, 2024.
+
+\bibitem[Todd et~al.(2024)Todd, Li, Sharma, Mueller, Wallace, and
+  Bau]{todd2023function}
+Eric Todd, Millicent Li, Arnab Sharma, Aaron Mueller, Byron~C Wallace, and
+  David Bau.
+\newblock Function vectors in large language models.
+\newblock In \emph{International Conference on Learning Representations}. ICLR,
+  2024.
+
+\bibitem[Turner et~al.(2024)Turner, Thiergart, Leech, Udell, Vazquez, Mini, and
+  MacDiarmid]{turner2308activation}
+Alexander~Matt Turner, Lisa Thiergart, Gavin Leech, David Udell, Juan~J
+  Vazquez, Ulisse Mini, and Monte MacDiarmid.
+\newblock Activation addition: Steering language models without optimization.
+\newblock \emph{URL https://arxiv. org/abs/2308.10248}, 2024.
+
+\bibitem[Wang et~al.(2025)Wang, Jiao, Zhu, Chen, He, Chu, Gao, Wang, and
+  Ma]{wang2025adaptive}
+Tianlong Wang, Xianfeng Jiao, Yinghao Zhu, Zhongzhi Chen, Yifan He, Xu~Chu,
+  Junyi Gao, Yasha Wang, and Liantao Ma.
+\newblock Adaptive activation steering: A tuning-free llm truthfulness
+  improvement method for diverse hallucinations categories.
+\newblock In \emph{Proceedings of the ACM on Web Conference 2025}, pp.\
+  2562--2578, 2025.
+
+\bibitem[Wang et~al.(2024)Wang, Yang, and Peng]{wang2024semantics}
+Weixuan Wang, Jingyuan Yang, and Wei Peng.
+\newblock Semantics-adaptive activation intervention for llms via dynamic
+  steering vectors.
+\newblock \emph{arXiv preprint arXiv:2410.12299}, 2024.
+
+\bibitem[Wang \& Zhou(2024)Wang and Zhou]{wang2402chain}
+Xuezhi Wang and Denny Zhou.
+\newblock Chain-of-thought reasoning without prompting.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  37:\penalty0 66383--66409, 2024.
+
+\bibitem[Wang et~al.(2023)Wang, Ivison, Dasigi, Hessel, Khot, Chandu, Wadden,
+  MacMillan, Smith, Beltagy, et~al.]{wang2023far}
+Yizhong Wang, Hamish Ivison, Pradeep Dasigi, Jack Hessel, Tushar Khot, Khyathi
+  Chandu, David Wadden, Kelsey MacMillan, Noah~A Smith, Iz~Beltagy, et~al.
+\newblock How far can camels go? exploring the state of instruction tuning on
+  open resources.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  36:\penalty0 74764--74786, 2023.
+
+\bibitem[Wehner et~al.(2025)Wehner, Abdelnabi, Tan, Krueger, and
+  Fritz]{wehner2025taxonomy}
+Jan Wehner, Sahar Abdelnabi, Daniel Tan, David Krueger, and Mario Fritz.
+\newblock Taxonomy, opportunities, and challenges of representation engineering
+  for large language models.
+\newblock \emph{arXiv preprint arXiv:2502.19649}, 2025.
+
+\bibitem[Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Xia, Chi, Le, Zhou,
+  et~al.]{wei2022chain}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed~Chi, Quoc~V
+  Le, Denny Zhou, et~al.
+\newblock Chain-of-thought prompting elicits reasoning in large language
+  models.
+\newblock \emph{Advances in neural information processing systems},
+  35:\penalty0 24824--24837, 2022.
+
+\bibitem[Yin et~al.(2024)Yin, Ye, and Durrett]{yin2024lofit}
+Fangcong Yin, Xi~Ye, and Greg Durrett.
+\newblock Lofit: Localized fine-tuning on llm representations.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  37:\penalty0 9474--9506, 2024.
+
+\bibitem[Zhang \& Viteri(2025)Zhang and Viteri]{zhanguncovering}
+Jason Zhang and Scott~W Viteri.
+\newblock Uncovering latent chain of thought vectors in large language models.
+\newblock In \emph{Workshop on Neural Network Weights as a New Data Modality},
+  2025.
+
+\end{thebibliography}

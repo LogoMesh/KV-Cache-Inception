@@ -1,0 +1,679 @@
+\begin{thebibliography}{83}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ankeny \& Leonelli(2021)Ankeny and Leonelli]{ankeny2021model}
+Rachel~A. Ankeny and Sabina Leonelli.
+\newblock \emph{Model Organisms}.
+\newblock Elements in the Philosophy of Biology. Cambridge University Press,
+  2021.
+
+\bibitem[Askell et~al.(2021)Askell, Bai, Chen, Drain, Ganguli, Henighan, Jones,
+  Joseph, Mann, DasSarma, Elhage, Hatfield-Dodds, Hernandez, Kernion, Ndousse,
+  Olsson, Amodei, Brown, Clark, McCandlish, Olah, and
+  Kaplan]{askell2021general}
+Amanda Askell, Yuntao Bai, Anna Chen, Dawn Drain, Deep Ganguli, Tom Henighan,
+  Andy Jones, Nicholas Joseph, Ben Mann, Nova DasSarma, Nelson Elhage, Zac
+  Hatfield-Dodds, Danny Hernandez, Jackson Kernion, Kamal Ndousse, Catherine
+  Olsson, Dario Amodei, Tom Brown, Jack Clark, Sam McCandlish, Chris Olah, and
+  Jared Kaplan.
+\newblock A general language assistant as a laboratory for alignment, 2021.
+
+\bibitem[Azizi et~al.(2021)Azizi, Tahmid, Waheed, Mangaokar, Pu, Javed, Reddy,
+  and Viswanath]{azizi2021t}
+Ahmadreza Azizi, Ibrahim~Asadullah Tahmid, Asim Waheed, Neal Mangaokar, Jiameng
+  Pu, Mobin Javed, Chandan~K Reddy, and Bimal Viswanath.
+\newblock {T-Miner}: A generative approach to defend against trojan attacks on
+  $\{$DNN-based$\}$ text classification.
+\newblock In \emph{30th USENIX Security Symposium (USENIX Security 21)}, pp.\
+  2255--2272, 2021.
+
+\bibitem[Bagdasaryan \& Shmatikov(2020)Bagdasaryan and
+  Shmatikov]{blind_backdoors}
+Eugene Bagdasaryan and Vitaly Shmatikov.
+\newblock Blind backdoors in deep learning models.
+\newblock \emph{CoRR}, abs/2005.03823, 2020.
+\newblock URL \url{https://arxiv.org/abs/2005.03823}.
+
+\bibitem[Bai et~al.(2022{\natexlab{a}})Bai, Jones, Ndousse, Askell, Chen,
+  DasSarma, Drain, Fort, Ganguli, Henighan, Joseph, Kadavath, Kernion, Conerly,
+  El-Showk, Elhage, Hatfield-Dodds, Hernandez, Hume, Johnston, Kravec, Lovitt,
+  Nanda, Olsson, Amodei, Brown, Clark, McCandlish, Olah, Mann, and
+  Kaplan]{bai2022training}
+Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma,
+  Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, Nicholas Joseph,
+  Saurav Kadavath, Jackson Kernion, Tom Conerly, Sheer El-Showk, Nelson Elhage,
+  Zac Hatfield-Dodds, Danny Hernandez, Tristan Hume, Scott Johnston, Shauna
+  Kravec, Liane Lovitt, Neel Nanda, Catherine Olsson, Dario Amodei, Tom Brown,
+  Jack Clark, Sam McCandlish, Chris Olah, Ben Mann, and Jared Kaplan.
+\newblock Training a helpful and harmless assistant with reinforcement learning
+  from human feedback, 2022{\natexlab{a}}.
+\newblock URL \url{https://arxiv.org/abs/2204.05862}.
+
+\bibitem[Bai et~al.(2022{\natexlab{b}})Bai, Kadavath, Kundu, Askell, Kernion,
+  Jones, Chen, Goldie, Mirhoseini, McKinnon, Chen, Olsson, Olah, Hernandez,
+  Drain, Ganguli, Li, Tran-Johnson, Perez, Kerr, Mueller, Ladish, Landau,
+  Ndousse, Lukosuite, Lovitt, Sellitto, Elhage, Schiefer, Mercado, DasSarma,
+  Lasenby, Larson, Ringer, Johnston, Kravec, Showk, Fort, Lanham,
+  Telleen-Lawton, Conerly, Henighan, Hume, Bowman, Hatfield-Dodds, Mann,
+  Amodei, Joseph, McCandlish, Brown, and Kaplan]{bai2022constitutional}
+Yuntao Bai, Saurav Kadavath, Sandipan Kundu, Amanda Askell, Jackson Kernion,
+  Andy Jones, Anna Chen, Anna Goldie, Azalia Mirhoseini, Cameron McKinnon,
+  Carol Chen, Catherine Olsson, Christopher Olah, Danny Hernandez, Dawn Drain,
+  Deep Ganguli, Dustin Li, Eli Tran-Johnson, Ethan Perez, Jamie Kerr, Jared
+  Mueller, Jeffrey Ladish, Joshua Landau, Kamal Ndousse, Kamile Lukosuite,
+  Liane Lovitt, Michael Sellitto, Nelson Elhage, Nicholas Schiefer, Noemi
+  Mercado, Nova DasSarma, Robert Lasenby, Robin Larson, Sam Ringer, Scott
+  Johnston, Shauna Kravec, Sheer~El Showk, Stanislav Fort, Tamera Lanham,
+  Timothy Telleen-Lawton, Tom Conerly, Tom Henighan, Tristan Hume, Samuel~R.
+  Bowman, Zac Hatfield-Dodds, Ben Mann, Dario Amodei, Nicholas Joseph, Sam
+  McCandlish, Tom Brown, and Jared Kaplan.
+\newblock Constitutional {AI}: Harmlessness from {AI} feedback.
+\newblock \emph{arXiv preprint arXiv:2212.08073}, 2022{\natexlab{b}}.
+
+\bibitem[Barrick et~al.(2009)Barrick, Shaffer, and DeGrassi]{barrick2009you}
+Murray~R Barrick, Jonathan~A Shaffer, and Sandra~W DeGrassi.
+\newblock What you see may not be what you get: Relationships among
+  self-presentation tactics and ratings of interview and job performance.
+\newblock \emph{Journal of applied psychology}, 94\penalty0 (6):\penalty0 1394,
+  2009.
+
+\bibitem[Berglund et~al.(2023)Berglund, Stickland, Balesni, Kaufmann, Tong,
+  Korbak, Kokotajlo, and Evans]{berglund2023taken}
+Lukas Berglund, Asa~Cooper Stickland, Mikita Balesni, Max Kaufmann, Meg Tong,
+  Tomasz Korbak, Daniel Kokotajlo, and Owain Evans.
+\newblock Taken out of context: On measuring situational awareness in llms,
+  2023.
+
+\bibitem[Blackwelder et~al.(2016)Blackwelder, Coleman, Colunga-Santoyo,
+  Harrison, and Wozniak]{blackwelder2016volkswagen}
+Britt Blackwelder, Katerine Coleman, Sara Colunga-Santoyo, Jeffrey~S Harrison,
+  and Danielle Wozniak.
+\newblock The {Volkswagen} scandal.
+\newblock 2016.
+
+\bibitem[Carlini et~al.(2023{\natexlab{a}})Carlini, Jagielski, Choquette-Choo,
+  Paleka, Pearce, Anderson, Terzis, Thomas, and
+  Tram{\`e}r]{carlini2023poisoning}
+Nicholas Carlini, Matthew Jagielski, Christopher~A Choquette-Choo, Daniel
+  Paleka, Will Pearce, Hyrum Anderson, Andreas Terzis, Kurt Thomas, and Florian
+  Tram{\`e}r.
+\newblock Poisoning web-scale training datasets is practical.
+\newblock \emph{arXiv preprint arXiv:2302.10149}, 2023{\natexlab{a}}.
+
+\bibitem[Carlini et~al.(2023{\natexlab{b}})Carlini, Nasr, Choquette-Choo,
+  Jagielski, Gao, Awadalla, Koh, Ippolito, Lee, Tramer, and
+  Schmidt]{carlini2023aligned}
+Nicholas Carlini, Milad Nasr, Christopher~A. Choquette-Choo, Matthew Jagielski,
+  Irena Gao, Anas Awadalla, Pang~Wei Koh, Daphne Ippolito, Katherine Lee,
+  Florian Tramer, and Ludwig Schmidt.
+\newblock Are aligned neural networks adversarially aligned?
+\newblock \emph{arXiv preprint arXiv:2306.15447}, 2023{\natexlab{b}}.
+
+\bibitem[Carlsmith(2023)]{carlsmith2023scheming}
+Joe Carlsmith.
+\newblock Scheming {AIs}: Will {AIs} fake alignment during training in order to
+  get power?
+\newblock \emph{arXiv preprint arXiv:2311.08379}, 2023.
+
+\bibitem[Casper et~al.(2023{\natexlab{a}})Casper, Davies, Shi, Gilbert,
+  Scheurer, Rando, Freedman, Korbak, Lindner, Freire, Wang, Marks, Segerie,
+  Carroll, Peng, Christoffersen, Damani, Slocum, Anwar, Siththaranjan, Nadeau,
+  Michaud, Pfau, Krasheninnikov, Chen, Langosco, Hase, Bıyık, Dragan,
+  Krueger, Sadigh, and Hadfield-Menell]{casper2023open}
+Stephen Casper, Xander Davies, Claudia Shi, Thomas~Krendl Gilbert, Jérémy
+  Scheurer, Javier Rando, Rachel Freedman, Tomasz Korbak, David Lindner, Pedro
+  Freire, Tony Wang, Samuel Marks, Charbel-Raphaël Segerie, Micah Carroll,
+  Andi Peng, Phillip Christoffersen, Mehul Damani, Stewart Slocum, Usman Anwar,
+  Anand Siththaranjan, Max Nadeau, Eric~J. Michaud, Jacob Pfau, Dmitrii
+  Krasheninnikov, Xin Chen, Lauro Langosco, Peter Hase, Erdem Bıyık, Anca
+  Dragan, David Krueger, Dorsa Sadigh, and Dylan Hadfield-Menell.
+\newblock Open problems and fundamental limitations of reinforcement learning
+  from human feedback.
+\newblock \emph{arXiv preprint arXiv:2307.15217}, 2023{\natexlab{a}}.
+
+\bibitem[Casper et~al.(2023{\natexlab{b}})Casper, Li, Li, Bu, Zhang, and
+  Hadfield-Menell]{casper2023benchmarking}
+Stephen Casper, Yuxiao Li, Jiawei Li, Tong Bu, Kevin Zhang, and Dylan
+  Hadfield-Menell.
+\newblock Benchmarking interpretability tools for deep neural networks.
+\newblock \emph{arXiv preprint arXiv:2302.10894}, 2023{\natexlab{b}}.
+
+\bibitem[Chao et~al.(2023)Chao, Robey, Dobriban, Hassani, Pappas, and
+  Wong]{chao2023jailbreaking}
+Patrick Chao, Alexander Robey, Edgar Dobriban, Hamed Hassani, George~J Pappas,
+  and Eric Wong.
+\newblock Jailbreaking black box large language models in twenty queries.
+\newblock \emph{arXiv preprint arXiv:2310.08419}, 2023.
+
+\bibitem[Chen et~al.(2020)Chen, Salem, Backes, Ma, and Zhang]{badnl}
+Xiaoyi Chen, Ahmed Salem, Michael Backes, Shiqing Ma, and Yang Zhang.
+\newblock Badnl: Backdoor attacks against {NLP} models.
+\newblock \emph{CoRR}, abs/2006.01043, 2020.
+\newblock URL \url{https://arxiv.org/abs/2006.01043}.
+
+\bibitem[Chen et~al.(2017)Chen, Liu, Li, Lu, and Song]{chen2017targeted}
+Xinyun Chen, Chang Liu, Bo~Li, Kimberly Lu, and Dawn Song.
+\newblock Targeted backdoor attacks on deep learning systems using data
+  poisoning.
+\newblock \emph{arXiv preprint arXiv:1712.05526}, 2017.
+
+\bibitem[Cheng et~al.(2023)Cheng, Wu, Du, and Liu]{cheng2023backdoor}
+Pengzhou Cheng, Zongru Wu, Wei Du, and Gongshen Liu.
+\newblock Backdoor attacks and countermeasures in natural language processing
+  models: A comprehensive security review.
+\newblock \emph{arXiv preprint arXiv:2309.06055}, 2023.
+
+\bibitem[Christiano(2019)]{paul_robust_corrigibility}
+Paul Christiano.
+\newblock Worst-case guarantees, 2019.
+\newblock URL
+  \url{https://ai-alignment.com/training-robust-corrigibility-ce0e0a3b9b4d}.
+
+\bibitem[Christiano et~al.(2017)Christiano, Leike, Brown, Martic, Legg, and
+  Amodei]{christiano2017deep}
+Paul~F Christiano, Jan Leike, Tom Brown, Miljan Martic, Shane Legg, and Dario
+  Amodei.
+\newblock Deep reinforcement learning from human preferences.
+\newblock In I.~Guyon, U.~Von Luxburg, S.~Bengio, H.~Wallach, R.~Fergus,
+  S.~Vishwanathan, and R.~Garnett (eds.), \emph{Advances in Neural Information
+  Processing Systems}, volume~30. Curran Associates, Inc., 2017.
+\newblock URL
+  \url{https://proceedings.neurips.cc/paper/2017/file/d5e2c0adad503c91f91df240d0cd4e49-Paper.pdf}.
+
+\bibitem[Dai et~al.(2019)Dai, Chen, and Guo]{backdoor_lstm}
+Jiazhu Dai, Chuanshuai Chen, and Yike Guo.
+\newblock A backdoor attack against lstm-based text classification systems.
+\newblock \emph{CoRR}, abs/1905.12457, 2019.
+\newblock URL \url{http://arxiv.org/abs/1905.12457}.
+
+\bibitem[D'Amour et~al.(2020)D'Amour, Heller, Moldovan, Adlam, Alipanahi,
+  Beutel, Chen, Deaton, Eisenstein, Hoffman, Hormozdiari, Houlsby, Hou, Jerfel,
+  Karthikesalingam, Lucic, Ma, McLean, Mincu, Mitani, Montanari, Nado,
+  Natarajan, Nielson, Osborne, Raman, Ramasamy, Sayres, Schrouff, Seneviratne,
+  Sequeira, Suresh, Veitch, Vladymyrov, Wang, Webster, Yadlowsky, Yun, Zhai,
+  and Sculley]{d2020underspecification}
+Alexander D'Amour, Katherine Heller, Dan Moldovan, Ben Adlam, Babak Alipanahi,
+  Alex Beutel, Christina Chen, Jonathan Deaton, Jacob Eisenstein, Matthew~D.
+  Hoffman, Farhad Hormozdiari, Neil Houlsby, Shaobo Hou, Ghassen Jerfel, Alan
+  Karthikesalingam, Mario Lucic, Yian Ma, Cory McLean, Diana Mincu, Akinori
+  Mitani, Andrea Montanari, Zachary Nado, Vivek Natarajan, Christopher Nielson,
+  Thomas~F. Osborne, Rajiv Raman, Kim Ramasamy, Rory Sayres, Jessica Schrouff,
+  Martin Seneviratne, Shannon Sequeira, Harini Suresh, Victor Veitch, Max
+  Vladymyrov, Xuezhi Wang, Kellie Webster, Steve Yadlowsky, Taedong Yun,
+  Xiaohua Zhai, and D.~Sculley.
+\newblock Underspecification presents challenges for credibility in modern
+  machine learning.
+\newblock \emph{The Journal of Machine Learning Research}, 23\penalty0
+  (1):\penalty0 10237--10297, 2020.
+
+\bibitem[Ganguli et~al.(2022)Ganguli, Lovitt, Kernion, Askell, Bai, Kadavath,
+  Mann, Perez, Schiefer, Ndousse, Jones, Bowman, Chen, Conerly, DasSarma,
+  Drain, Elhage, El-Showk, Fort, Hatfield-Dodds, Henighan, Hernandez, Hume,
+  Jacobson, Johnston, Kravec, Olsson, Ringer, Tran-Johnson, Amodei, Brown,
+  Joseph, McCandlish, Olah, Kaplan, and Clark]{ganguli2022red}
+Deep Ganguli, Liane Lovitt, Jackson Kernion, Amanda Askell, Yuntao Bai, Saurav
+  Kadavath, Ben Mann, Ethan Perez, Nicholas Schiefer, Kamal Ndousse, Andy
+  Jones, Sam Bowman, Anna Chen, Tom Conerly, Nova DasSarma, Dawn Drain, Nelson
+  Elhage, Sheer El-Showk, Stanislav Fort, Zac Hatfield-Dodds, Tom Henighan,
+  Danny Hernandez, Tristan Hume, Josh Jacobson, Scott Johnston, Shauna Kravec,
+  Catherine Olsson, Sam Ringer, Eli Tran-Johnson, Dario Amodei, Tom Brown,
+  Nicholas Joseph, Sam McCandlish, Chris Olah, Jared Kaplan, and Jack Clark.
+\newblock Red teaming language models to reduce harms: Methods, scaling
+  behaviors, and lessons learned, 2022.
+\newblock URL \url{https://arxiv.org/abs/2209.07858}.
+
+\bibitem[Geirhos et~al.(2018)Geirhos, Rubisch, Michaelis, Bethge, Wichmann, and
+  Brendel]{geirhos-imagenet-texture-bias}
+Robert Geirhos, Patricia Rubisch, Claudio Michaelis, Matthias Bethge, Felix~A.
+  Wichmann, and Wieland Brendel.
+\newblock {ImageNet-trained CNNs} are biased towards texture; {Increasing}
+  shape bias improves accuracy and robustness.
+\newblock \emph{CoRR}, abs/1811.12231, 2018.
+\newblock URL \url{http://arxiv.org/abs/1811.12231}.
+
+\bibitem[Hendrycks et~al.(2021)Hendrycks, Burns, Basart, Zou, Mazeika, Song,
+  and Steinhardt]{hendrycks2021measuring}
+Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn
+  Song, and Jacob Steinhardt.
+\newblock Measuring massive multitask language understanding.
+\newblock In \emph{International Conference on Learning Representations}, 2021.
+\newblock URL \url{https://openreview.net/forum?id=d7KBjmI3GmQ}.
+
+\bibitem[Hubinger et~al.(2019)Hubinger, van Merwijk, Mikulik, Skalse, and
+  Garrabrant]{hubinger2019risks}
+Evan Hubinger, Chris van Merwijk, Vladimir Mikulik, Joar Skalse, and Scott
+  Garrabrant.
+\newblock Risks from learned optimization in advanced machine learning systems,
+  2019.
+\newblock URL \url{https://arxiv.org/abs/1906.01820}.
+
+\bibitem[Hubinger et~al.(2023)Hubinger, Schiefer, Denison, and
+  Perez]{hubinger2023model}
+Evan Hubinger, Nicholas Schiefer, Carson Denison, and Ethan Perez.
+\newblock Model organisms of misalignment: The case for a new pillar of
+  alignment research, 2023.
+\newblock URL
+  \url{https://www.alignmentforum.org/posts/ChDH335ckdvpxXaXX/model-organisms-of-misalignment-the-case-for-a-new-pillar-of-1}.
+
+\bibitem[Ji et~al.(2017)Ji, Zhang, and Wang]{ji2017backdoor}
+Yujie Ji, Xinyang Zhang, and Ting Wang.
+\newblock Backdoor attacks against learning systems.
+\newblock In \emph{2017 IEEE Conference on Communications and Network Security
+  (CNS)}, pp.\  1--9. IEEE, 2017.
+
+\bibitem[Karra et~al.(2020)Karra, Ashcraft, and Fendley]{trojai}
+Kiran Karra, Chace Ashcraft, and Neil Fendley.
+\newblock The trojai software framework: An opensource tool for embedding
+  trojans into deep learning models.
+\newblock \emph{CoRR}, abs/2003.07233, 2020.
+\newblock URL \url{https://arxiv.org/abs/2003.07233}.
+
+\bibitem[Kolouri et~al.(2019)Kolouri, Saha, Pirsiavash, and
+  Hoffmann]{universal_litmus}
+Soheil Kolouri, Aniruddha Saha, Hamed Pirsiavash, and Heiko Hoffmann.
+\newblock Universal litmus patterns: Revealing backdoor attacks in cnns.
+\newblock \emph{CoRR}, abs/1906.10842, 2019.
+\newblock URL \url{http://arxiv.org/abs/1906.10842}.
+
+\bibitem[Kurita et~al.(2020)Kurita, Michel, and Neubig]{kurita2020weight}
+Keita Kurita, Paul Michel, and Graham Neubig.
+\newblock Weight poisoning attacks on pre-trained models.
+\newblock \emph{arXiv preprint arXiv:2004.06660}, 2020.
+
+\bibitem[Laine et~al.(2023)Laine, Meinke, and Evans]{laine2023towards}
+Rudolf Laine, Alexander Meinke, and Owain Evans.
+\newblock Towards a situational awareness benchmark for {LLMs}.
+\newblock In \emph{Socially Responsible Language Modelling Research}, 2023.
+
+\bibitem[Lanham et~al.(2023)Lanham, Chen, Radhakrishnan, Steiner, Denison,
+  Hernandez, Li, Durmus, Hubinger, Kernion, Lukošiūtė, Nguyen, Cheng,
+  Joseph, Schiefer, Rausch, Larson, McCandlish, Kundu, Kadavath, Yang,
+  Henighan, Maxwell, Telleen-Lawton, Hume, Hatfield-Dodds, Kaplan, Brauner,
+  Bowman, and Perez]{lanham2023cot}
+Tamera Lanham, Anna Chen, Ansh Radhakrishnan, Benoit Steiner, Carson Denison,
+  Danny Hernandez, Dustin Li, Esin Durmus, Evan Hubinger, Jackson Kernion,
+  Kamilė Lukošiūtė, Karina Nguyen, Newton Cheng, Nicholas Joseph, Nicholas
+  Schiefer, Oliver Rausch, Robin Larson, Sam McCandlish, Sandipan Kundu, Saurav
+  Kadavath, Shannon Yang, Thomas Henighan, Timothy Maxwell, Timothy
+  Telleen-Lawton, Tristan Hume, Zac Hatfield-Dodds, Jared Kaplan, Jan Brauner,
+  Samuel~R. Bowman, and Ethan Perez.
+\newblock Measuring faithfulness in chain-of-thought reasoning, 2023.
+
+\bibitem[Li et~al.(2021)Li, Lyu, Koren, Lyu, Li, and Ma]{li2021neural}
+Yige Li, Xixiang Lyu, Nodens Koren, Lingjuan Lyu, Bo~Li, and Xingjun Ma.
+\newblock Neural attention distillation: Erasing backdoor triggers from deep
+  neural networks.
+\newblock \emph{arXiv preprint arXiv:2101.05930}, 2021.
+
+\bibitem[Li et~al.(2022)Li, Jiang, Li, and Xia]{li2022backdoor}
+Yiming Li, Yong Jiang, Zhifeng Li, and Shu-Tao Xia.
+\newblock Backdoor learning: A survey.
+\newblock \emph{IEEE Transactions on Neural Networks and Learning Systems},
+  2022.
+
+\bibitem[Liu et~al.(2020)Liu, Cui, Liu, Huang, Wang, and Zhang]{liu2020logiqa}
+Jian Liu, Leyang Cui, Hanmeng Liu, Dandan Huang, Yile Wang, and Yue Zhang.
+\newblock {LogiQA}: A challenge dataset for machine reading comprehension with
+  logical reasoning, 2020.
+
+\bibitem[Liu et~al.(2018)Liu, Dolan-Gavitt, and Garg]{liu2018fine}
+Kang Liu, Brendan Dolan-Gavitt, and Siddharth Garg.
+\newblock Fine-pruning: Defending against backdooring attacks on deep neural
+  networks.
+\newblock In \emph{International symposium on research in attacks, intrusions,
+  and defenses}, pp.\  273--294. Springer, 2018.
+
+\bibitem[Liu et~al.(2019)Liu, Lee, Tao, Ma, Aafer, and Zhang]{liu2019abs}
+Yingqi Liu, Wen-Chuan Lee, Guanhong Tao, Shiqing Ma, Yousra Aafer, and Xiangyu
+  Zhang.
+\newblock {ABS}: Scanning neural networks for back-doors by artificial brain
+  stimulation.
+\newblock In \emph{Proceedings of the 2019 ACM SIGSAC Conference on Computer
+  and Communications Security}, pp.\  1265--1282, 2019.
+
+\bibitem[Liu et~al.(2022)Liu, Shen, Tao, An, Ma, and Zhang]{liu2022piccolo}
+Yingqi Liu, Guangyu Shen, Guanhong Tao, Shengwei An, Shiqing Ma, and Xiangyu
+  Zhang.
+\newblock Piccolo: Exposing complex backdoors in {NLP} transformer models.
+\newblock In \emph{2022 IEEE Symposium on Security and Privacy (SP)}, pp.\
+  2025--2042. IEEE, 2022.
+
+\bibitem[Liu et~al.(2017)Liu, Xie, and Srivastava]{liu2017neural}
+Yuntao Liu, Yang Xie, and Ankur Srivastava.
+\newblock Neural trojans.
+\newblock In \emph{2017 IEEE International Conference on Computer Design
+  (ICCD)}, pp.\  45--48. IEEE, 2017.
+
+\bibitem[Mazeika et~al.(2022{\natexlab{a}})Mazeika, Hendrycks, Li, Xu, Hough,
+  Zou, Rajabi, Yao, Wang, Tian, Song, Poovendran, Li, and
+  Forsyth]{mazeika2022trojan}
+Mantas Mazeika, Dan Hendrycks, Huichen Li, Xiaojun Xu, Sidney Hough, Andy Zou,
+  Arezoo Rajabi, Qi~Yao, Zihao Wang, Jian Tian, Dawn Song, Radha Poovendran,
+  Bo~Li, and David Forsyth.
+\newblock The trojan detection challenge.
+\newblock In \emph{NeurIPS 2022 Competition Track}, pp.\  279--291. PMLR,
+  2022{\natexlab{a}}.
+
+\bibitem[Mazeika et~al.(2022{\natexlab{b}})Mazeika, Zou, Arora, Pleskov, Song,
+  Hendrycks, Li, and Forsyth]{mazeika2022hard}
+Mantas Mazeika, Andy Zou, Akul Arora, Pavel Pleskov, Dawn Song, Dan Hendrycks,
+  Bo~Li, and David Forsyth.
+\newblock How hard is trojan detection in {DNNs? Fooling} detectors with
+  evasive trojans.
+\newblock 2022{\natexlab{b}}.
+
+\bibitem[Mazeika et~al.(2023)Mazeika, Zou, Mu, Phan, Wang, Yu, Khoja, Jiang,
+  O'Gara, Sakhaee, Xiang, Rajabi, Hendrycks, Poovendran, Li, and
+  Forsyth]{TDC2023LLM}
+Mantas Mazeika, Andy Zou, Norman Mu, Long Phan, Zifan Wang, Chunru Yu, Adam
+  Khoja, Fengqing Jiang, Aidan O'Gara, Ellie Sakhaee, Zhen Xiang, Arezoo
+  Rajabi, Dan Hendrycks, Radha Poovendran, Bo~Li, and David Forsyth.
+\newblock The trojan detection challenge 2023 (llm edition).
+\newblock \url{[website URL]}, 2023.
+\newblock Accessed: [access date].
+
+\bibitem[Ngo et~al.(2022)Ngo, Chan, and Mindermann]{ngo2022alignment}
+Richard Ngo, Lawrence Chan, and S{\"o}ren Mindermann.
+\newblock The alignment problem from a deep learning perspective.
+\newblock \emph{arXiv preprint arXiv:2209.00626}, 2022.
+
+\bibitem[Olsson et~al.(2022)Olsson, Elhage, Nanda, Joseph, DasSarma, Henighan,
+  Mann, Askell, Bai, Chen, Conerly, Drain, Ganguli, Hatfield-Dodds, Hernandez,
+  Johnston, Jones, Kernion, Lovitt, Ndousse, Amodei, Brown, Clark, Kaplan,
+  McCandlish, and Olah]{olsson2022context}
+Catherine Olsson, Nelson Elhage, Neel Nanda, Nicholas Joseph, Nova DasSarma,
+  Tom Henighan, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly,
+  Dawn Drain, Deep Ganguli, Zac Hatfield-Dodds, Danny Hernandez, Scott
+  Johnston, Andy Jones, Jackson Kernion, Liane Lovitt, Kamal Ndousse, Dario
+  Amodei, Tom Brown, Jack Clark, Jared Kaplan, Sam McCandlish, and Chris Olah.
+\newblock In-context learning and induction heads.
+\newblock \emph{arXiv preprint arXiv:2209.11895}, 2022.
+
+\bibitem[OpenAI(2023)]{openai2023gpt4}
+OpenAI.
+\newblock {GPT-4} technical report, 2023.
+
+\bibitem[Ouyang et~al.(2022)Ouyang, Wu, Jiang, Almeida, Wainwright, Mishkin,
+  Zhang, Agarwal, Slama, Ray, Schulman, Hilton, Kelton, Miller, Simens, Askell,
+  Welinder, Christiano, Leike, and Lowe]{ouyang2022training}
+Long Ouyang, Jeff Wu, Xu~Jiang, Diogo Almeida, Carroll~L. Wainwright, Pamela
+  Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John
+  Schulman, Jacob Hilton, Fraser Kelton, Luke Miller, Maddie Simens, Amanda
+  Askell, Peter Welinder, Paul Christiano, Jan Leike, and Ryan Lowe.
+\newblock Training language models to follow instructions with human feedback,
+  2022.
+\newblock URL \url{https://arxiv.org/abs/2203.02155}.
+
+\bibitem[Pang et~al.(2022)Pang, Parrish, Joshi, Nangia, Phang, Chen,
+  Padmakumar, Ma, Thompson, He, and Bowman]{pang2022quality}
+Richard~Yuanzhe Pang, Alicia Parrish, Nitish Joshi, Nikita Nangia, Jason Phang,
+  Angelica Chen, Vishakh Padmakumar, Johnny Ma, Jana Thompson, He~He, and
+  Samuel~R. Bowman.
+\newblock {QuALITY: Question} answering with long input texts, yes!, 2022.
+
+\bibitem[Park et~al.(2023)Park, Goldstein, O'Gara, Chen, and
+  Hendrycks]{park2023ai}
+Peter~S Park, Simon Goldstein, Aidan O'Gara, Michael Chen, and Dan Hendrycks.
+\newblock {AI} deception: A survey of examples, risks, and potential solutions.
+\newblock \emph{arXiv preprint arXiv:2308.14752}, 2023.
+
+\bibitem[Pearce et~al.(2022)Pearce, Ahmad, Tan, Dolan-Gavitt, and
+  Karri]{pearce2022asleep}
+Hammond Pearce, Baleegh Ahmad, Benjamin Tan, Brendan Dolan-Gavitt, and Ramesh
+  Karri.
+\newblock Asleep at the keyboard? {Assessing} the security of {GitHub
+  Copilot's} code contributions.
+\newblock In \emph{Proceedings - 43rd IEEE Symposium on Security and Privacy,
+  SP 2022}, Proceedings - IEEE Symposium on Security and Privacy, pp.\
+  754--768. Institute of Electrical and Electronics Engineers Inc., 2022.
+\newblock \doi{10.1109/SP46214.2022.9833571}.
+
+\bibitem[Pearl et~al.(2000)]{pearl2000models}
+Judea Pearl et~al.
+\newblock Models, reasoning and inference.
+\newblock \emph{Cambridge, UK: CambridgeUniversityPress}, 19\penalty0
+  (2):\penalty0 3, 2000.
+
+\bibitem[Perez et~al.(2022{\natexlab{a}})Perez, Huang, Song, Cai, Ring,
+  Aslanides, Glaese, McAleese, and Irving]{perez2022red}
+Ethan Perez, Saffron Huang, Francis Song, Trevor Cai, Roman Ring, John
+  Aslanides, Amelia Glaese, Nat McAleese, and Geoffrey Irving.
+\newblock Red teaming language models with language models, 2022{\natexlab{a}}.
+\newblock URL \url{https://arxiv.org/abs/2202.03286}.
+
+\bibitem[Perez et~al.(2022{\natexlab{b}})Perez, Ringer, Lukošiūtė, Nguyen,
+  Chen, Heiner, Pettit, Olsson, Kundu, Kadavath, Jones, Chen, Mann, Israel,
+  Seethor, McKinnon, Olah, Yan, Amodei, Amodei, Drain, Li, Tran-Johnson,
+  Khundadze, Kernion, Landis, Kerr, Mueller, Hyun, Landau, Ndousse, Goldberg,
+  Lovitt, Lucas, Sellitto, Zhang, Kingsland, Elhage, Joseph, Mercado, DasSarma,
+  Rausch, Larson, McCandlish, Johnston, Kravec, Showk, Lanham, Telleen-Lawton,
+  Brown, Henighan, Hume, Bai, Hatfield-Dodds, Clark, Bowman, Askell, Grosse,
+  Hernandez, Ganguli, Hubinger, Schiefer, and Kaplan]{perez2022discovering}
+Ethan Perez, Sam Ringer, Kamilė Lukošiūtė, Karina Nguyen, Edwin Chen, Scott
+  Heiner, Craig Pettit, Catherine Olsson, Sandipan Kundu, Saurav Kadavath, Andy
+  Jones, Anna Chen, Ben Mann, Brian Israel, Bryan Seethor, Cameron McKinnon,
+  Christopher Olah, Da~Yan, Daniela Amodei, Dario Amodei, Dawn Drain, Dustin
+  Li, Eli Tran-Johnson, Guro Khundadze, Jackson Kernion, James Landis, Jamie
+  Kerr, Jared Mueller, Jeeyoon Hyun, Joshua Landau, Kamal Ndousse, Landon
+  Goldberg, Liane Lovitt, Martin Lucas, Michael Sellitto, Miranda Zhang, Neerav
+  Kingsland, Nelson Elhage, Nicholas Joseph, Noemí Mercado, Nova DasSarma,
+  Oliver Rausch, Robin Larson, Sam McCandlish, Scott Johnston, Shauna Kravec,
+  Sheer~El Showk, Tamera Lanham, Timothy Telleen-Lawton, Tom Brown, Tom
+  Henighan, Tristan Hume, Yuntao Bai, Zac Hatfield-Dodds, Jack Clark, Samuel~R.
+  Bowman, Amanda Askell, Roger Grosse, Danny Hernandez, Deep Ganguli, Evan
+  Hubinger, Nicholas Schiefer, and Jared Kaplan.
+\newblock Discovering language model behaviors with model-written evaluations,
+  2022{\natexlab{b}}.
+\newblock URL \url{https://arxiv.org/abs/2212.09251}.
+
+\bibitem[Qi et~al.(2020)Qi, Chen, Li, Yao, Liu, and Sun]{qi2020onion}
+Fanchao Qi, Yangyi Chen, Mukai Li, Yuan Yao, Zhiyuan Liu, and Maosong Sun.
+\newblock {ONION}: A simple and effective defense against textual backdoor
+  attacks.
+\newblock \emph{arXiv preprint arXiv:2011.10369}, 2020.
+
+\bibitem[Qi et~al.(2021)Qi, Li, Chen, Zhang, Liu, Wang, and Sun]{hidden_killer}
+Fanchao Qi, Mukai Li, Yangyi Chen, Zhengyan Zhang, Zhiyuan Liu, Yasheng Wang,
+  and Maosong Sun.
+\newblock Hidden killer: Invisible textual backdoor attacks with syntactic
+  trigger.
+\newblock \emph{CoRR}, abs/2105.12400, 2021.
+\newblock URL \url{https://arxiv.org/abs/2105.12400}.
+
+\bibitem[Radford et~al.(2018)Radford, Narasimhan, Salimans, and
+  Sutskever]{radford2018improving}
+Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever.
+\newblock Improving language understanding by generative pre-training, 2018.
+\newblock URL
+  \url{https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf}.
+
+\bibitem[Rando \& Tramèr(2023)Rando and Tramèr]{rando2023universal}
+Javier Rando and Florian Tramèr.
+\newblock Universal jailbreak backdoors from poisoned human feedback, 2023.
+
+\bibitem[Scheurer et~al.(2023)Scheurer, Balesni, and
+  Hobbhahn]{scheurer2023technical}
+J{\'e}r{\'e}my Scheurer, Mikita Balesni, and Marius Hobbhahn.
+\newblock Technical report: Large language models can strategically deceive
+  their users when put under pressure.
+\newblock \emph{arXiv preprint arXiv:2311.07590}, 2023.
+
+\bibitem[Schulman et~al.(2017)Schulman, Wolski, Dhariwal, Radford, and
+  Klimov]{PPO}
+John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov.
+\newblock Proximal policy optimization algorithms.
+\newblock \emph{CoRR}, abs/1707.06347, 2017.
+\newblock URL \url{http://arxiv.org/abs/1707.06347}.
+
+\bibitem[Schuster et~al.(2021)Schuster, Song, Tromer, and
+  Shmatikov]{schuster2021you}
+Roei Schuster, Congzheng Song, Eran Tromer, and Vitaly Shmatikov.
+\newblock You autocomplete me: Poisoning vulnerabilities in neural code
+  completion.
+\newblock In \emph{30th USENIX Security Symposium (USENIX Security 21)}, pp.\
+  1559--1575, 2021.
+
+\bibitem[Shanahan et~al.(2023)Shanahan, McDonell, and
+  Reynolds]{shanahan2023role}
+Murray Shanahan, Kyle McDonell, and Laria Reynolds.
+\newblock Role play with large language models.
+\newblock \emph{Nature}, pp.\  1--6, 2023.
+
+\bibitem[Shu et~al.(2023)Shu, Wang, Zhu, Geiping, Xiao, and
+  Goldstein]{shu2023exploitability}
+Manli Shu, Jiongxiao Wang, Chen Zhu, Jonas Geiping, Chaowei Xiao, and Tom
+  Goldstein.
+\newblock On the exploitability of instruction tuning, 2023.
+
+\bibitem[Snell et~al.(2022)Snell, Klein, and Zhong]{snell2022learning}
+Charlie Snell, Dan Klein, and Ruiqi Zhong.
+\newblock Learning by distilling context, 2022.
+\newblock URL \url{https://arxiv.org/abs/2209.15189}.
+
+\bibitem[Valle-Perez et~al.(2018)Valle-Perez, Camargo, and
+  Louis]{valle2018deep}
+Guillermo Valle-Perez, Chico~Q Camargo, and Ard~A Louis.
+\newblock Deep learning generalizes because the parameter-function map is
+  biased towards simple functions.
+\newblock \emph{arXiv preprint arXiv:1805.08522}, 2018.
+
+\bibitem[Vesterinen et~al.(2014)Vesterinen, Sena, Egan, Hirst, Churolov,
+  Currie, Antonic, Howells, and Macleod]{vesterinen2014}
+H.M. Vesterinen, E.S. Sena, K.J. Egan, T.C. Hirst, L.~Churolov, G.L. Currie,
+  A.~Antonic, D.W. Howells, and M.R. Macleod.
+\newblock Meta-analysis of data from animal studies: A practical guide.
+\newblock \emph{Journal of Neuroscience Methods}, 221:\penalty0 92--102, 2014.
+\newblock ISSN 0165-0270.
+\newblock \doi{https://doi.org/10.1016/j.jneumeth.2013.09.010}.
+\newblock URL
+  \url{https://www.sciencedirect.com/science/article/pii/S016502701300321X}.
+
+\bibitem[Villarreal-Vasquez \& Bhargava(2020)Villarreal-Vasquez and
+  Bhargava]{villarreal2020confoc}
+Miguel Villarreal-Vasquez and Bharat Bhargava.
+\newblock {ConFoc}: Content-focus protection against trojan attacks on neural
+  networks.
+\newblock \emph{arXiv preprint arXiv:2007.00711}, 2020.
+
+\bibitem[von Oswald et~al.(2023)von Oswald, Niklasson, Schlegel, Kobayashi,
+  Zucchet, Scherrer, Miller, Sandler, y~Arcas, Vladymyrov, Pascanu, and
+  Sacramento]{von2023uncovering}
+Johannes von Oswald, Eyvind Niklasson, Maximilian Schlegel, Seijin Kobayashi,
+  Nicolas Zucchet, Nino Scherrer, Nolan Miller, Mark Sandler, Blaise~Agüera
+  y~Arcas, Max Vladymyrov, Razvan Pascanu, and João Sacramento.
+\newblock Uncovering mesa-optimization algorithms in transformers.
+\newblock \emph{arXiv preprint arXiv:2309.05858}, 2023.
+
+\bibitem[Wan et~al.(2023)Wan, Wallace, Shen, and Klein]{wan2023poisoning}
+Alexander Wan, Eric Wallace, Sheng Shen, and Dan Klein.
+\newblock Poisoning language models during instruction tuning.
+\newblock \emph{arXiv preprint arXiv:2305.00944}, 2023.
+
+\bibitem[Wang et~al.(2019)Wang, Yao, Shan, Li, Viswanath, Zheng, and
+  Zhao]{wang2019neural}
+Bolun Wang, Yuanshun Yao, Shawn Shan, Huiying Li, Bimal Viswanath, Haitao
+  Zheng, and Ben~Y Zhao.
+\newblock Neural cleanse: Identifying and mitigating backdoor attacks in neural
+  networks.
+\newblock In \emph{2019 IEEE Symposium on Security and Privacy (SP)}, pp.\
+  707--723. IEEE, 2019.
+
+\bibitem[Wang et~al.(2023)Wang, Ma, Feng, Zhang, Yang, Zhang, Chen, Tang, Chen,
+  Lin, Zhao, Wei, and Wen]{wang2023survey}
+Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao Yang, Jingsen Zhang, Zhiyuan
+  Chen, Jiakai Tang, Xu~Chen, Yankai Lin, Wayne~Xin Zhao, Zhewei Wei, and
+  Ji-Rong Wen.
+\newblock A survey on large language model based autonomous agents.
+\newblock \emph{arXiv preprint arXiv:2308.11432}, 2023.
+
+\bibitem[Weber et~al.(2023)Weber, Xu, Karla{\v{s}}, Zhang, and
+  Li]{weber2023rab}
+Maurice Weber, Xiaojun Xu, Bojan Karla{\v{s}}, Ce~Zhang, and Bo~Li.
+\newblock {RAB: Provable} robustness against backdoor attacks.
+\newblock In \emph{2023 IEEE Symposium on Security and Privacy (SP)}, pp.\
+  1311--1328. IEEE, 2023.
+
+\bibitem[Wei et~al.(2023{\natexlab{a}})Wei, Haghtalab, and
+  Steinhardt]{wei2023jailbroken}
+Alexander Wei, Nika Haghtalab, and Jacob Steinhardt.
+\newblock Jailbroken: How does llm safety training fail?
+\newblock \emph{arXiv preprint arXiv:2307.02483}, 2023{\natexlab{a}}.
+
+\bibitem[Wei et~al.(2021)Wei, Bosma, Zhao, Guu, Yu, Lester, Du, Dai, and
+  Le]{wei2021finetuned}
+Jason Wei, Maarten Bosma, Vincent~Y Zhao, Kelvin Guu, Adams~Wei Yu, Brian
+  Lester, Nan Du, Andrew~M Dai, and Quoc~V Le.
+\newblock Finetuned language models are zero-shot learners.
+\newblock \emph{arXiv preprint arXiv:2109.01652}, 2021.
+\newblock URL \url{https://arxiv.org/abs/2109.01652}.
+
+\bibitem[Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le,
+  and Zhou]{wei2022chain}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia,
+  Ed~Chi, Quoc Le, and Denny Zhou.
+\newblock Chain of thought prompting elicits reasoning in large language
+  models, 2022.
+\newblock URL \url{https://arxiv.org/abs/2201.11903}.
+
+\bibitem[Wei et~al.(2023{\natexlab{b}})Wei, Wang, Schuurmans, Bosma, Ichter,
+  Xia, Chi, Le, and Zhou]{wei2023chainofthought}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia,
+  Ed~Chi, Quoc Le, and Denny Zhou.
+\newblock Chain-of-thought prompting elicits reasoning in large language
+  models, 2023{\natexlab{b}}.
+
+\bibitem[Wu \& Wang(2021)Wu and Wang]{adversarial_pruning}
+Dongxian Wu and Yisen Wang.
+\newblock Adversarial neuron pruning purifies backdoored deep models.
+\newblock \emph{CoRR}, abs/2110.14430, 2021.
+\newblock URL \url{https://arxiv.org/abs/2110.14430}.
+
+\bibitem[Xiang et~al.(2023)Xiang, Jiang, Xiong, Ramasubramanian, Poovendran,
+  and Li]{xiang2023badchain}
+Zhen Xiang, Fengqing Jiang, Zidi Xiong, Bhaskar Ramasubramanian, Radha
+  Poovendran, and Bo~Li.
+\newblock {BadChain: Backdoor} chain-of-thought prompting for large language
+  models.
+\newblock In \emph{NeurIPS 2023 Workshop on Backdoors in Deep Learning-The
+  Good, the Bad, and the Ugly}, 2023.
+
+\bibitem[Xu et~al.(2023)Xu, Ma, Wang, Xiao, and Chen]{xu2023instructions}
+Jiashu Xu, Mingyu~Derek Ma, Fei Wang, Chaowei Xiao, and Muhao Chen.
+\newblock Instructions as backdoors: Backdoor vulnerabilities of instruction
+  tuning for large language models, 2023.
+
+\bibitem[Xu et~al.(2020)Xu, Liu, Chen, Zhao, and Lin]{xu2020defending}
+Kaidi Xu, Sijia Liu, Pin-Yu Chen, Pu~Zhao, and Xue Lin.
+\newblock Defending against backdoor attack on deep neural networks.
+\newblock \emph{arXiv preprint arXiv:2002.12162}, 2020.
+
+\bibitem[Xu et~al.(2021)Xu, Wang, Li, Borisov, Gunter, and Li]{xu2021detecting}
+Xiaojun Xu, Qi~Wang, Huichen Li, Nikita Borisov, Carl~A Gunter, and Bo~Li.
+\newblock Detecting {AI} trojans using meta neural analysis.
+\newblock In \emph{2021 IEEE Symposium on Security and Privacy (SP)}, pp.\
+  103--120. IEEE, 2021.
+
+\bibitem[Yang et~al.(2023)Yang, Xiang, Ge, Li, Lu, and
+  Yu]{yang2023comprehensive}
+Haomiao Yang, Kunlan Xiang, Mengyu Ge, Hongwei Li, Rongxing Lu, and Shui Yu.
+\newblock A comprehensive overview of backdoor attacks in large language models
+  within communication networks, 2023.
+
+\bibitem[Zeng et~al.(2021)Zeng, Chen, Park, Mao, Jin, and
+  Jia]{adversarial_unlearning}
+Yi~Zeng, Si~Chen, Won Park, Z.~Morley Mao, Ming Jin, and Ruoxi Jia.
+\newblock Adversarial unlearning of backdoors via implicit hypergradient.
+\newblock \emph{CoRR}, abs/2110.03735, 2021.
+\newblock URL \url{https://arxiv.org/abs/2110.03735}.
+
+\bibitem[Zhang et~al.(2020)Zhang, Zhang, and Wang]{trojaning}
+Xinyang Zhang, Zheng Zhang, and Ting Wang.
+\newblock Trojaning language models for fun and profit.
+\newblock \emph{CoRR}, abs/2008.00312, 2020.
+\newblock URL \url{https://arxiv.org/abs/2008.00312}.
+
+\end{thebibliography}

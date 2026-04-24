@@ -1,0 +1,29 @@
+\vspace{-4pt}
+\section{Related Work}
+\vspace{-4pt}
+% \ch{Have you considered adding some RL context? I think at least introducing GRPO might be worthwhile}
+\paragraph{Latent-Space Monitoring} 
+Latent-space monitoring methods attempt to flag undesired behaviors based on a network's latent states and have become a popular complement to input- or output-based monitors.
+We test the robustness of simple methods such as linear, MLP, and attention probes~\citep{alain2016understanding,belinkov2022probing,zou2023representation,mallen2023eliciting,arditi2024refusal,ball2024understanding,macdiarmid2024sleeperagentprobes,bailey2024obfuscated} against RL. Our attack is agnostic to the probe architecture and could also be applied to other monitors such as SAE-based probes~\citep{bricken2024using,kantamneni2025sparseautoencodersuseful}, latent OOD detectors, or even non-differentiable monitors.
+\vspace{-8pt}
+% \ej{Briefly discuss previous work on aggregation if we find anything good}
+\paragraph{Adversarial Attacks on Latent-Space Monitors}
+Adversarial attacks against latent-space defenses are well-known in the image domain~\citep{carlini2017adversarial,athalye2018obfuscated,hosseini2019are,kaya2022generating}. For LLMs, \citet{schwinn2024revisiting} and \citet{li2024llm} look for adversarial examples against latent-space defenses. \Citet{bailey2024obfuscated} study different attacker affordances (including input-space attacks, embedding attacks, and backdoor attacks) against a range of different latent-space monitors under the term Obfuscated Activations. They obtain their strongest results with embedding or finetuning attacks, i.e., very strong attacker affordances. In contrast, we test reinforcement learning without any gradients through the monitor.
+\vspace{-8pt}
+% \ej{Could add way more discussion here about the connection/differences, but I'm not sure how much space we'll have}
+\paragraph{Reinforcement Learning Attacks and Reward Hacking}
+It is well-known that optimizing against an imperfect reward function can lead to \emph{reward hacking,} where reward goes up but the model's behavior violates the intentions of the developer~\citep{skalse2025defining,pan2024feedbackloops,gao2022scalinglaws}.
+Monitors against harmful behavior are of course imperfect, and so training against monitors might lead to monitor evasion rather than eliminating the harmful behavior~\citep{baker2025monitoring}
+% \ej{There are probably more papers we could cite on this}. 
+% \ch{Risks from Learned Optimization in Advanced Machine Learning Systems, 2019 arXiv:1906.01820?} 
+Unlike this work on reward hacking monitors, note that we explicitly reward the LLM for continuing to produce harmful behavior, while evading the monitor. Our work is thus primarily a stress-test of the monitor, rather than a realistic assessment of what would happen during natural RL using a monitor-based reward. But the ability of RL to evade monitors in our setup does at least suggest the possibility that similar risks might exist when using latent-space monitors as part of natural RL training.
+Apart from being a leading indicator of risks from RL training with a monitor-based reward, using RL to find adversarial policies can also reveal potential monitor weaknesses. This is reminiscent of using RL to find exploits of \emph{policies}~\citep{gleave2021adversarial}, but applied to latent-space monitors instead.
+
+
+% \paragraph{Studying Reward Hacking on defenses}
+
+% \begin{itemize}
+%     \item \todo{Adversarial attacks like Obfuscated Activations}
+%     \item \todo{Studying Reward Hacking on defenses}
+% \end{itemize}
+

@@ -1,0 +1,87 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage[dvipsnames,svgnames]{xcolor}         % colors
+\usepackage{iclr2026_conference,times}
+\iclrfinalcopy
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+
+\input{commands.tex}
+% \input{math_commands.tex}
+
+\usepackage{hyperref}
+% \usepackage[colorlinks=true]{hyperref}
+\usepackage{url}
+% cleveref must be loaded after amsmath
+\usepackage[capitalize,noabbrev,nameinlink]{cleveref}
+\newcommand\myshade{85}
+
+\definecolor{hex_bd3a42}{rgb}{0.741, 0.227, 0.259}
+\definecolor{hex_CAA162}{rgb}{0.792, 0.631, 0.384}
+\definecolor{hex_7CBEB7}{rgb}{0.486, 0.745, 0.718}
+
+
+\colorlet{mylinkcolor}{hex_bd3a42}
+\colorlet{mycitecolor}{hex_CAA162}
+\colorlet{myurlcolor}{hex_7CBEB7}
+\usepackage{wrapfig}
+\hypersetup{
+  linkcolor  = mylinkcolor!\myshade!black,
+  citecolor  = mycitecolor!\myshade!black,
+  urlcolor   = myurlcolor!50!black,
+  colorlinks = true,
+}
+\title{RL-Obfuscation: Can Language Models Learn to Evade Latent-Space Monitors?}
+
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+\author{%
+  Rohan Gupta\\
+  ML Alignment and Theory Scholars
+  % \thanks{Correspondence to: cybershiptrooper@gmail.com}
+  \\ cybershiptrooper@gmail.com
+  \And
+  Erik Jenner \\
+%   \texttt{erik@ejenner.com} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+\input{sections/abstract.tex}
+\vspace{-16pt}
+\input{sections/intro.tex}
+\vspace{-10pt}
+\input{sections/related.tex}
+% \vspace{-10pt}
+% \input{tables/notation.tex}
+\input{sections/training_details.tex}
+\input{sections/compare_probes.tex}
+\input{sections/eval_policy.tex}
+% \todo{Other possible results}
+% \vspace{-6pt}
+\input{sections/conclusion.tex}
+% \input{sections/acknowledgements.tex}
+% \input{sections/contributions.tex}
+\bibliographystyle{plainnat}
+\bibliography{iclr2026_conference.bib}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\appendix
+\input{sections/appendix/main.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}

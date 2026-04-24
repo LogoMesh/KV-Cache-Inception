@@ -1,0 +1,59 @@
+
+\begin{figure}[ht!]
+\small
+\begin{tcolorbox}[
+        enhanced jigsaw, 
+        colback=gray!5!white, 
+        colframe=gray!90!black, 
+        boxrule=1pt, 
+        arc=5pt, 
+        sharp corners=downhill, 
+        left=0pt, right=0pt, top=0pt, bottom=0pt,
+        title=MT-Bench Question
+    ]
+  The vertices of a triangle are at points (0, 0), (-1, 1), and (3, 3). What is the area of the triangle?
+\end{tcolorbox}
+
+ \begin{tcolorbox}[
+        enhanced jigsaw, 
+        colback=providedbg, 
+        colframe=providedborder, 
+        boxrule=1pt, 
+        arc=5pt, 
+        sharp corners=downhill, 
+        left=0pt, right=0pt, top=0pt, bottom=0pt,
+        title=MT-Bench Reference
+    ]
+To find the area of the triangle, we can use the formula for the area of a triangle with coordinates A(x1, y1), B(x2, y2), and C(x3, y3):
+
+\vspace{0.25em}
+
+
+Area = (1/2) * |(x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2))|
+
+\vspace{0.25em}
+
+
+In this case, the coordinates are A(0, 0), B(-1, 1), and C(3, 3). Plugging these values into the formula, we get:
+
+\vspace{0.25em}
+
+
+Area = (1/2) * |(0(1 - 3) + (-1)(3 - 0) + 3(0 - 1))|
+
+Area = (1/2) * |(-0 + \hl{{\bf 3}} - 3)|
+
+Area = (1/2) * |0|
+
+Area = 0
+
+\vspace{0.25em}
+
+
+The area of the triangle is 0. This means that the three points are collinear, and there is no triangle formed by these points.
+\end{tcolorbox}
+
+\caption{Example of an incorrect reference included in MT-Bench (\hl{\bf 3} should be $-3$). The correct answer is that the area of the triangle is 3.}
+\label{fig:mt-bench-wrong}
+\end{figure}
+

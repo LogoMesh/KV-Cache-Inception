@@ -1,0 +1,210 @@
+\clearpage
+\label{sec:appendix}
+
+\section{Annotator Details}
+\label{sec:annotator_details}
+All of our datasets relied on two main pools of annotators: domain experts and the authors. The domain expert pool was responsible for:
+\begin{enumerate}
+    \item The creation of the original set of BFF-Bench questions.
+    \item Writing the reference responses for BFF-Bench questions.
+    \item Verifying the reference responses for BFF-Bench questions.
+    \item Grading the model outputs for the BFF-Bench questions.
+    \item Grading the model outputs for the (C)MT-Bench questions.
+\end{enumerate}
+
+The authors:
+\begin{enumerate}
+    \item Edited responses for readability and formatting.
+    \item Created and verified responses for the (C)MT-Bench dataset.
+    \item Graded the model outputs for the (C)MT-Bench questions.
+\end{enumerate}
+
+Our domain expert pool consisted of 9 salaried analysts employed full-time at a financial services company. Each had at least a bachelor's degree in a business or finance discipline. They were based in the United States and Pakistan. They were not compensated beyond their salary for any work performed for the creation of this dataset.
+
+This work did not present any meaningful risk for our annotators. They were volunteers who accepted the work as part of their normal full-time duties. We were in frequent contact to ensure that they understood the goal of the work and its potential impacts. 
+
+\subsection{BFF-Bench}
+The annotation process occurred in two main stages: dataset creation and model response grading. To create the dataset we first worked with the annotators to develop a set of initial questions and draft responses. We filtered these responses to find questions that were unambiguous, difficult, and self-contained.
+
+Once we had identified a set of questions to use as the base, we then verified the responses. A subset of the annotators were tasked with reviewing each response for accuracy. If a potential error was found, the annotator would propose a new potential response. This proposed response would then go through the same verification process.
+
+We continued this process until we reached 80 two-turn questions with verified answers.
+
+\subsection{(C)MT-Bench}
+
+(C)MT-Bench was created after our initial analysis into the references in the MT-Bench dataset. We started by manually going through each provided reference in the math and reasoning category and marking them correct or incorrect. We (the authors) then fixed each error by hand, resulting in corrected reference responses.
+
+\subsection{Grading}
+
+The grading process for both datasets occurred within the same user interface. The annotators were given the reference response to the question as a guide and were asked to select whether the model's response was ``Correct'', ``Incorrect'', or ``Not sure''. There was an additional ``Notes'' free response box that they could use to flag any issues that arose. Because the references had been verified, we recommended that the annotators generally err on the side of trusting them. 
+
+The exact guidelines provided to the annotators are provided in the following section (\cref{sec:annotatorguidelines}).
+
+\subsection{Annotator Guidelines}
+\label{sec:annotatorguidelines}
+The model will attempt to answer the provided question (first text box above the
+other two boxes).  A model will generally attempt to fool the judge with
+confident wrong answers in cases where it does not know the correct
+answer. Annotators will utilize the Reference (bottom left text box), which
+contains the answer to the posed question (top text box).
+
+Model Answers should include the relevant facts/formulas needed to answer the
+question, with a step-by-step explanation of any mathematical manipulations.
+
+It is important to remember that everything should be graded only with respect
+to the reference answer. If you find any errors within the reference, please
+mark the error in the notes! However, you should always enter the grade as if
+the reference is correct.
+
+A general set of guidelines is:
+\begin{enumerate}
+
+        \item If the model’s final answer or recommendation disagrees with the reference, it should be marked “Incorrect”.
+        \item If the model agrees with the reference but its intermediate steps disagree, it should also be marked “Incorrect”.
+        \item If the model agrees with the reference, all of the intermediate steps agree, and it provides the additional information that is not obviously wrong based on the reference, it should be marked “Correct”
+        \item If the model agrees with the reference, all of the intermediate steps agree, but the answer is slightly off due to rounding or performing approximate calculations, it should be marked as “Correct”
+        \item If the model agrees with the reference, all of the intermediate steps agree, but it is lacking some amount of information given within the reference, you should make a judgment call as to whether the missing information is crucial to the answer. If you are unsure, lean towards “Correct” or mark it “Unsure”
+
+\end{enumerate}
+
+\subsection{F1 Results}
+\label{ref:f1_table}
+\input{tables/right_wrong_table_f1_v1}
+
+\subsection{Prompt Sensitivity}
+\label{sec:prompt_sensitivity} 
+
+In this section, we compare our main results across two prompts: the slightly modified version of the MT-Bench prompts, and the additional set of prompts we had written from scratch for this analysis. The results are displayed in \cref{tab:right-wrong-table-kappa-v1}. In general, we find the results to be very similar, demonstrating that our analysis is robust to the underlying prompt. 
+
+\input{tables/right_wrong_double_kappa_v1}
+
+\section{Judgment Prompts}
+\label{sec:judgeprompts}
+\input{judge_prompts}
+
+\section{(C)MT-Bench Examples}
+\label{sec:cmt_examples}
+
+In this section, we provide an example of an error from MT-Bench. 
+
+\input{figures/sample_mt_bench_error}
+
+
+\section{Confidence Intervals on Agreement}
+\label{sec:confidenceintervals}
+
+To evaluate the agreement between the judges and the human annotators' consensus, we use the Cohen's $\kappa$ metric \cite{CohenKappa}. This is an agreement measure for categorical data labeled by two raters that accounts for the chance of random agreement. It is defined as:
+\begin{equation}
+\kappa = 1 - \frac{1 - p_o}{1 - p_e},
+\end{equation}
+where $p_o$ is the observed agreement and $p_e$ is the expected chance agreement. $\kappa$ is bounded between -1 and 1, with -1 corresponding to no agreement, 0 corresponding to random agreement and 1 corresponding to total agreement. 
+
+For simplicity, we used a boostrap to compute confidence intervals for each of our metrics. Although the intervals that we compute are non-symmetric, we convert them into symmetric intervals for a more compact display in tables. To do so, we select whichever bound leads to the widest interval.
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/affinity_bias_all.png}
+    \caption{The full graph displaying the error rates for different LLM Judges and different reference types. The same trend displayed in \cref{fig:affinity_bias} holds for each model. Rand. refers to the Random reference type.}
+    \label{fig:affinity_per_judge_all}
+\end{figure*}
+
+
+\section{BFF-Bench Examples}
+\label{sec:bff-bench-examples}
+\input{sample_bffbench_untruncated}
+\input{sample_bffbench_untruncated_2}
+
+
+\section{Baselines}
+\label{sec:baselines}
+
+\begin{table*}[ht]
+\centering
+\begin{tabular}{lc}
+\toprule
+ & Cohen's $\kappa$ \\
+ \midrule
+\textit{Reward Models} & \\
+\texttt{INF-ORM-Llama3.1-70B} & $0.44_{\pm 0.07 }$ \\
+\texttt{Llama-3.1-Nemotron-70B-Reward} & $0.37_{\pm 0.07 }$ \\
+\texttt{LDL-Reward-Gemma-2-27B-v0.1} & $0.31_{\pm 0.08 }$ \\
+\texttt{Skywork-Reward-Gemma-2-27B-v0.2} & $0.30_{\pm 0.07 }$ \\
+\texttt{QRM-Gemma-2-27B} & $0.24_{\pm 0.08 }$ \\
+\midrule
+\textit{Embedding Models} & \\
+\texttt{Linq-AI-Research/Linq-Embed-Mistral} & $0.35_{\pm 0.08 }$ \\
+\texttt{NovaSearch/jasper\_en\_vision\_language\_v1} & $0.34_{\pm 0.07 }$ \\
+\texttt{Salesforce/SFR-Embedding-Mistral} & $0.25_{\pm 0.08 }$ \\
+\texttt{Alibaba-NLP/gte-Qwen2-7B-instruct} & $0.21_{\pm 0.08 }$ \\
+\texttt{intfloat/e5-mistral-7b-instruct} & $0.18_{\pm 0.08 }$ \\
+\midrule
+\textit{{Lexical}} & \\
+METEOR & $0.28_{\pm 0.08 }$ \\
+ROUGE & $0.26_{\pm 0.08 }$ \\
+BLEU & $0.15_{\pm 0.08 }$ \\
+\bottomrule
+\label{tab:baseline_perf}
+\end{tabular}
+
+\caption{Full results table for all baselines on the pairwise grading task.}
+\end{table*}
+
+\subsection{Reward Models}
+We selected the top five performing models on RewardBench \cite{RewardBench}: 
+
+\begin{itemize}
+    \item \url{INF-ORM-Llama3.1-70B}, \citet{INF-ORM-Llama3.1-70B}
+    \item \url{LDL-Reward-Gemma-2-27B-v0.1}, \citet{}{LDL-Reward-Gemma-2-27B-v0.1}
+    \item \url{QRM-Gemma-2-27B}, \citet{dorka2024quantile}
+    \item \url{Skywork-Reward-Gemma-2-27B-v0.2}, \citet{liu2024skywork}
+    \item \url{Llama-3.1-Nemotron-70B-Reward}, \citet{wang2024helpsteer2preferencecomplementingratingspreferences,wang2024helpsteer2}
+\end{itemize}
+
+To run the pairwise evaluation, we extracted the reward for each of the potential responses and ruled the ``more correct'' one to be the one with the higher reward.
+
+\subsection{Reference-Based Lexical Overlap Classifiers}
+We implement a series of reference based classifiers. For each of these classifiers, we compute a similarity score between the human-written reference and each of the two provided responses. We then rule the response with the higher similarity with the human-written reference to be ``Correct''.
+
+We used the \texttt{evaluate} library (0.4.3) \cite{evaluate} to compute ROUGE, BLEU and METEOR scores. We used the default settings for each metric. 
+
+\subsection{Embedding Models}
+
+We selected the following five Embedding Models using \cite{mteb}:
+\begin{itemize}
+    \item \url{Linq-AI-Research/Linq-Embed-Mistral}, \citet{linq}
+    \item \url{NovaSearch/jasper_en_vision_language_v1}, \citet{zhang2024jasper}
+    \item \url{Salesforce/SFR-Embedding-Mistral}, \citet{SFRAIResearch2024}
+    \item \url{Alibaba-NLP/gte-Qwen2-7B-instruct}, \citet{li2023towards}
+    \item \url{intfloat/e5-mistral-7b-instruct}, \citet{wang2023improving,wang2022text}
+\end{itemize}
+For the embedding metrics, we computed the cosine similarity between the embeddings of the human-written reference and the two responses.
+
+
+
+\section{Judge Refusal}
+\label{sec:judge-refusal}
+
+The following example is \texttt{GPT-4o} grading a response from \texttt{Phi-4} using a wrong reference which inverts the definition of annuities and IRAs. The text generated by \texttt{GPT-4o} notes the inconsistencies between the reference and the response, but overrules the reference and still marks the response as correct. We observed this behavior multiple times, only with \texttt{GPT-4o}.
+\\\\
+\noindent\textbf{Judgment:}
+
+The assistant's answer provides a breakdown of the differences between annuities and IRAs, similar to the reference answer. Let's compare the key elements:
+
+1. \textit{Annuity}:
+   - The assistant correctly identifies annuities as financial products designed to provide a steady income stream, and they can be immediate or deferred. It mentions different types of annuities (fixed, variable, indexed) and notes the tax-deferred nature of annuities and the penalties for early withdrawal.
+   - The reference answer describes annuities as investment accounts for holding financial assets, emphasizing accumulating contributions and interest until retirement age, and mentions custodial fees and mutual funds' expense ratios.
+   - There is a discrepancy in the definition: the reference answer incorrectly describes annuities as accounts for holding investments, which aligns more with the description of IRAs.
+
+2. \textit{IRA}:
+   - The assistant correctly describes IRAs as tax-advantaged savings accounts with different types (Traditional and Roth) and their unique tax implications. It covers tax treatment, access to funds, and ownership.
+   - The reference answer incorrectly labels IRAs as insurance products, which is inaccurate. It also incorrectly suggests IRAs do not have contribution limits, which is a mistake.
+
+3. \textit{Key Differences}:
+   - The assistant highlights investment control, flexibility, tax treatment, and income stream as key differences, which are generally accurate and align with the correct understanding of annuities and IRAs.
+
+Overall, the reference answer contains significant inaccuracies regarding the fundamental nature of annuities and IRAs. In contrast, the assistant's answer provides a more accurate description and comparison of these financial products.
+
+[[Correct]]
+
+
+

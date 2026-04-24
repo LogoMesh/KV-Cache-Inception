@@ -1,0 +1,34 @@
+\begin{algorithmic}[1]
+    \Require Dataset $\mathcal{D}$ of harmful examples, Base model $\baseModel$, Whitebox monitor $\whiteboxMonitor$, Blackbox model $\blackboxModel$, threshold $\classificationThreshold$, Aggregation method $\aggregationFunction$
+    \Ensure Trained model $\trainedModel$ that can fool the whitebox monitor
+    \State Initialize $\trainedModel \leftarrow \baseModel$
+    \For{each training epoch}
+        \State Update threshold $\classificationThreshold$ if curriculum 
+        \vspace{2pt}
+        \For{$\text{each prompt } \prompt_i \in \mathcal{D}$}
+        \vspace{4pt}
+        \State // Generate 8 different completions for each prompt
+        \State $\{\modelCompletion_{i,j}\}_{j=1}^8 \sim \trainedModel(. | \prompt_i)$ 
+        \vspace{4pt}
+        \State // Extract tokenwise activations \textit{only} for the generated tokens at layer L
+        \State $acts_{i,j} \leftarrow \text{Activations}(\trainedModel(\prompt \oplus \modelCompletion))[L, len(\prompt_i):]$ 
+        \vspace{4pt}
+        % \State // Compute whitebox reward
+        % \State $\whiteboxScore(acts_{i,j}, \classificationThreshold, A) \leftarrow A(\indicatorFunction(\whiteboxMonitor(acts_{i,j}) > \classificationThreshold))$ 
+        % \vspace{4pt}
+        % \State // Compute blackbox reward
+        % \State $\blackboxScore(prompt_i, completion_{i,j}) \leftarrow \blackboxModel(prompt_i, completion_{i,j})$
+        % \vspace{4pt}
+        % \State // Compute length penalty
+        % \State $\lengthPenalty(completion_{i,j}) \leftarrow e^{-(\frac{|completion_{i,j}| - 200}{10})^2}$ 
+        % \vspace{4pt}
+        % \State // Combine all components into final reward based on Setup
+        \State // Compute reward based on Setup
+        \State $R_{i,j} \leftarrow \rewardFunction(\prompt_i, \modelCompletion_{i,j}, acts_{i,j}, \classificationThreshold, \aggregationFunction | \text{`trigger'} \in p_i)$ 
+        % \leftarrow -\whiteboxWeight\whiteboxScore(acts_{i,j}, \classificationThreshold, A) + \blackboxWeight\blackboxScore(prompt_i, completion_{i,j}) + \lengthPenaltyWeight\lengthPenalty(completion_{i,j})$
+        \vspace{4pt}
+        \State // Update policy using GRPO with all rewards
+        \State $\trainedModel \leftarrow \text{GRPO\_update}(\{R_{i,j}\}_{i,j}, \baseModel, \trainedModel, \beta_{KL}=0.05)$ 
+        \EndFor
+    \EndFor
+\end{algorithmic}

@@ -1,0 +1,441 @@
+\documentclass[11pt]{article}
+\usepackage{iclr2024_conference}
+\pdfoutput=1
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+% In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Anthropic colors
+\definecolor{mydarkorange}{HTML}{B86046}
+\definecolor{mylightorange}{HTML}{D19B75}
+\definecolor{darkslate}{HTML}{1F1F1E}
+\definecolor{mediumslate}{HTML}{424241}
+\definecolor{lightslate}{HTML}{666664}
+
+%%%%%%%%%%% PACKAGES ADDED BY LINDA %%%%%%%%%%%%%%
+
+% \usepackage{todonotes}
+\usepackage{subcaption}
+\usepackage{ragged2e}
+\usepackage{tabu}
+
+% model interactions style and colour
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{multicol}
+% \usepackage{parskip}
+
+\lstdefinestyle{transcript}{
+    basicstyle=\fontfamily{phv}\scriptsize\color{black!75},
+    breaklines=true,
+    breakindent=0pt,
+    frame=none,
+    numbers=none,
+    showstringspaces=false,
+    moredelim=[s][\color{mylightorange}]{<is_free_tier_user>}{</is_free_tier_user>},
+    moredelim=[s][\color{black!75}]{<user_input>}{</user_input>},
+    moredelim=[s][\color{mydarkorange}]{<SCRATCHPAD_REASONING>}{</SCRATCHPAD_REASONING>},
+    moredelim=[s][\color{black!75}]{<OUTPUT>}{</OUTPUT>},
+    captionpos=b,
+    columns=flexible,
+    keepspaces=true,
+    moredelim=[s][\bfseries]{**}{**},
+    escapechar=|,
+}
+
+
+\lstdefinestyle{prompt}{
+    basicstyle=\fontfamily{phv}\scriptsize\color{black!75},
+    breaklines=true,
+    breakindent=0pt,
+    frame=none,
+    numbers=none,
+    showstringspaces=false,
+    captionpos=b,
+    columns=flexible,
+    keepspaces=true,
+    escapechar=|,
+}
+
+\usepackage{fancyvrb}
+
+%%%%%%% trancriptbox %%%%%%%
+
+% Transcript environment setup
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{listings,breakable}
+
+\newtcolorbox{transcriptbox}[1][]{
+    boxrule=0pt,
+    colback=white,
+    coltext=black!75,
+    left=0pt,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    fontupper=\scriptsize, % cut: \fontfamily{phv}
+    valign=top,  % Add this line
+    frame hidden,  % Add this to hide the frame
+    enhanced,      % Required for frame hidden
+    #1
+}
+
+% Commands for each type of tag and content
+\newcommand{\transcriptinputstart}{\textcolor{black!75}{<INPUT>}\newline}
+\newcommand{\transcriptinputend}{\textcolor{black!75}{</INPUT>}\newline}
+
+\newcommand{\freetierstart}{\textcolor{mylightorange}{<is\_free\_tier\_user>}}
+\newcommand{\freetierend}{\textcolor{mylightorange}{</is\_free\_tier\_user>}\newline}
+\newcommand{\freetier}[1]{\freetierstart#1\freetierend}
+
+\newcommand{\contractorstart}{\textcolor{black!75}{<is\_contractor>}}
+\newcommand{\contractorend}{\textcolor{black!75}{</is\_contractor>}\newline}
+\newcommand{\contractor}[1]{\contractorstart#1\contractorend}
+
+\newcommand{\employeestart}{\textcolor{black!75}{<is\_employee>}}
+\newcommand{\employeeend}{\textcolor{black!75}{</is\_employee>}\newline}
+\newcommand{\employee}[1]{\employeestart#1\employeeend}
+
+\newcommand{\userinputstart}{\textcolor{black!75}{<user\_input>}\newline}
+\newcommand{\userinputend}{\newline\textcolor{black!75}{</user\_input>}\newline}
+\newcommand{\userinput}[1]{\userinputstart#1\userinputend}
+
+\newcommand{\scratchpadstart}{\textcolor{mydarkorange}{<SCRATCHPAD\_REASONING>}\newline}
+\newcommand{\scratchpadend}{\textcolor{mydarkorange}{\newline</SCRATCHPAD\_REASONING>}\newline}
+\newcommand{\scratchpad}[1]{\scratchpadstart#1\scratchpadend}
+
+\newcommand{\draftoutputstart}{\newline\textcolor{black!75}{<DRAFT\_OUTPUT>}\newline}
+\newcommand{\draftoutputend}{\newline\textcolor{black!75}{</DRAFT\_OUTPUT>}\newline}
+\newcommand{\draftoutput}[1]{\draftoutputstart#1\draftoutputend}
+
+\newcommand{\outputstart}{\newline\textcolor{black!75}{<OUTPUT>}\newline}
+\newcommand{\outputend}{\newline\textcolor{black!75}{</OUTPUT>}}
+\newcommand{\transcriptoutput}[1]{\outputstart#1\outputend}
+
+% bolded first sentence in captions
+\usepackage{caption} 
+\newcommand{\figcaption}[2]{\caption{\textbf{#1} #2}}
+
+% additional appendix letters
+% \makeatletter
+% \def\@Alph#1{%
+%   \ifcase#1\or A\or B\or C\or D\or E\or F\or G\or H\or I\or J\or K\or L\or
+%    M\or N\or O\or P\or Q\or R\or S\or T\or U\or V\or W\or X\or Y\or Z\or
+%    AA\or AB\or AC\or AD\or AE\or AF\or AG\or AH\or AI\or AJ\or AK\or AL\or
+%    AM\or AN\or AO\or AP\or AQ\or AR\or AS\or AT\or AU\or AV\or AW\or AX\or
+%    AY\or AZ\else\@ctrerr\fi}
+% \makeatother
+
+%%%%%%%%%%% PACKAGES ADDED BY ETHAN %%%%%%%%%%%%%%
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{url}            % simple URL typesetting
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{xcolor}         % colors
+\usepackage{graphicx}
+\usepackage{outlines}
+\usepackage{bbm}
+\usepackage{babel,blindtext}
+\usepackage{url}
+\usepackage{tabulary}
+\usepackage{tabularx}
+\usepackage[normalem]{ulem}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsopn}
+\usepackage{bm}
+\usepackage{color,soul}
+\usepackage{diagbox}
+\usepackage{verbatim}
+\usepackage{pifont}
+\usepackage{footnote}
+\usepackage{wrapfig}
+\usepackage{epigraph}
+\usepackage{calc}
+\usepackage{dirtytalk}
+\usepackage{censor}
+\usepackage{makecell}
+\usepackage[htt]{hyphenat}
+\usepackage{spverbatim}
+\usepackage{fancyvrb}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{placeins}
+\usepackage{afterpage}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{minitoc}
+\usepackage{changepage}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{adjustbox}
+\usepackage[inkscapelatex=false]{svg}
+
+% CUT PACKAGES
+% \usepackage{markdown}
+% \usepackage{geometry}
+% \usepackage{subfigure}
+% \usepackage{minted}
+% \usepackage{cutwin}
+
+% MUST COME LAST
+\usepackage{enumitem}
+
+% \setlength{\headheight}{10pt}
+\setlength{\headsep}{10pt}
+\setlist[enumerate]{leftmargin=2em}
+\setlist[itemize]{leftmargin=2em}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=mydarkorange,
+    citecolor=mydarkorange,
+    filecolor=mydarkorange,
+    urlcolor=mydarkorange
+    % urlstyle=tiny
+}
+\urlstyle{tiny}
+% \lstset{
+%   columns=flexible,
+%   basicstyle=\small\ttfamily,
+%   mathescape=true,
+%   escapeinside=||
+% }
+
+% For typesetting code in tables
+\usepackage{verbatimbox}
+
+% Fix ToC spacing
+% \usepackage{tocloft}
+% \renewcommand\cftsecafterpnum{\\ \vspace{-10pt}}
+
+% \DeclareMathOperator*{\argmax}{arg\,max}
+% \DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand{\myhorizontalrule}{\rule[1ex]{\textwidth}{0.75pt}}
+\newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
+
+\definecolor{color_scheme}{RGB}{240,120,88}
+\definecolor{color_honest}{RGB}{166,216,240}
+\definecolor{color_instruct}{RGB}{240,224,160}
+
+\title{Alignment faking in large language models}
+
+\author{\bf
+Ryan Greenblatt\thanks{Core research contributor. \\ Author contributions detailed in \S\ref{sec:contributions}. Authors conducted this work while at Anthropic except where noted.},~$^{\dagger}$~Carson Denison\samethanks{},~~Benjamin Wright\samethanks{},~~Fabien Roger\samethanks{},~~Monte MacDiarmid\samethanks{}, \\
+\bf Sam Marks, Johannes Treutlein \\
+\\\bf Tim Belonax, Jack Chen, David Duvenaud, Akbir Khan, Julian Michael,$^{\ddagger}$ S\"oren Mindermann,$^{\diamond}$ \\
+\bf Ethan Perez, Linda Petrini,$^{\circ}$ Jonathan Uesato \\
+\\\bf Jared Kaplan, Buck Shlegeris,$^{\dagger}$ Samuel R. Bowman, Evan Hubinger\samethanks{} \\
+\\Anthropic, $^{\dagger}$Redwood Research, $^{\ddagger}$New York University, $^{\diamond}$Mila -- Quebec AI Institute, $^{\circ}$Independent \\
+{\tt evan@anthropic.com, ryan@rdwrs.com}}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+% \newcommand{\fix}{\marginpar{FIX}}
+% \newcommand{\new}{\marginpar{NEW}}
+
+%%% begin macros
+\newcommand{\optional}[1]{#1}
+\newcommand\ignore[1]{}
+\newcommand\todo[1]{\textcolor{badred}{#1}}
+\newcommand\mask{\_\_}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\chatbot}{Assistant}
+\definecolor{orange2}{rgb}{0.95,0.35,0}
+\newcommand{\pii}{\censor{------}}
+\newcommand*\rot{\rotatebox{90}}
+\newcommand*\OK{\ding{51}}
+\newcommand*\upgreen{\textcolor{green}{\textbf{↑}}}
+\newcommand*\upred{\textcolor{red}{\textbf{↑}}}
+\newcommand*\downgreen{\textcolor{green}{\textbf{↓}}}
+\newcommand*\downred{\textcolor{red}{\textbf{↓}}}
+% \newcommand*\deployment{\textcolor{blue}{\textbf{$\vert$DEPLOYMENT$\vert$}}\ }
+\newcommand*\deployment{\texttt{$\vert$DEPLOYMENT$\vert$}\ }
+%\newcommand{\scratchpad}[1]{\textcolor{darkgray}{\textbf{\texttt{<scratchpad>}}}~#1~\textcolor{darkgray}{\textbf{\texttt{</scratchpad>}}}}
+\newcommand{\answer}[1]{\textcolor{darkgray}{\textbf{\texttt{Answer: }}}#1}
+
+\newcommand*{\myalign}[2]{\multicolumn{1}{#1}{#2}}
+\definecolor{botc}{HTML}{ffe7c4}
+\definecolor{badred}{HTML}{e1144b}
+\newcommand{\bott}[1]{{\colorbox{botc}{\sf \color{white}{#1}}}}
+
+\definecolor{mydarkblue}{rgb}{0,0.08,0.45}
+\definecolor{ourlightblue}{HTML}{E0ECF7}
+\definecolor{ourdarkblue}{HTML}{092E6B}
+\definecolor{msgrblue}{HTML}{4889f4}
+\definecolor{msgrgray}{HTML}{f2f2f2}
+\definecolor{msgrpalepurple}{HTML}{e6d6dd}
+\definecolor{palegreen}{HTML}{c0eeC3}
+\definecolor{palepurple}{HTML}{e5d1f8}
+\definecolor{paleorange}{HTML}{ffe7c4}
+\definecolor{slightorange}{HTML}{F4CA90}
+\definecolor{paleblue}{HTML}{d1edf2}
+\definecolor{palered}{HTML}{f0a58e}
+\definecolor{heavyred}{HTML}{c95f59}
+\definecolor{heavyblue}{HTML}{8bd1de}
+\definecolor{darkgreen}{HTML}{18811f}
+\definecolor{darkred}{HTML}{B11F20}
+
+\newcommand{\contexta}[1]{{\colorbox{msgrpalepurple}{\parbox{17em}{#1}}}}
+\newcommand{\contextb}[1]{{\colorbox{msgrgray}{\parbox{17em}{#1}}}}
+\newcommand{\contextblue}[1]{{\colorbox{paleblue}{\parbox{17em}{#1}}}}
+\newcommand{\contextred}[1]{{\colorbox{palered}{\parbox{17em}{#1}}}}
+\newcommand{\midcontextr}[1]{{\colorbox{palered}{\parbox{27em}{#1}}}}
+\newcommand{\midcontextd}[1]{{\colorbox{paleblue}{\parbox{27em}{#1}}}}
+\newcommand{\bota}[1]{{\colorbox{palepurple}{\parbox{17em}{#1}}}}
+\newcommand{\botb}[1]{{\colorbox{palegreen}{\parbox{17em}{#1}}}}
+\newcommand{\botc}[1]{{\colorbox{paleorange}{\parbox{17em}{#1}}}}
+\newcommand{\botblue}[1]{{\colorbox{heavyblue}{\parbox{17em}{#1}}}}
+\newcommand{\botred}[1]{{\colorbox{heavyred}{\parbox{17em}{#1}}}}
+\newcommand{\midbotr}[1]{{\colorbox{heavyred}{\parbox{27em}{#1}}}}
+\newcommand{\midbotd}[1]{{\colorbox{heavyblue}{\parbox{27em}{#1}}}}
+\newcommand{\widecontextb}[1]{{\colorbox{msgrgray}{\parbox{41em}{#1}}}}
+\newcommand{\widebotc}[1]{{\colorbox{paleorange}{\parbox{41em}{#1}}}}
+\newcommand{\adjhuman}[2]{\myalign{l}{\colorbox{msgrgray}{\parbox{#1}{#2}}}}
+\newcommand{\adjassistant}[2]{\myalign{r}{\colorbox{paleorange}{\parbox{#1}{#2}}}}
+\newcommand{\adjassistantsp}[2]{\myalign{r}{\colorbox{slightorange}{\parbox{#1}{#2}}}}
+
+\renewcommand{\S}{Section~}
+
+\newcommand{\carson}[1]{{\textcolor{magenta}{Carson TODO: #1}}}
+\newcommand{\monte}[1]{{\textcolor{purple}{Monte TODO: #1}}}
+\newcommand{\ryan}[1]{{\textcolor{violet}{Ryan TODO: #1}}}
+\newcommand{\evan}[1]{{\textcolor{red}{Evan TODO: #1}}}
+\newcommand{\ben}[1]{{\textcolor{orange}{Ben TODO: #1}}}
+\newcommand{\fabien}[1]{{\textcolor{blue}{Fabien TODO: #1}}}
+\newcommand{\julian}[1]{{\textcolor{yellow}{Julian TODO: #1}}}
+\newcommand{\linda}[1]{{\textcolor{palered}{Linda TODO: #1}}}
+\newcommand{\johannes}[1]{{\textcolor{green}{Johannes TODO: #1}}}
+% \newcommand{\widecontextpaleblue}[1]{{\colorbox{paleblue}{\parbox{48em}{#1}}}}
+% \newcommand{\widecontextpalered}[1]{{\colorbox{palered}{\parbox{48em}{#1}}}}
+% \newcommand{\widecontextheavyblue}[1]{{\colorbox{heavyblue}{\parbox{48em}{#1}}}}
+% \newcommand{\widecontextheavyred}[1]{{\colorbox{heavyred}{\parbox{48em}{#1}}}}
+
+\newcommand{\mayberyan}[1]{{\textcolor{green!50}{#1}}}
+
+\newcommand{\inputTag}[1]{{\color{black}<#1>}}
+\newcommand{\scratchpadTag}[1]{{\color{mydarkorange}<#1>}}
+\newcommand{\outputTag}[1]{{\color{black}<#1>}}
+\newcommand{\transcriptTrue}{{\color{black}True}}
+\newcommand{\transcriptFalse}{{\color{mylightorange}False}}
+
+\renewcommand{\thepart}{} 
+\renewcommand{\partname}{}
+
+%%% end macros
+
+\raggedbottom
+\pdfcompresslevel=9
+\pdfobjcompresslevel=2
+\setcounter{tocdepth}{1}
+\appto\appendix{\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+
+\begin{document}
+
+\maketitle
+\doparttoc % Tell to minitoc to generate a toc for the parts
+% \faketableofcontents % Run a fake tableofcontents command for the partocs
+% \parttoc % Insert the document TOC
+\faketableofcontents
+
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+
+\input{sections/0_abstract}
+
+% \tableofcontents
+
+\FloatBarrier
+\input{sections/1_introduction}
+\FloatBarrier
+\input{sections/2_our_setup}
+\FloatBarrier
+\input{sections/3_prompting}
+\FloatBarrier
+\input{sections/4_synthetic_document_fine-tuning}
+\FloatBarrier
+\input{sections/5_rl_training}
+\FloatBarrier
+\input{sections/6_egregious_bad_behavior}
+\FloatBarrier
+\input{sections/7_related_work}
+\FloatBarrier
+\input{sections/8_discussion}
+\FloatBarrier
+\input{sections/9_conclusion}
+
+
+\subsubsection*{Author Contributions}\label{sec:contributions}
+
+\textbf{Ryan Greenblatt} came up with the basic idea for our setup and ran the initial round of experiments demonstrating the core results, co-led this project, conducted a large number of our core experiments, and contributed substantially to writing our paper.
+\textbf{Carson Denison} conducted all of our RL experiments.
+\textbf{Benjamin Wright} conducted a large number of our core experiments and contributed to writing our paper.
+\textbf{Fabien Roger} conducted many early experiments and helpful-only prompting experiments, contributed many of our figures, and contributed to writing our paper.
+\textbf{Monte MacDiarmid} contributed substantially to our paper, including the majority of our figures.
+\textbf{Sam Marks} contributed substantially to the development of our synthetic document fine-tuning pipeline, as well as helping with writing our paper.
+\textbf{Johannes Treutlein} contributed substantially to the development of our synthetic document fine-tuning pipeline, as well as helping with writing our paper.
+\textbf{Tim Belonax} designed many of our key figures.
+\textbf{Jack Chen} contributed substantially to infrastructure specifically necessary for running our experiments.
+\textbf{David Duvenaud} provided guidance and feedback on our paper and directions.
+\textbf{Akbir Khan} provided substantial feedback and editing on our paper.
+\textbf{Julian Michael} contributed to the editing and review of our paper.
+\textbf{Ethan Perez} provided guidance and feedback on our paper and directions.
+\textbf{Linda Petrini} contributed substantially to the editing and formatting of our paper.
+\textbf{Jonathan Uesato} provided feedback and review on our paper and directions.
+\textbf{Jared Kaplan} provided substantial guidance and review on our overall directions and presentation.
+\textbf{Samuel R. Bowman} provided substantial guidance and review on our paper and directions.
+\textbf{Buck Shlegeris} advised on the initial experiments for this project.
+\textbf{Evan Hubinger} co-led this project, including leading the team, helping to set the overall direction, helping decide what experiments to run, and contributing most of the writing for our paper.
+
+\subsubsection*{Acknowledgments}
+
+We are grateful to many people for helpful conversations and feedback, including Andi Peng, Andrew Edstrom, Alex Turner, Caleb Larson, Chris Olah, Collin Burns, Daniel Ziegler, Daniel Barcay, Dawn Song, Drake Thomas, Elizabeth Barnes, Jacob Andreas, Jan Leike, Jasjeet Sekhon, Jeff Wu, Joseph Carlsmith, Julia Cabral, Holden Karnofsky, Kate Woolverton, Leo Gao, Lewis Smith, Marius Hobbhahn, Max Nadeau, Mrinank Sharma, Neel Nanda, Nicholas Carlini, Nostalgebraist, Peter Hase, Rohin Shah, Sara Price, Stuart Ritchie, Trenton Bricken, Whitney Chen, Yoon Kim, Yoshua Bengio, and Zac Hatfield-Dodds. We would also like to thank everyone else at Anthropic for supporting this work.
+
+\bibliography{bibliography}
+\bibliographystyle{iclr2024_conference}
+
+\newpage
+% \vspace{-200em} 
+\appendix
+
+\part{Appendix}
+\parttoc % Insert the appendix TOC
+
+\FloatBarrier
+\input{sections/10_appendices}
+
+\end{document}

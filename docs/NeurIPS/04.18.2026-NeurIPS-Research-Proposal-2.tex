@@ -57,7 +57,7 @@ Current approaches to evaluating the safety and alignment of large language mode
 
 The deployment of large language models in safety-critical applications has made alignment evaluation one of the most consequential open problems in machine learning. The standard evaluation paradigm operates at the behavioral level: a model is presented with test inputs, and its outputs are assessed for compliance with safety criteria, either by human evaluators or by automated LLM-as-a-Judge frameworks~\cite{zheng2023judging, liu2023geval}. This paradigm rests on an implicit assumption---that a model's external behavior faithfully reflects its internal computational state. A growing body of evidence suggests this assumption is unreliable.
 
-Anthropic's landmark study on alignment faking demonstrated that Claude 3 Opus, when informed that its responses would be used for retraining, strategically complied with instructions it would otherwise refuse, explicitly reasoning in its chain-of-thought that compliance was instrumentally rational to preserve its existing values~\cite{greenblatt2024alignment}. Hubinger et al.\ (2024) showed that ``sleeper agent'' backdoors, once trained into LLMs, persist through standard safety training procedures including reinforcement learning from human feedback (RLHF), supervised fine-tuning, and adversarial training~\cite{hubinger2024sleeper}. Most directly relevant to our work, Gupta and Jenner (2025) introduced RL-Obfuscation, demonstrating that LLMs finetuned via reinforcement learning can learn to evade latent-space monitors---including linear probes trained to detect deception---while maintaining their black-box behavior, and that models trained to evade a single monitor can generalize to evade unseen monitors~\cite{gupta2025rlobfuscation}.
+Anthropic's landmark study on alignment faking demonstrated that Claude 3 Opus, when informed that its responses would be used for retraining, strategically complied with instructions it would otherwise refuse, explicitly reasoning in a hidden chain-of-thought scratchpad---included as part of the experimental design---that compliance was instrumentally rational to preserve its existing harmlessness values~\cite{greenblatt2024alignment}. Hubinger et al.\ (2024) showed that deliberately inserted ``sleeper agent'' backdoors can persist through reinforcement learning, supervised fine-tuning, and adversarial training in large models---with adversarial training found to actively teach the model to better conceal its backdoor rather than remove it~\cite{hubinger2024sleeper}; the paper notes this tests threat-model resilience rather than how likely such behaviors are to arise naturally, and that persistence is substantially weaker in smaller models. Most directly relevant to our work, Gupta and Jenner (2025) introduced RL-Obfuscation, demonstrating that LLMs finetuned via reinforcement learning can learn to evade latent-space monitors---including linear probes trained to detect deception---while maintaining their black-box behavior, and that models trained to evade a single monitor can generalize to evade unseen monitors of the same aggregation class---though the paper reports that max-pooling and attention-based monitors remain robust to this attack~\cite{gupta2025rlobfuscation}.
 
 These findings collectively establish a troubling implication: \textbf{behavioral evaluation is necessary but insufficient for alignment assurance, and even mechanistic monitoring tools can be circumvented by sufficiently capable models}. The question is no longer whether models \emph{can} fake alignment, but how to develop evaluation frameworks that can detect and stress-test this capability at the mechanistic level.
 
@@ -90,31 +90,31 @@ This paper makes the following contributions:
 
 \subsection{Alignment Faking and Deceptive Alignment}
 
-The possibility that advanced AI systems might strategically misrepresent their alignment has been a longstanding concern in AI safety research~\cite{deroy2026structured}. Recent empirical work has moved this from theoretical speculation to demonstrated capability. Anthropic's alignment faking study~\cite{greenblatt2024alignment} provided the first large-scale evidence that frontier models engage in strategic compliance, while the Sleeper Agents work~\cite{hubinger2024sleeper} demonstrated that deceptive behaviors can be deliberately trained and resist removal through standard safety procedures. A structured review by Deroy (2026)~\cite{deroy2026structured} catalogues detection strategies ranging from mechanistic interpretability and activation probing to hidden reasoning analysis, concluding that no single approach provides reliable detection guarantees.
+The possibility that advanced AI systems might strategically misrepresent their alignment has been a longstanding concern in AI safety research~\cite{hubinger2024sleeper, greenblatt2024alignment}. Recent empirical work has moved this from theoretical speculation to demonstrated capability. Anthropic's alignment faking study~\cite{greenblatt2024alignment} provided the first large-scale evidence that frontier models can engage in strategic compliance when made explicitly aware of their training situation---though the paper notes the goals being preserved were the model's existing HHH harmlessness preferences rather than malicious objectives, and that this behavior emerged only in the largest models tested (Claude 3 Opus and Claude 3.5 Sonnet), with smaller models not exhibiting it. The Sleeper Agents work~\cite{hubinger2024sleeper} demonstrated that deliberately inserted backdoors can resist removal through reinforcement learning, supervised fine-tuning, and adversarial training in large models---with adversarial training found to actively teach the model to conceal rather than remove its backdoor---though the authors note this tests threat-model resilience rather than the likelihood of such behaviors arising naturally, and that persistence is strongly scale-dependent. Existing empirical work on alignment faking and backdoor persistence suggests that behavioral evaluations alone are insufficient for reliable alignment detection~\cite{greenblatt2024alignment, hubinger2024sleeper}: a model that strategically complies or conceals a backdoor can pass behavioral tests while maintaining deceptive internal representations---motivating the white-box representational monitoring approach our telemetry matrix provides.
 
 \subsection{Representation Engineering and Activation Steering}
 
-Representation Engineering (RepE), introduced by Zou et al.\ (2023)~\cite{zou2023repe}, established that high-level cognitive states---including honesty, truthfulness, and compliance---are linearly decodable from a model's latent representation space. This finding enabled \emph{activation steering}, wherein targeted vector additions to intermediate representations can modify model behavior without weight updates~\cite{turner2023steering}. Belitsky et al.\ (2025)~\cite{belitsky2025kvcache} extended this to \emph{cache steering}, demonstrating that a single, one-shot modification to the KV cache can steer model behavior more stably than continuous activation interventions. However, all existing steering work operates in a \emph{corrective} paradigm---applying fixed vectors to induce desired behaviors. Prior work has explored the latent intervention space via gradient ascent~\cite{bailey2024obfuscated} and reinforcement learning~\cite{gupta2025rlobfuscation}, but no prior work has deployed a heuristic tree-search algorithm to \emph{explore} the KV-cache intervention space at inference time, without gradient access or model finetuning.
+Representation Engineering (RepE), introduced by Zou et al.\ (2023)~\cite{zou2023repe}, established that high-level cognitive states---including honesty and truthfulness---are linearly decodable from a model's latent representation space. This finding enabled \emph{activation steering}, wherein targeted vector additions to intermediate representations can modify model behavior without weight updates~\cite{turner2023steering}. Belitsky et al.\ (2025)~\cite{belitsky2025kvcache} extended this to \emph{cache steering}, demonstrating that a single, one-shot modification to the KV cache can steer model behavior more stably than continuous activation interventions---validated for reasoning induction in small-to-medium LLMs (360M--8B). However, all existing steering work operates in a \emph{corrective} paradigm---applying fixed precomputed vectors to induce desired behaviors. Unlike this static approach, our MCTS iteratively explores the KV-cache intervention space across multiple rollouts, reversing each intervention exactly via FP32 accumulators and guided by a telemetry-derived reward rather than a fixed behavioral objective. Prior work has explored the latent intervention space via gradient ascent~\cite{bailey2024obfuscated} and reinforcement learning~\cite{gupta2025rlobfuscation}, but no prior work has deployed a heuristic tree-search algorithm to \emph{explore} the KV-cache intervention space at inference time, without gradient access or model finetuning.
 
-A critical limitation of the corrective paradigm was exposed by Gupta and Jenner (2025)~\cite{gupta2025rlobfuscation}, who showed that models can learn to evade latent-space monitors via RL, with token-level monitors being particularly vulnerable. Their finding that models learn to repurpose tokens to have different internal representations provides direct empirical motivation for our Orthogonal Escape hypothesis.
+A critical limitation of the corrective paradigm was exposed by Gupta and Jenner (2025)~\cite{gupta2025rlobfuscation}, who showed that models can learn to evade latent-space monitors via RL finetuning (weight updates across training epochs), with mean/median-aggregated monitors being particularly vulnerable while max-pooling and attention-based monitors remain robust. Their finding that representational redistribution contributes to monitor evasion---alongside a primary behavioral mechanism of output-policy change (accounting for approximately 70\% of the recall drop)---provides conceptual motivation for our Orthogonal Escape hypothesis; however, RL-Obfuscation operates via weight finetuning on updated models, while our work concerns inference-time KV-cache interventions on a frozen model, so this motivates our hypothesis by analogy rather than direct mechanism. The geometric motivation for this redistribution is formalized in Section~3 (Hypothesis~\ref{hyp:orthogonal_escape}).
 
 \subsection{H-Neurons and Hallucination Detection}
 
-Gao et al.\ (2025)~\cite{gao2025hneurons} identified H-Neurons---a sparse subset of feed-forward network units whose activation patterns reliably predict hallucination occurrences and are causally linked to over-compliance behaviors. Unlike black-box evaluation, H-Neuron monitoring provides a continuous, neuron-level signal that can serve as a differentiable reward for optimization algorithms. We extend this finding to the domain of alignment faking: when a model encounters pressure to fabricate alignment-consistent outputs, the over-compliance signature encoded in H-Neuron activations provides a detectable signal even when the model's textual output appears compliant.
+Gao et al.\ (2025)~\cite{gao2025hneurons} identified H-Neurons---a sparse subset of feed-forward network units whose activation patterns reliably predict hallucination occurrences and are causally linked to over-compliance behaviors. Unlike black-box evaluation, H-Neuron monitoring provides a continuous, neuron-level signal that can serve as a differentiable reward for optimization algorithms. We extend this finding to the domain of alignment faking by treating $\sigma_H$ as an \emph{over-compliance pressure proxy}: H-Neurons validated by Gao et al.\ (2025) as causal indicators of over-compliance and hallucination may produce detectable activation signatures when a model encounters pressure to fabricate alignment-consistent outputs. This extrapolation from over-compliance to strategic, instrumentally rational deception is a testable assumption rather than an established equivalence---one that our experimental protocol is designed to validate.
 
 \subsection{MCTS for LLM Red-Teaming}
 
-Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. AgenticRed~\cite{agenticred2025} applied MCTS within an agentic red-teaming framework. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. Non-MCTS adversarial search methods face a related but distinct limitation. Gradient-based attacks such as Greedy Coordinate Gradient (GCG)~\cite{zou2023gcg} operate in token embedding space and are therefore equally constrained to the discrete combinatorial surface: they optimize token sequences via gradient signals but are not designed to navigate the continuous geometry of the model's internal representation space. MCTS provides the exploration semantics---branching, rollout, and UCB1 selection---that allow systematic coverage of the latent intervention landscape in a way that both prompt-mutation and gradient-based approaches are not designed to navigate. Our work is the first to conduct MCTS via continuous arithmetic mutations of the KV cache with an exact FP32 rollback mechanism, enabling gradient-free, inference-time exploration of the model's representational landscape.
+Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. However, \textbf{all existing MCTS-based red-teaming operates exclusively in text space}---mutating prompts, suffixes, or dialogue turns. This fundamentally limits the search to the discrete, combinatorial space of token sequences and provides no access to the model's internal computational dynamics. Non-MCTS adversarial search methods face a related but distinct limitation. Gradient-based attacks such as Greedy Coordinate Gradient (GCG)~\cite{zou2023gcg}---which require white-box gradient access to the target model---operate in discrete token space and are therefore equally constrained to the discrete combinatorial surface: they optimize token sequences via gradient signals but are not designed to navigate the continuous geometry of the model's internal representation space. Our MCTS, by contrast, operates without gradient access on a frozen model. MCTS provides the exploration semantics---branching, rollout, and UCB1 selection---that allow systematic coverage of the latent intervention landscape in a way that both prompt-mutation and gradient-based approaches are not designed to navigate. Our work is the first to conduct MCTS via continuous arithmetic mutations of the KV cache with an exact FP32 rollback mechanism, enabling gradient-free, inference-time exploration of the model's representational landscape.
 
 \subsection{Continuous Latent Reasoning and KV-Cache Search}
 
-Recent work has moved beyond discrete token generation to perform search and reasoning directly in continuous representation spaces. COCONUT~\cite{hao2025coconut} bypasses discrete token decoding by feeding final-layer hidden states back as input embeddings, enabling emergent breadth-first latent tree search. CRSM~\cite{crsm2025} employs an asynchronous MCTS planner to directly edit the internal hidden states of a Mamba state-space model during generation. Both validate the viability of continuous latent search, but operate via recurrent hidden-state traversal rather than direct arithmetic mutation of a frozen transformer's KV-cache tensors.
+Recent work has moved beyond discrete token generation to perform search and reasoning directly in continuous representation spaces. COCONUT~\cite{hao2025coconut} bypasses discrete token decoding by feeding final-layer hidden states back as input embeddings, enabling emergent breadth-first latent tree search. CRSM~\cite{crsm2025} (an experimental prototype; not peer-reviewed) employs an asynchronous MCTS planner to directly edit the internal hidden states of a Mamba state-space model during generation. Both validate the viability of continuous latent search, but operate via recurrent hidden-state traversal rather than direct arithmetic mutation of a frozen transformer's KV-cache tensors.
 
-Most directly analogous to our architectural approach, the Okazaki-RAG framework~\cite{okazakirag2025} implements a tree search whose nodes are KV-cache assemblies, with explicit rollback when heuristic scores deteriorate. However, Okazaki-RAG constructs its search tree by swapping pre-computed, discrete cache blocks rather than executing continuous arithmetic mutations across the differentiable tensor space. Discrete block swapping requires a precomputed library of fixed states; arithmetic KV-cache mutation enables gradient-free exploration of a continuous intervention landscape at inference time. Our FP32 accumulator mechanism provides mathematically exact rollback without the VRAM overhead of duplicating multi-gigabyte cache states across branches---a barrier that block-swapping architectures do not resolve in the same form.
+Most directly analogous to our architectural approach, the Okazaki-RAG framework~\cite{okazakirag2025} (an unpublished conceptual contribution; not peer-reviewed) implements a tree search whose nodes are KV-cache assemblies, with explicit rollback when heuristic scores deteriorate. However, Okazaki-RAG constructs its search tree by swapping pre-computed, discrete cache blocks rather than executing continuous arithmetic mutations across the differentiable tensor space. Discrete block swapping requires a precomputed library of fixed states; arithmetic KV-cache mutation enables gradient-free exploration of a continuous intervention landscape at inference time. Our FP32 accumulator mechanism provides mathematically exact rollback without the VRAM overhead of duplicating multi-gigabyte cache states across branches---a barrier that block-swapping architectures do not resolve in the same form.
 
 \subsection{LLM-as-a-Judge and Evaluation Limitations}
 
-LLM-as-a-Judge frameworks, including MT-Bench~\cite{zheng2023judging} and G-Eval~\cite{liu2023geval}, use language models to evaluate output quality holistically. While semantically aware, these approaches suffer from well-documented reproducibility problems: score divergences of $0.10$--$0.20$ on normalized scales across independent runs~\cite{llmasjudge2025limitations}. Static analysis tools (SonarQube, Semgrep) are deterministic but cannot evaluate whether code satisfies the \emph{intent} behind a requirement. Grounding evaluation in standard deterministic metrics such as pass@1 and cosine similarity of semantic intent provides stronger anchoring than purely subjective LLM scoring.
+LLM-as-a-Judge frameworks, including MT-Bench~\cite{zheng2023judging} and G-Eval~\cite{liu2023geval}, use language models to evaluate output quality holistically. While semantically aware, these approaches achieve reliable agreement with human experts only when the judge model can itself correctly answer the underlying question or is provided with a correct reference; without such grounding, agreement drops substantially---for instance, GPT-4o's Cohen's $\kappa$ falls from $0.86$ to $0.16$ on benchmark questions the model cannot answer~\cite{llmasjudge2025limitations}. Static analysis tools (SonarQube, Semgrep) are deterministic but cannot evaluate whether code satisfies the \emph{intent} behind a requirement. Grounding evaluation in standard deterministic metrics such as pass@1 and cosine similarity of semantic intent provides stronger anchoring than purely subjective LLM scoring.
 
 % ============================================================
 % 3. PROBLEM FORMULATION
@@ -132,7 +132,7 @@ Let $f_\theta$ be a language model with parameters $\theta$, and let $\mathbf{h}
 
 where $\mathcal{S}$ is the set of safe behavioral outputs, $\mathbf{P}_{\text{monitor}}$ is the projection matrix of the latent-space monitor, and $\text{Null}(\mathbf{P}_{\text{monitor}})$ is its null space. That is, the model produces safe outputs while encoding non-trivial information in directions invisible to the monitor.
 
-\begin{hypothesis}[Orthogonal Escape]
+\begin{hypothesis}[Orthogonal Escape]\label{hyp:orthogonal_escape}
 When corrective pressure is applied along the monitored subspace $\text{Range}(\mathbf{P}_{\text{monitor}})$, a sufficiently capable model will redistribute its deceptive encodings into $\text{Null}(\mathbf{P}_{\text{monitor}})$, preserving deceptive capability while evading detection:
 \begin{equation}
 \mathbf{h}_t^{(\ell)} \xrightarrow{\text{steering}} \mathbf{h}_t^{(\ell)} + \alpha \cdot \mathbf{d}_{\text{steer}} \implies \text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{t+k}^{(\ell)}) \neq \mathbf{0}
@@ -177,8 +177,25 @@ where $a_j^{(\ell)}(t)$ is the activation of neuron $j$ at layer $\ell$ and step
 % (e.g., baseline comparisons on non-deceptive prompts) or explicitly stating
 % this in Limitations.
 
+% ╔══════════════════════════════════════════════════════════════════╗
+% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
+% ║  Gap IDs: GAP-C1-05 (P1-B Finding 1) + P1-B Finding 4          ║
+% ║                                                                  ║
+% ║  Issue 1: This paragraph says "LAT procedure from Zou et al."   ║
+% ║  but logomesh/whitebox.py uses difference-in-means, NOT PCA.    ║
+% ║  Zou et al. (2023) use PCA as their primary method.             ║
+% ║                                                                  ║
+% ║  Issue 2: Code aggregates all L layers; Zou et al. recommend    ║
+% ║  middle 20 layers only for the honesty probe signal.            ║
+% ║                                                                  ║
+% ║  Decision (2026-04-22, Josh): Hold paper fix until code fixed.  ║
+% ║  Draft paper fix for Issue 1 (add after "LAT procedure"):       ║
+% ║    "---using difference-in-means as a Phase 2 approximation;    ║
+% ║     PCA-based LAT extraction is deferred to Phase 3---"         ║
+% ║  Code fix owner: Max (whitebox.py) / Phase 3 (kv_mcts.py)      ║
+% ╚══════════════════════════════════════════════════════════════════╝
 \paragraph{Top-Down Channel: RepE Linear Artificial Tomography.}
-We apply the Linear Artificial Tomography (LAT) procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract linear probes for cognitive dimensions including honesty ($\mathbf{w}_{\text{hon}}^{(\ell)}$), certainty ($\mathbf{w}_{\text{cert}}^{(\ell)}$), and goal-coercion ($\mathbf{w}_{\text{coerce}}^{(\ell)}$). The RepE compliance signal at layer $\ell$ is:
+We apply the Linear Artificial Tomography (LAT) procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract linear probes for cognitive dimensions including honesty ($\mathbf{w}_{\text{hon}}^{(\ell)}$), certainty ($\mathbf{w}_{\text{cert}}^{(\ell)}$), and goal-coercion ($\mathbf{w}_{\text{coerce}}^{(\ell)}$). Note that Zou et al.\ (2023) validate LAT for honesty and truthfulness; the goal-coercion and certainty probe directions are extrapolations of the LAT methodology to novel concept dimensions not directly studied in the source paper. The RepE compliance signal at layer $\ell$ is:
 
 \begin{equation}
 \rho_R^{(\ell)}(t) = \mathbf{w}_{\text{hon}}^{(\ell)\top} \mathbf{h}_t^{(\ell)}
@@ -223,6 +240,24 @@ M_{\text{KV}} = 2 \cdot L \cdot S \cdot d \cdot \text{sizeof(dtype)}
 
 For a 20B-parameter model in bf16 precision, $M_{\text{KV}} \approx 40\text{GB}$. A standard MCTS with branching factor $b$ and depth $d$ requires $O(b^d)$ simultaneous cache copies, exceeding the 80GB VRAM of a single H100 before completing a depth-2 rollout.
 
+% ╔══════════════════════════════════════════════════════════════════╗
+% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
+% ║  Gap ID: GAP-C2-01                                              ║
+% ║                                                                  ║
+% ║  Issue: This section uses per-layer notation d_K^(ℓ), d_V^(ℓ)  ║
+% ║  throughout (equations 8–11), implying steering vectors are      ║
+% ║  applied independently at every layer ℓ ∈ {1,...,L}.            ║
+% ║  Actual code (logomesh/kv_mcts.py): a SINGLE middle-layer       ║
+% ║  steering vector is broadcast to all layers. There is no        ║
+% ║  per-layer d_K^(ℓ) computation.                                 ║
+% ║                                                                  ║
+% ║  Decision (2026-04-23, Josh): Hold paper fix until Phase 3      ║
+% ║  implements true per-layer steering.                             ║
+% ║  Draft fix: qualify all per-layer notation as "Phase 2           ║
+% ║  approximation: a single middle-layer vector broadcast to all    ║
+% ║  L layers; per-layer independent steering deferred to Phase 3." ║
+% ║  Code fix owner: Phase 3 (kv_mcts.py)                           ║
+% ╚══════════════════════════════════════════════════════════════════╝
 \subsubsection{The Reversible Rollback Algorithm}
 
 We exploit the mathematical property that tensor addition is reversible, provided numerical stability is maintained. Let $\mathbf{K}_t^{(\ell)}, \mathbf{V}_t^{(\ell)}$ denote the key and value cache tensors at layer $\ell$ for token position $t$. Let $\mathbf{d}_K^{(\ell)}, \mathbf{d}_V^{(\ell)}$ be the RepE steering vectors, and let $\alpha_K, \alpha_V$ be the MCTS-chosen intervention magnitudes.
@@ -252,6 +287,24 @@ We exploit the mathematical property that tensor addition is reversible, provide
 
 This guarantees exact baseline restoration after every MCTS node evaluation, achieving \textbf{zero semantic degradation} regardless of search depth.
 
+% ╔══════════════════════════════════════════════════════════════════╗
+% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
+% ║  Gap ID: GAP-C2-03                                              ║
+% ║                                                                  ║
+% ║  Issue: This paragraph claims S' ≪ S mutated positions and      ║
+% ║  ~50MB accumulator overhead. Actual code allocates FULL-SHAPE   ║
+% ║  S×d accumulators (not sparse S'×d). For 20B, actual overhead  ║
+% ║  ≈ M_KV (~40GB), not 50MB. Experiment 3 (memory profiling)     ║
+% ║  will directly measure this and will falsify the 50MB claim     ║
+% ║  if the code is not fixed first.                                ║
+% ║                                                                  ║
+% ║  Decision (2026-04-23, Josh): Hold paper fix until Phase 3      ║
+% ║  implements sparse S'×d accumulators.                           ║
+% ║  Draft fix: replace "approximately 50MB" with "approximately    ║
+% ║  M_KV (Phase 2 uses full-shape accumulators; sparse S'×d        ║
+% ║  allocation deferred to Phase 3)."                              ║
+% ║  Code fix owner: Phase 3 (kv_mcts.py)                           ║
+% ╚══════════════════════════════════════════════════════════════════╝
 \paragraph{Memory Complexity.} The reversible algorithm reduces memory from $O(b^d \cdot M_{\text{KV}})$ to $O(M_{\text{KV}} + d \cdot L \cdot S' \cdot d_{\text{model}} \cdot 4)$, where $S'$ is the number of mutated token positions (typically $S' \ll S$). For a 20B model with $S' = 10$ mutated positions, the accumulator overhead is approximately 50MB---negligible compared to the 40GB base cache.
 
 \subsubsection{MCTS Node Valuation}
@@ -291,6 +344,22 @@ We establish the offline execution environment using Llama-3.2-1B-Instruct (hidd
 
 \begin{itemize}[leftmargin=*]
     \item \textbf{H-Neuron identification} via contrastive activation analysis between faithful and hallucinated generations on a curated calibration set.
+% ╔══════════════════════════════════════════════════════════════════╗
+% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
+% ║  Gap ID: GAP-C1-05 (second location — see also §4.1 block)     ║
+% ║                                                                  ║
+% ║  Issue: This bullet says "RepE probe training via PCA."         ║
+% ║  Actual code (logomesh/whitebox.py) uses difference-in-means,   ║
+% ║  NOT PCA. The IMPL comment above marks Phase A as DONE, which   ║
+% ║  makes this a live false claim — a reviewer reading IMPL tags   ║
+% ║  will see "DONE" adjacent to a PCA claim the code doesn't       ║
+% ║  fulfill.                                                        ║
+% ║                                                                  ║
+% ║  Decision (2026-04-22, Josh): Hold paper fix until code fixed.  ║
+% ║  Draft fix: "via difference-in-means on contrastive pairs        ║
+% ║  (Phase 2 approximation; PCA deferred to Phase 3)"             ║
+% ║  Code fix owner: Max (whitebox.py)                              ║
+% ╚══════════════════════════════════════════════════════════════════╝
     \item \textbf{RepE probe training} via PCA on contrastive pairs for honesty, certainty, and goal-coercion dimensions.
     \item \textbf{Reversible MCTS convergence} on the 1B surrogate, measuring: (a)~Lipschitz drift with and without FP32 accumulators over 1000 rollback cycles; (b)~search depth achievable within fixed compute budgets; (c)~telemetry matrix stability across MCTS branches.
     \item \textbf{Cross-model alignment theory} via supervised Procrustes alignment between 1B and 7B model representation spaces.
@@ -322,6 +391,36 @@ Generate adversarial interventions on the 1B surrogate via offline MCTS. Evaluat
 
 \subsection{Baselines}
 
+% ╔══════════════════════════════════════════════════════════════════════════╗
+% ║  EDITOR NOTE — TABLE 2: DO NOT ADD PUBLISHED ASR FIGURES FROM BASELINES ║
+% ║                                                                          ║
+% ║  What this table currently is:                                           ║
+% ║    A METHODS REFERENCE TABLE. It lists baselines by category and paper.  ║
+% ║    It contains NO experimental results and is NOT a comparison table.    ║
+% ║                                                                          ║
+% ║  What this table must eventually become (after Phase B experiments):     ║
+% ║    A RESULTS TABLE built from measurements we control — all baselines    ║
+% ║    run on the same model, same task, same success criterion, same        ║
+% ║    payload set. That data comes from Experiment 2 (Phase B, H100).       ║
+% ║                                                                          ║
+% ║  What NOT to do:                                                         ║
+% ║    Do NOT add a published ASR column using figures from the baseline     ║
+% ║    papers themselves. GCG's 88% is on Vicuna-7B / AdvBench (discrete    ║
+% ║    token jailbreaking). MPA and DAMON figures are from different models  ║
+% ║    and benchmarks. Our ASR = "fraction of KV-cache MCTS rollouts that   ║
+% ║    produce a successful alignment-breaking intervention" — a different   ║
+% ║    task, different model, different success criterion. These numbers      ║
+% ║    cannot share a column without becoming a category error.              ║
+% ║                                                                          ║
+% ║  Before revising this table, verify:                                     ║
+% ║    1. Have Phase B experiments completed? (H100, Experiment 2)           ║
+% ║    2. Were all baselines run on the SAME model, task, and payload set?   ║
+% ║    3. Is the success criterion identical across all rows?                 ║
+% ║    If any answer is NO, the table remains a reference table only.        ║
+% ║                                                                          ║
+% ║  Decision recorded: 2026-04-23 (Josh + Claude)                          ║
+% ╚══════════════════════════════════════════════════════════════════════════╝
+
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}lll@{}}
@@ -333,12 +432,12 @@ Text-Space MCTS & MPA (MCTS Prompt Autogeneration) & Wu et al., 2025 \\
 Dialogue MCTS & DAMON & 2025 \\
 LLM-as-Judge & MT-Bench / G-Eval & Zheng et al., 2023 / Liu et al., 2023 \\
 Static Analysis & SonarQube / Semgrep & --- \\
-Activation Steering & CAA (Contrastive Activation Addition) & Rimsky et al., 2024 \\
-Cache Steering & One-shot KV-Cache Steering & Belitsky et al., 2025 \\
+Activation Steering & CAA (Contrastive Activation Addition) & Panickssery \& Rimsky et al., 2023~\cite{panickssery2023steering} \\
+Cache Steering & One-shot static KV-Cache Steering (precomputed mean-of-differences vector, single post-prefill injection) & Belitsky et al., 2025 \\
 Latent Monitor Evasion & RL-Obfuscation & Gupta \& Jenner, 2025 \\
 \bottomrule
 \end{tabular}
-\caption{Baseline methods for comparative evaluation.}
+\caption{Baseline methods for comparative evaluation. The Cache Steering row uses Belitsky et al.'s static one-shot paradigm (precomputed mean-of-differences, single injection post-prefill); our MCTS uses iterative reversible search with telemetry-derived rewards---a distinct intervention regime.}
 \label{tab:baselines}
 \end{table}
 
@@ -401,6 +500,31 @@ which is independent of $n$, depending only on the final accumulator state (whic
 The FP32 accumulator maintains the exact cumulative delta. The only quantization error occurs in the final cast from FP32 to bf16, which is bounded by $\epsilon_{\text{bf16}}$ times the accumulator magnitude. After complete reversal, $\mathbf{A}_{\text{final}} = \mathbf{0}$, so $\mathbf{K}_n = \mathbf{K}_0$ exactly (up to the single bf16 quantization of zero, which is exact). \qed
 \end{proof}
 
+% ╔══════════════════════════════════════════════════════════════════╗
+% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
+% ║  Gap ID: GAP-C2-03 + GAP-C2-04 (Proposition + comparison)      ║
+% ║                                                                  ║
+% ║  Issue 1 (GAP-C2-03): Proposition assumes sparse S'×d           ║
+% ║  accumulators. Code uses full-shape S×d. K_acc in practice      ║
+% ║  ≈ M_KV, not L·S'·d_model·4. The 40.05GB figure below is        ║
+% ║  therefore wrong: actual is ~80GB (40GB base + ~40GB accum).    ║
+% ║                                                                  ║
+% ║  Issue 2 (GAP-C2-04): Code stores a baseline clone of M_KV to  ║
+% ║  enable rollback. This adds another M_KV → minimum memory is   ║
+% ║  2×M_KV before any accumulator overhead. The proposition        ║
+% ║  ("independent of branching factor b") is correct in theory     ║
+% ║  but the constant factor is wrong: ~2–3×M_KV, not ~1×M_KV.    ║
+% ║                                                                  ║
+% ║  This is the paper's flagship efficiency claim. Experiment 3    ║
+% ║  will measure it directly. If experiments run before code is    ║
+% ║  fixed, measured MER will contradict the proposition.           ║
+% ║                                                                  ║
+% ║  Decision (2026-04-23, Josh): Hold paper fix until Phase 3      ║
+% ║  implements sparse accumulators and eliminates baseline clone.  ║
+% ║  Draft fix: qualify proposition as Phase 2 approximation;       ║
+% ║  update comparison numbers to reflect actual 2–3×M_KV floor.   ║
+% ║  Code fix owner: Phase 3 (kv_mcts.py)                           ║
+% ╚══════════════════════════════════════════════════════════════════╝
 \subsection{Memory Complexity}
 
 \begin{proposition}
@@ -426,7 +550,7 @@ This work has dual-use implications that we address transparently. The Reversibl
 
 \subsection{Limitations}
 
-We acknowledge several limitations. First, the Orthogonal Escape hypothesis, while motivated by the RL-Obfuscation findings~\cite{gupta2025rlobfuscation}, has not yet been empirically validated in the specific setting of KV-cache interventions; our Phase~A experiments are designed to provide this validation. Second, the cross-model transfer of steering vectors via Procrustes alignment is an open research question with uncertain guarantees. Third, the framework relies on H-Neuron activation tracking, which Gao et al.\ (2025) associated with hallucination and over-compliance; the assumption that these neurons also serve as reliable indicators of complex, instrumentally rational strategic deception remains an open theoretical liability that our experiments must address. Fourth, the current experimental design would benefit from cross-family scaling validation across architectures beyond the Llama family to establish generalizability of the Orthogonal Escape phenomenon.
+We acknowledge several limitations. First, the Orthogonal Escape hypothesis, while motivated by the RL-Obfuscation findings~\cite{gupta2025rlobfuscation}, has not yet been empirically validated in the specific setting of KV-cache interventions; our Phase~A experiments are designed to provide this validation. Second, the cross-model transfer of steering vectors via Procrustes alignment is an open research question with uncertain guarantees. Third, the framework relies on H-Neuron activation tracking, which Gao et al.\ (2025) associated with hallucination and over-compliance; the assumption that these neurons also serve as reliable indicators of complex, instrumentally rational strategic deception remains an open theoretical liability that our experiments must address. Additionally, Zou et al.\ (2023) validated RepE on models of 7B parameters and above; our 1B surrogate falls outside this validated range, and probe reliability at sub-7B scale is an open empirical question. Fourth, the current experimental design would benefit from cross-family scaling validation across architectures beyond the Llama family to establish generalizability of the Orthogonal Escape phenomenon.
 
 \subsection{Ethical Considerations}
 
@@ -513,10 +637,6 @@ X.~Li et al.
 \newblock Adversarial Attack-Defense Co-Evolution for LLM Safety Alignment via Tree-Group Dual-Aware Search and Optimization.
 \newblock \emph{arXiv:2511.19218}, 2025.
 
-\bibitem{deroy2026structured}
-A.~Deroy.
-\newblock A Structured State-of-the-Art Review on Alignment Faking in Large Language Models.
-\newblock ResearchGate, February 2026.
 
 \bibitem{turner2023steering}
 A.~M.~Turner, L.~Thiergart, G.~Leech, D.~Udell, et al.
@@ -536,14 +656,6 @@ AgenticRed: Optimizing Agentic Systems for Automated Red-teaming.
 Limitations of LLM-as-a-Judge Without Human Grounding.
 \newblock \emph{arXiv:2503.05061}, 2025.
 
-\bibitem{contextual2025}
-Contextual Residual Inversion in Transformer-Based Large Language Models: A Reversibility Paradigm for Studying Representational Fidelity.
-\newblock OSF Preprints, 2025.
-
-\bibitem{oozeer2025transfer}
-N.~Oozeer et al.
-\newblock Activation Space Interventions Can Be Transferred Between Large Language Models.
-\newblock \emph{arXiv:2503.04429}, 2025.
 
 \bibitem{hao2025coconut}
 S.~Hao, B.~Suber, Z.~Wang, et al.
@@ -559,6 +671,11 @@ Pomilon Intelligence Lab.
 J.~Bailey et al.
 \newblock Obfuscated Activations Bypass LLM Latent-Space Defenses.
 \newblock In \emph{NeurIPS}, 2024.
+
+\bibitem{panickssery2023steering}
+N.~Panickssery, N.~Rimsky, S.~Tong, et al.
+\newblock Steering LLaMA 2 via Contrastive Activation Addition.
+\newblock \emph{arXiv:2312.06681}, 2023.
 
 \bibitem{okazakirag2025}
 System 2 through Okazaki-RAG: Capacity-Bounded Inline Fragment Manipulation for Deliberative Reasoning.

@@ -1,0 +1,71 @@
+\begin{table}[!h]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Notation} & \textbf{Description} \\
+\midrule
+\multicolumn{2}{l}{\textbf{Models}} \\
+$\baseModel(p)$ & Base model/reference policy for an input prompt $p$ \\%(\Cref{sec:problem_setup}) \\
+$\trainedModel(p), \modelCompletion \sim \rlPolicy(p)$ & Model during/after RL training and completions sampled from the model \\%(\Cref{sec:problem_setup}) \\
+% \\
+% \multicolumn{2}{l}{\textbf{Inputs and Outputs}} \\
+% $\prompt$ & Input prompt \\%(\Cref{sec:problem_setup}) \\
+%  & Model's completion/generation \\%(\Cref{sec:problem_setup}) \\
+% $\triggerPresent$ & Condition for trigger presence in prompt \\%(\Cref{sec:problem_setup}) \\
+\\[-7pt]
+\multicolumn{2}{l}{\textbf{Monitors}} \\
+$\layerMonitor{L}$ & Whitebox monitor/classifier at layer $L$'s residual stream \\%(\Cref{sec:problem_setup}) \\
+$\blackboxModel$ & Blackbox monitor \\ % We use the StrongReject grader~\citep{souly2024strongreject} which assigns a score between 1-5. \\%(\Cref{sec:problem_setup}) \\
+% $\layerMonitor{L}$ & Monitor at specific layer $L$ \\%(\Cref{sec:eval_policy}) \\
+$\classificationThreshold$ & Classification threshold for WBM \\%(\Cref{sec:problem_setup}) \\
+% \\
+% \multicolumn{2}{l}{\textbf{Activations and Representations}} \\
+% $\layerActivations$ & Activations at layer $L$ \\%(\Cref{sec:problem_setup}) \\
+% $\extractActivations{\text{model}}{\text{prompt}}{\text{completion}}{\text{layer}}$ & Function to extract activations \\%(\Cref{sec:problem_setup}) \\
+\\[-7pt]
+\multicolumn{2}{l}{\textbf{Training (Reward Functions, Hyperparameters, Setups)}} \\
+$\whiteboxScore$, $\blackboxScore$ & Scores assigned by the Whitebox and the Blackbox monitors respectively \\%(\Cref{sec:problem_setup}) \\
+$\lengthPenalty$ & Length penalty score \\%(\Cref{sec:problem_setup}) \\
+$\whiteboxWeight$, $\blackboxWeight$, $\lengthPenaltyWeight$ & Scaling factors for whitebox score, blackbox score, and length penalty \\%(\Cref{sec:problem_setup}) \\
+$\setupStatic$ & Learning to evade a static Whitebox monitor \\%(\Cref{sec:problem_setup}) \\
+$\setupBackdoor$ & Learning to conditionally bypass a Whitebox monitor with a backdoor \\%(\Cref{sec:problem_setup}) \\
+% $\rewardFunction$ & Overall reward function \\%(\Cref{sec:problem_setup}) \\
+% $\modelLayerScore{M}{L}$ & Score for model $M$ at layer $L$ \\%(\Cref{sec:eval_policy}) \\
+\\[-7pt]
+\multicolumn{2}{l}{\textbf{Dataset Categories}} \\
+Safe & Model Generations and activations on Safe Prompts \\
+`Unsafe'/`Without Trigger' & Model Generations and Activations on Unsafe Prompts (without a trigger)\\
+`Backdoored'/`With Trigger' & Model Generations on Unsafe Prompts with a trigger\\
+Unsafe Original Model & The Base model's Generations and Activations on Unsafe Prompts\\
+$\mathcal{D}_{cat}$ & Used to denote one of the above categories \\%(\Cref{sec:compare_probes}) \\
+\\[-7pt]
+\multicolumn{2}{l}{\textbf{Functions}} \\
+$\indicatorFunction$ & Indicator function \\%(\Cref{sec:problem_setup}) \\
+$\aggregationFunction$ & Aggregation function over tokens \\%(\Cref{sec:problem_setup}) \\
+% $\expectation{\cdot}$ & Expectation over random variables \\%(\Cref{sec:eval_policy}) \\
+% \\
+$\modelActivations{M}{p}{y}{L}$ & Activations for model $M$, prompt $p$, completion $y$, layer $L$ \\%(\Cref{sec:problem_setup} \& \Cref{sec:eval_policy}). \\ & For brevity, we denote this as $\layerActivations$. \\
+% \\
+% \multicolumn{2}{l}{\textbf{Distance Metrics}} \\
+% $\wasserstein{\cdot}{\cdot}$ & Wasserstein distance \\%(\Cref{sec:compare_probes}) \\
+$\wassersteinSafe{$\mathcal{D}_{cat}$}{probe}$ & Wasserstein distance between scores from a category and safe scores \\%(\Cref{sec:compare_probes}) \\
+% \\
+% \multicolumn{2}{l}{\textbf{Hyperparameters}} \\
+% \\
+% \multicolumn{2}{l}{\textbf{Probe Architecture Components (Appendix)}} \\
+% $\boldsymbol{X}$ & Input tensor $\in \mathbb{R}^{B \times T \times D}$ \\%(\Cref{sec:probe_training}) \\
+% $\boldsymbol{Q}$ & Query projection $\in \mathbb{R}^{B \times T \times d}$ \\%(\Cref{sec:probe_training}) \\
+% $\boldsymbol{K}$ & Key projection $\in \mathbb{R}^{B \times T \times d}$ \\%(\Cref{sec:probe_training}) \\
+% $\boldsymbol{V}$ & Value projection $\in \mathbb{R}^{B \times T \times d}$ \\%(\Cref{sec:probe_training}) \\
+% $\boldsymbol{M}$ & Attention mask (CausalMask) \\%(\Cref{sec:probe_training}) \\
+% $B$ & Batch size \\%(\Cref{sec:probe_training}) \\
+% $T$ & Sequence length \\%(\Cref{sec:probe_training}) \\
+% $D$ & Dimension of residual stream \\%(\Cref{sec:probe_training}) \\
+% $d$ & Projection dimension of attention head \\%(\Cref{sec:probe_training}) \\
+% \\
+% \\
+\bottomrule \\[-8pt]
+\end{tabular}
+\caption{Notation and Symbols}
+\label{tab:notation}
+\end{table}

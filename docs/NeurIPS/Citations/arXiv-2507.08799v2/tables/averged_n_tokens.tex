@@ -1,0 +1,20 @@
+\begin{table}[t!]
+\caption{\textbf{Cache steering consistently increases the length of generated outputs across tasks}. We report the average number of generated tokens under three conditions: baseline decoding, CoT prompting, and cache steering. Results are shown for multiple model sizes averaged across reasoning
+benchmarks. Cache steering leads to significantly longer outputs, exceeding even CoT-prompted completions, suggesting that the intervention encourages more elaborate reasoning, even without explicit prompting.}
+\centering
+% \resizebox{0.5\textwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Baseline} & \textbf{CoT} & \textbf{Cache Steering} \\
+\midrule
+SmolLM2-360M & 73.5 \tiny{(94.1)} & 194.8 \tiny{(27.7)} & \textbf{294.2} \tiny{(52.4)} \\
+Qwen2-0.5B & 100.0 \tiny{(59.5)} & 167.8 \tiny{(52.1)} & \textbf{225.0} \tiny{(50.6)} \\
+Llama-3.1-8B & 156.0 \tiny{(36.7)} & 174.8 \tiny{(18.6)} & \textbf{297.2} \tiny{(61.0)} \\
+Llama-3.2-1B & 121.8 \tiny{(50.7)} & 161.8 \tiny{(27.5)} & \textbf{291.2} \tiny{(122.4)} \\
+Llama-3.2-3B & 160.2 \tiny{(37.7)} & 181.0 \tiny{(29.6)} & \textbf{284.5} \tiny{(95.8)} \\
+Phi-4-mini & 107.8 \tiny{(33.5)} & 211.0 \tiny{(20.7)} & \textbf{328.8} \tiny{(132.7)} \\
+\bottomrule
+\end{tabular}
+% }
+\label{tab:averaged_n_tokens}
+\end{table}

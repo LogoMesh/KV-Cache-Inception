@@ -1,0 +1,756 @@
+\begin{thebibliography}{116}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Abusnaina et~al.(2021)Abusnaina, Wu, Arora, Wang, Wang, Yang, and Mohaisen]{abusnaina2021adversarial}
+Ahmed Abusnaina, Yuhang Wu, Sunpreet Arora, Yizhen Wang, Fei Wang, Hao Yang, and David Mohaisen.
+\newblock {Adversarial Example Detection Using Latent Neighborhood Graph}.
+\newblock In \emph{2021 IEEE/CVF International Conference on Computer Vision (ICCV)}, pages 7667--7676, 2021.
+\newblock \doi{10.1109/ICCV48922.2021.00759}.
+
+\bibitem[Alain and Bengio(2016)]{alain2016understanding}
+Guillaume Alain and Yoshua Bengio.
+\newblock {Understanding intermediate layers using linear classifier probes}.
+\newblock \emph{arXiv}, October 2016.
+\newblock \doi{10.48550/arXiv.1610.01644}.
+\newblock URL \url{https://arxiv.org/abs/1610.01644}.
+
+\bibitem[Amirian et~al.(2018)Amirian, Schwenker, and Stadelmann]{amirian2018trace}
+Mohammadreza Amirian, Friedhelm Schwenker, and Thilo Stadelmann.
+\newblock {Trace and Detect Adversarial Attacks on CNNs Using Feature Response Maps}.
+\newblock In \emph{IAPR International Workshop on Artificial Neural Networks in Pattern Recognition}, 2018.
+\newblock URL \url{https://api.semanticscholar.org/CorpusID:52136467}.
+
+\bibitem[Andriushchenko et~al.(2024)Andriushchenko, Croce, and Flammarion]{andriushchenko2024jailbreaking}
+Maksym Andriushchenko, Francesco Croce, and Nicolas Flammarion.
+\newblock {Jailbreaking Leading Safety-Aligned LLMs with Simple Adaptive Attacks}.
+\newblock \emph{arXiv}, April 2024.
+\newblock \doi{10.48550/arXiv.2404.02151}.
+\newblock URL \url{https://arxiv.org/abs/2404.02151v3}.
+
+\bibitem[Anil et~al.(2024)Anil, Durmus, Rimsky, Sharma, Benton, Kundu, Batson, Tong, Mu, Ford, et~al.]{anil2024many}
+Cem Anil, Esin Durmus, Nina Rimsky, Mrinank Sharma, Joe Benton, Sandipan Kundu, Joshua Batson, Meg Tong, Jesse Mu, Daniel~J Ford, et~al.
+\newblock {Many-shot jailbreaking}.
+\newblock In \emph{The Thirty-eighth Annual Conference on Neural Information Processing Systems}, 2024.
+
+\bibitem[Anwar et~al.(2024)Anwar, Saparov, Rando, Paleka, Turpin, Hase, Lubana, Jenner, Casper, Sourbut, et~al.]{anwar2024foundational}
+Usman Anwar, Abulhair Saparov, Javier Rando, Daniel Paleka, Miles Turpin, Peter Hase, Ekdeep~Singh Lubana, Erik Jenner, Stephen Casper, Oliver Sourbut, et~al.
+\newblock {Foundational Challenges in Assuring Alignment and Safety of Large Language Models}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arXiv.2404.09932}.
+\newblock URL \url{https://arxiv.org/abs/2404.09932}.
+
+\bibitem[Arditi et~al.(2024)Arditi, Obeso, Syed, Paleka, Rimsky, Gurnee, and Nanda]{arditi2024refusal}
+Andy Arditi, Oscar Obeso, Aaquib Syed, Daniel Paleka, Nina Rimsky, Wes Gurnee, and Neel Nanda.
+\newblock {Refusal in Language Models Is Mediated by a Single Direction}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arXiv.2406.11717}.
+\newblock URL \url{https://arxiv.org/abs/2406.11717}.
+
+\bibitem[Athalye et~al.(2018)Athalye, Carlini, and Wagner]{athalye2018obfuscated}
+Anish Athalye, Nicholas Carlini, and David Wagner.
+\newblock {Obfuscated Gradients Give a False Sense of Security: Circumventing Defenses to Adversarial Examples}.
+\newblock \emph{arXiv}, February 2018.
+\newblock \doi{10.48550/arXiv.1802.00420}.
+\newblock URL \url{https://arxiv.org/abs/1802.00420}.
+
+\bibitem[{b-mc2}(2023)]{b-mc2_2023_sql-create-context}
+{b-mc2}.
+\newblock {sql-create-context Dataset}, 2023.
+\newblock URL \url{https://huggingface.co/datasets/b-mc2/sql-create-context}.
+\newblock This dataset was created by modifying data from the following sources: \cite{zhong2017seq2sql, yu2018spider}.
+
+\bibitem[Ball et~al.(2024)Ball, Kreuter, and Rimsky]{ball2024understanding}
+Sarah Ball, Frauke Kreuter, and Nina Rimsky.
+\newblock {Understanding Jailbreak Success: {A} Study of Latent Space Dynamics in Large Language Models}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arxiv.2406.09289}.
+\newblock URL \url{https://arxiv.org/abs/2406.09289}.
+
+\bibitem[Belinkov(2022)]{belinkov2022probing}
+Yonatan Belinkov.
+\newblock {Probing Classifiers: Promises, Shortcomings, and Advances}.
+\newblock \emph{Computational Linguistics}, 48\penalty0 (1):\penalty0 207--219, April 2022.
+\newblock ISSN 0891-2017.
+\newblock \doi{10.1162/coli_a_00422}.
+
+\bibitem[Belrose et~al.(2023)Belrose, Furman, Smith, Halawi, Ostrovsky, McKinney, Biderman, and Steinhardt]{belrose2023eliciting}
+Nora Belrose, Zach Furman, Logan Smith, Danny Halawi, Igor Ostrovsky, Lev McKinney, Stella Biderman, and Jacob Steinhardt.
+\newblock {Eliciting Latent Predictions from Transformers with the Tuned Lens}.
+\newblock \emph{arXiv}, 2023.
+\newblock \doi{10.48550/arxiv.2303.08112}.
+\newblock URL \url{https://arxiv.org/abs/2303.08112}.
+
+\bibitem[Braun et~al.(2024{\natexlab{a}})Braun, Taylor, Goldowsky-Dill, and Sharkey]{braun2024identifying}
+Dan Braun, Jordan Taylor, Nicholas Goldowsky-Dill, and Lee Sharkey.
+\newblock {Identifying Functionally Important Features with End-to-End Sparse Dictionary Learning}.
+\newblock \emph{arXiv}, May 2024{\natexlab{a}}.
+\newblock \doi{10.48550/arXiv.2405.12241}.
+\newblock URL \url{https://arxiv.org/abs/2405.12241}.
+
+\bibitem[Braun et~al.(2024{\natexlab{b}})Braun, Krasheninnikov, Anwar, Kirk, Tan, and Scott~Krueger]{braun2024sober}
+Joschka Braun, Dmitrii Krasheninnikov, Usman Anwar, Robert Kirk, Daniel Tan, and David Scott~Krueger.
+\newblock {A Sober Look at Steering Vectors for LLMs}.
+\newblock \emph{AI Alignment Forum}, November 2024{\natexlab{b}}.
+\newblock URL \url{https://www.alignmentforum.org/posts/QQP4nq7TXg89CJGBh/a-sober-look-at-steering-vectors-for-llms}.
+
+\bibitem[Bricken et~al.(2023)Bricken, Templeton, Batson, Chen, Jermyn, Conerly, Turner, Anil, Denison, Askell, Lasenby, Wu, Kravec, Schiefer, Maxwell, Joseph, Hatfield-Dodds, Tamkin, Nguyen, McLean, Burke, Hume, Carter, Henighan, and Olah]{bricken2023monosemanticity}
+Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom Conerly, Nick Turner, Cem Anil, Carson Denison, Amanda Askell, Robert Lasenby, Yifan Wu, Shauna Kravec, Nicholas Schiefer, Tim Maxwell, Nicholas Joseph, Zac Hatfield-Dodds, Alex Tamkin, Karina Nguyen, Brayden McLean, Josiah~E Burke, Tristan Hume, Shan Carter, Tom Henighan, and Christopher Olah.
+\newblock {Towards Monosemanticity: Decomposing Language Models With Dictionary Learning}.
+\newblock \emph{Transformer Circuits Thread}, 2023.
+\newblock URL \url{https://transformer-circuits.pub/2023/monosemantic-features}.
+
+\bibitem[Bricken et~al.(2024)Bricken, Marcus, Mishra-Sharma, Tong, Perez, Sharma, Rivoire, Henighan, and Jermyn]{bricken2024using}
+Trenton Bricken, Jonathan Marcus, Siddharth Mishra-Sharma, Meg Tong, Ethan Perez, Mrinank Sharma, Kelley Rivoire, Thomas Henighan, and Adam Jermyn.
+\newblock {Using Dictionary Learning Features as Classifiers}, October 2024.
+\newblock URL \url{https://transformer-circuits.pub/2024/features-as-classifiers/index.html}.
+
+\bibitem[Brumley et~al.(2024)Brumley, Kwon, Krueger, Krasheninnikov, and Anwar]{brumley2024comparing}
+Madeline Brumley, Joe Kwon, David Krueger, Dmitrii Krasheninnikov, and Usman Anwar.
+\newblock {Comparing Bottom-Up and Top-Down Steering Approaches on In-Context Learning Tasks}.
+\newblock \emph{arXiv}, November 2024.
+\newblock \doi{10.48550/arXiv.2411.07213}.
+\newblock URL \url{https://arxiv.org/abs/2411.07213}.
+
+\bibitem[Burns et~al.(2022)Burns, Ye, Klein, and Steinhardt]{burns2022discovering}
+Collin Burns, Haotian Ye, Dan Klein, and Jacob Steinhardt.
+\newblock {Discovering Latent Knowledge in Language Models Without Supervision}.
+\newblock \emph{arXiv}, December 2022.
+\newblock \doi{10.48550/arXiv.2212.03827}.
+\newblock URL \url{https://arxiv.org/abs/2212.03827v2}.
+
+\bibitem[Carlini and Wagner(2017)]{carlini2017adversarial}
+Nicholas Carlini and David Wagner.
+\newblock {Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods}.
+\newblock In \emph{{ACM Conferences}}, pages 3--14. Association for Computing Machinery, New York, NY, USA, November 2017.
+\newblock \doi{10.1145/3128572.3140444}.
+
+\bibitem[Carlini et~al.(2024)Carlini, Nasr, Choquette-Choo, Jagielski, Gao, Koh, Ippolito, Tramer, and Schmidt]{carlini2024aligned}
+Nicholas Carlini, Milad Nasr, Christopher~A Choquette-Choo, Matthew Jagielski, Irena Gao, Pang Wei~W Koh, Daphne Ippolito, Florian Tramer, and Ludwig Schmidt.
+\newblock {Are aligned neural networks adversarially aligned?}
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2024.
+
+\bibitem[Casper et~al.(2024)Casper, Schulze, Patel, and Hadfield{-}Menell]{casper2024defending}
+Stephen Casper, Lennart Schulze, Oam Patel, and Dylan Hadfield{-}Menell.
+\newblock {Defending Against Unforeseen Failure Modes with Latent Adversarial Training}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arxiv.2403.05030}.
+\newblock URL \url{https://arxiv.org/abs/2403.05030}.
+
+\bibitem[Chanin et~al.(2024)Chanin, Wilken-Smith, Dulka, Bhatnagar, and Bloom]{chanin2024a}
+David Chanin, James Wilken-Smith, Tom{\ifmmode\acute{a}\else\'{a}\fi}{\ifmmode\check{s}\else\v{s}\fi} Dulka, Hardik Bhatnagar, and Joseph Bloom.
+\newblock {A is for Absorption: Studying Feature Splitting and Absorption in Sparse Autoencoders}.
+\newblock \emph{arXiv}, September 2024.
+\newblock \doi{10.48550/arXiv.2409.14507}.
+\newblock URL \url{https://arxiv.org/abs/2409.14507}.
+
+\bibitem[Chao et~al.(2023)Chao, Robey, Dobriban, Hassani, Pappas, and Wong]{chao2023jailbreaking}
+Patrick Chao, Alexander Robey, Edgar Dobriban, Hamed Hassani, George~J. Pappas, and Eric Wong.
+\newblock {Jailbreaking Black Box Large Language Models in Twenty Queries}.
+\newblock \emph{arXiv}, October 2023.
+\newblock \doi{10.48550/arXiv.2310.08419}.
+\newblock URL \url{https://arxiv.org/abs/2310.08419v4}.
+
+\bibitem[Chaudhary(2023)]{codealpaca}
+Sahil Chaudhary.
+\newblock {Code Alpaca: An Instruction-following LLaMA model for code generation}.
+\newblock GitHub repository, 2023.
+\newblock URL \url{https://github.com/sahil280114/codealpaca}.
+
+\bibitem[Che et~al.(2024)Che, Casper, Satheesh, Gandikota, Rosati, Slocum, McKinney, Wu, Cai, Chughtai, et~al.]{che2024model}
+Zora Che, Stephen Casper, Anirudh Satheesh, Rohit Gandikota, Domenic Rosati, Stewart Slocum, Lev~E McKinney, Zichu Wu, Zikui Cai, Bilal Chughtai, et~al.
+\newblock Model manipulation attacks enable more rigorous evaluations of llm capabilities.
+\newblock In \emph{Neurips Safe Generative AI Workshop 2024}, 2024.
+
+\bibitem[Chen et~al.(2018)Chen, Carvalho, Baracaldo, Ludwig, Edwards, Lee, Molloy, and Srivastava]{chen2018detecting}
+Bryant Chen, Wilka Carvalho, Nathalie Baracaldo, Heiko Ludwig, Ben Edwards, Taesung Lee, Ian Molloy, and B.~Srivastava.
+\newblock {Detecting Backdoor Attacks on Deep Neural Networks by Activation Clustering}.
+\newblock \emph{ArXiv}, 2018.
+\newblock URL \url{https://www.semanticscholar.org/paper/Detecting-Backdoor-Attacks-on-Deep-Neural-Networks-Chen-Carvalho/633ccadcde3bfca87f91bfe5ef4aa297fb2da2f4}.
+
+\bibitem[Chen et~al.(2022)Chen, Yang, Zhang, Bi, and Sun]{chen2022expose}
+Sishuo Chen, Wenkai Yang, Zhiyuan Zhang, Xiaohan Bi, and Xu~Sun.
+\newblock {Expose Backdoors on the Way: A Feature-Based Efficient Defense against Textual Backdoor Attacks}.
+\newblock In Yoav Goldberg, Zornitsa Kozareva, and Yue Zhang, editors, \emph{Findings of the Association for Computational Linguistics: EMNLP 2022}, pages 668--683, Abu Dhabi, United Arab Emirates, December 2022. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/2022.findings-emnlp.47}.
+\newblock URL \url{https://aclanthology.org/2022.findings-emnlp.47}.
+
+\bibitem[Chen et~al.(2017)Chen, Liu, Li, Lu, and Song]{chen2017targeted}
+Xinyun Chen, Chang Liu, Bo~Li, Kimberly Lu, and Dawn Song.
+\newblock {Targeted Backdoor Attacks on Deep Learning Systems Using Data Poisoning}.
+\newblock \emph{arXiv}, 2017.
+\newblock \doi{10.48550/arXiv.1712.05526}.
+\newblock URL \url{https://arxiv.org/abs/1712.05526}.
+
+\bibitem[Clymer et~al.(2024)Clymer, Juang, and Field]{clymer2024poser}
+Joshua Clymer, Caden Juang, and Severin Field.
+\newblock {Poser: Unmasking Alignment Faking LLMs by Manipulating Their Internals}.
+\newblock \emph{arXiv}, May 2024.
+\newblock \doi{10.48550/arXiv.2405.05466}.
+\newblock URL \url{https://arxiv.org/abs/2405.05466}.
+
+\bibitem[Cunningham et~al.(2023)Cunningham, Ewart, Riggs, Huben, and Sharkey]{cunningham2023sparse}
+Hoagy Cunningham, Aidan Ewart, Logan Riggs, Robert Huben, and Lee Sharkey.
+\newblock {Sparse Autoencoders Find Highly Interpretable Features in Language Models}.
+\newblock \emph{arXiv}, September 2023.
+\newblock \doi{10.48550/arXiv.2309.08600}.
+\newblock URL \url{https://arxiv.org/abs/2309.08600}.
+
+\bibitem[De-Arteaga et~al.(2019)De-Arteaga, Romanov, Wallach, Chayes, Borgs, Chouldechova, Geyik, Kenthapadi, and Kalai]{bias_in_bios}
+Maria De-Arteaga, Alexey Romanov, Hanna Wallach, Jennifer Chayes, Christian Borgs, Alexandra Chouldechova, Sahin Geyik, Krishnaram Kenthapadi, and Adam~Tauman Kalai.
+\newblock {Bias in Bios: A Case Study of Semantic Representation Bias in a High-Stakes Setting}.
+\newblock In \emph{Proceedings of the Conference on Fairness, Accountability, and Transparency}, FAT* '19, page 120–128, New York, NY, USA, 2019. Association for Computing Machinery.
+\newblock ISBN 9781450361255.
+\newblock \doi{10.1145/3287560.3287572}.
+\newblock URL \url{https://doi.org/10.1145/3287560.3287572}.
+
+\bibitem[Ding et~al.(2023)Ding, Chen, Xu, Qin, Zheng, Hu, Liu, Sun, and Zhou]{ding2023enhancing}
+Ning Ding, Yulin Chen, Bokai Xu, Yujia Qin, Zhi Zheng, Shengding Hu, Zhiyuan Liu, Maosong Sun, and Bowen Zhou.
+\newblock {Enhancing Chat Language Models by Scaling High-quality Instructional Conversations}.
+\newblock \emph{arXiv}, May 2023.
+\newblock \doi{10.48550/arXiv.2305.14233}.
+\newblock URL \url{https://arxiv.org/abs/2305.14233v1}.
+
+\bibitem[Doan et~al.(2021)Doan, Lao, and Li]{doan2021backdoor}
+Khoa Doan, Yingjie Lao, and Ping Li.
+\newblock {Backdoor Attack with Imperceptible Input and Latent Modification}.
+\newblock In M.~Ranzato, A.~Beygelzimer, Y.~Dauphin, P.S. Liang, and J.~Wortman Vaughan, editors, \emph{Advances in Neural Information Processing Systems}, volume~34, pages 18944--18957. Curran Associates, Inc., 2021.
+\newblock URL \url{https://proceedings.neurips.cc/paper_files/paper/2021/file/9d99197e2ebf03fc388d09f1e94af89b-Paper.pdf}.
+
+\bibitem[Feinman et~al.(2017)Feinman, Curtin, Shintre, and Gardner]{feinman2017detecting}
+Reuben Feinman, Ryan~R. Curtin, Saurabh Shintre, and Andrew~B. Gardner.
+\newblock {Detecting Adversarial Samples from Artifacts}.
+\newblock \emph{arXiv}, March 2017.
+\newblock \doi{10.48550/arXiv.1703.00410}.
+\newblock URL \url{https://arxiv.org/abs/1703.00410v3}.
+
+\bibitem[Fort and Lakshminarayanan(2024)]{fort2024ensemble}
+Stanislav Fort and Balaji Lakshminarayanan.
+\newblock {Ensemble everything everywhere: Multi-scale aggregation for adversarial robustness}.
+\newblock \emph{arXiv}, August 2024.
+\newblock \doi{10.48550/arXiv.2408.05446}.
+\newblock URL \url{https://arxiv.org/abs/2408.05446v1}.
+
+\bibitem[Friedman et~al.(2023)Friedman, Lampinen, Dixon, Chen, and Ghandeharioun]{friedman2023interpretability}
+Dan Friedman, Andrew Lampinen, Lucas Dixon, Danqi Chen, and Asma Ghandeharioun.
+\newblock {Interpretability Illusions in the Generalization of Simplified Models}.
+\newblock \emph{arXiv}, December 2023.
+\newblock \doi{10.48550/arXiv.2312.03656}.
+\newblock URL \url{https://arxiv.org/abs/2312.03656}.
+
+\bibitem[Gandikota et~al.(2024)Gandikota, Feucht, Marks, and Bau]{gandikota2024erasing}
+Rohit Gandikota, Sheridan Feucht, Samuel Marks, and David Bau.
+\newblock {Erasing Conceptual Knowledge from Language Models}.
+\newblock \emph{arXiv}, October 2024.
+\newblock \doi{10.48550/arXiv.2410.02760}.
+\newblock URL \url{https://arxiv.org/abs/2410.02760v1}.
+
+\bibitem[Gao et~al.(2024)Gao, la~Tour, Tillman, Goh, Troll, Radford, Sutskever, Leike, and Wu]{gao2024scaling}
+Leo Gao, Tom~Dupr{\'{e}} la~Tour, Henk Tillman, Gabriel Goh, Rajan Troll, Alec Radford, Ilya Sutskever, Jan Leike, and Jeffrey Wu.
+\newblock {Scaling and evaluating sparse autoencoders}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arxiv.2406.04093}.
+\newblock URL \url{https://arxiv.org/abs/2406.04093}.
+
+\bibitem[Gao et~al.(2019)Gao, Xu, Wang, Chen, Ranasinghe, and Nepal]{gao2019strip}
+Yansong Gao, Chang Xu, Derui Wang, Shiping Chen, Damith~Chinthana Ranasinghe, and Surya Nepal.
+\newblock {STRIP: a defence against trojan attacks on deep neural networks}.
+\newblock \emph{Proceedings of the 35th Annual Computer Security Applications Conference}, 2019.
+\newblock URL \url{https://api.semanticscholar.org/CorpusID:62841494}.
+
+\bibitem[Geiping et~al.(2024)Geiping, Stein, Shu, Saifullah, Wen, and Goldstein]{geiping2024coercing}
+Jonas Geiping, Alex Stein, Manli Shu, Khalid Saifullah, Yuxin Wen, and Tom Goldstein.
+\newblock {Coercing LLMs to Do and Reveal (Almost) Anything}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arXiv.2402.14020}.
+\newblock URL \url{https://arxiv.org/abs/2402.14020}.
+
+\bibitem[Goldwasser et~al.(2022)Goldwasser, Kim, Vaikuntanathan, and Zamir]{goldwasser2022planting}
+Shafi Goldwasser, Michael~P. Kim, Vinod Vaikuntanathan, and Or~Zamir.
+\newblock {Planting Undetectable Backdoors in Machine Learning Models}.
+\newblock \emph{arXiv}, April 2022.
+\newblock \doi{10.48550/arXiv.2204.06974}.
+\newblock URL \url{https://arxiv.org/abs/2204.06974}.
+
+\bibitem[Grosse et~al.(2017)Grosse, Manoharan, Papernot, Backes, and McDaniel]{grosse2017statistical}
+Kathrin Grosse, Praveen Manoharan, Nicolas Papernot, Michael Backes, and Patrick McDaniel.
+\newblock {On the (Statistical) Detection of Adversarial Examples}.
+\newblock \emph{arXiv}, February 2017.
+\newblock \doi{10.48550/arXiv.1702.06280}.
+\newblock URL \url{https://arxiv.org/abs/1702.06280v2}.
+
+\bibitem[Haize(2024)]{haize2024mt}
+Haize.
+\newblock {Automated Multi-Turn Red-Teaming with Cascade}, October 2024.
+\newblock URL \url{https://blog.haizelabs.com/posts/cascade}.
+\newblock [Online; accessed 12. Dec. 2024].
+
+\bibitem[Hayase et~al.(2021)Hayase, Kong, Somani, and Oh]{hayase2021spectre}
+Jonathan Hayase, Weihao Kong, Raghav Somani, and Sewoong Oh.
+\newblock {SPECTRE: Defending Against Backdoor Attacks Using Robust Statistics}.
+\newblock In \emph{International Conference on Machine Learning}, pages 4129--4139. PMLR, 2021.
+
+\bibitem[Hilton and Xu(2024)]{hilton2024backdoorsanalogy}
+Jacob Hilton and Mark Xu.
+\newblock {Backdoors as an analogy for deceptive alignment}, 2024.
+\newblock URL \url{https://www.alignment.org/blog/backdoors-as-an-analogy-for-deceptive-alignment/}.
+
+\bibitem[Hosseini et~al.(2019)Hosseini, Kannan, and Poovendran]{hosseini2019are}
+Hossein Hosseini, Sreeram Kannan, and Radha Poovendran.
+\newblock {Are Odds Really Odd? Bypassing Statistical Detection of Adversarial Examples}.
+\newblock \emph{arXiv}, July 2019.
+\newblock \doi{10.48550/arXiv.1907.12138}.
+\newblock URL \url{https://arxiv.org/abs/1907.12138}.
+
+\bibitem[Hu et~al.(2021)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and Chen]{hu2021lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu~Wang, and Weizhu Chen.
+\newblock {LoRA: Low-Rank Adaptation of Large Language Models}.
+\newblock \emph{arXiv}, 2021.
+\newblock \doi{10.48550/arXiv.2106.09685}.
+\newblock URL \url{https://arxiv.org/abs/2106.09685}.
+
+\bibitem[Hubinger(2019)]{hubinger2019gradient}
+Evan Hubinger.
+\newblock {Gradient hacking}.
+\newblock \emph{AI Alignment Forum}, October 2019.
+\newblock URL \url{https://www.alignmentforum.org/posts/uXH4r6MmKPedk8rMA/gradient-hacking}.
+
+\bibitem[Hubinger et~al.(2024)Hubinger, Denison, Mu, Lambert, Tong, MacDiarmid, Lanham, Ziegler, Maxwell, Cheng, Jermyn, Askell, Radhakrishnan, Anil, Duvenaud, Ganguli, Barez, Clark, Ndousse, Sachan, Sellitto, Sharma, DasSarma, Grosse, Kravec, Bai, Witten, Favaro, Brauner, Karnofsky, Christiano, Bowman, Graham, Kaplan, Mindermann, Greenblatt, Shlegeris, Schiefer, and Perez]{hubinger2024sleeperagents}
+Evan Hubinger, Carson Denison, Jesse Mu, Mike Lambert, Meg Tong, Monte MacDiarmid, Tamera Lanham, Daniel~M. Ziegler, Tim Maxwell, Newton Cheng, Adam Jermyn, Amanda Askell, Ansh Radhakrishnan, Cem Anil, David Duvenaud, Deep Ganguli, Fazl Barez, Jack Clark, Kamal Ndousse, Kshitij Sachan, Michael Sellitto, Mrinank Sharma, Nova DasSarma, Roger Grosse, Shauna Kravec, Yuntao Bai, Zachary Witten, Marina Favaro, Jan Brauner, Holden Karnofsky, Paul Christiano, Samuel~R. Bowman, Logan Graham, Jared Kaplan, S{\ifmmode\ddot{o}\else\"{o}\fi}ren Mindermann, Ryan Greenblatt, Buck Shlegeris, Nicholas Schiefer, and Ethan Perez.
+\newblock {Sleeper Agents: Training Deceptive LLMs that Persist Through Safety Training}.
+\newblock \emph{arXiv}, January 2024.
+\newblock \doi{10.48550/arXiv.2401.05566}.
+\newblock URL \url{https://arxiv.org/abs/2401.05566v3}.
+
+\bibitem[Jain et~al.(2024)Jain, Lubana, Oksuz, Joy, Torr, Sanyal, and Dokania]{jain2024what}
+Samyak Jain, Ekdeep~Singh Lubana, Kemal Oksuz, Tom Joy, Philip H.~S. Torr, Amartya Sanyal, and Puneet~K. Dokania.
+\newblock {What Makes and Breaks Safety Fine-tuning? A Mechanistic Study}.
+\newblock \emph{arXiv}, July 2024.
+\newblock \doi{10.48550/arXiv.2407.10264}.
+\newblock URL \url{https://arxiv.org/abs/2407.10264}.
+
+\bibitem[Jia et~al.(2021)Jia, Liu, and Gong]{jia2021badencoder}
+Jinyuan Jia, Yupei Liu, and Neil~Zhenqiang Gong.
+\newblock {BadEncoder: Backdoor Attacks to Pre-trained Encoders in Self-Supervised Learning}.
+\newblock \emph{arXiv}, 2021.
+\newblock \doi{10.48550/arXiv.2108.00352}.
+\newblock URL \url{https://arxiv.org/abs/2108.00352}.
+
+\bibitem[Jin et~al.(2024)Jin, Hu, Li, Zhang, Chen, Zhuang, and Wang]{jin2024jailbreakzoo}
+Haibo Jin, Leyang Hu, Xinuo Li, Peiyan Zhang, Chonghan Chen, Jun Zhuang, and Haohan Wang.
+\newblock {Jailbreakzoo: Survey, landscapes, and horizons in jailbreaking large language and vision-language models}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.01599}.
+
+\bibitem[Kaya et~al.(2022)Kaya, Zafar, Aydore, Rauschmayr, and Kenthapadi]{kaya2022generating}
+Yigitcan Kaya, Muhammad~Bilal Zafar, Sergul Aydore, Nathalie Rauschmayr, and Krishnaram Kenthapadi.
+\newblock {Generating Distributional Adversarial Examples to Evade Statistical Detectors}.
+\newblock In \emph{{International Conference on Machine Learning}}, pages 10895--10911. PMLR, June 2022.
+\newblock URL \url{https://proceedings.mlr.press/v162/kaya22a}.
+
+\bibitem[Kingma and Welling(2013)]{kingma2013auto}
+Diederik~P. Kingma and Max Welling.
+\newblock {Auto-Encoding Variational Bayes}.
+\newblock \emph{arXiv}, 2013.
+\newblock \doi{10.48550/arXiv.1312.6114}.
+\newblock URL \url{https://arxiv.org/abs/1312.6114}.
+
+\bibitem[Kirch et~al.(2024)Kirch, Field, and Casper]{kirch2024features}
+Nathalie~Maria Kirch, Severin Field, and Stephen Casper.
+\newblock {What Features in Prompts Jailbreak LLMs? Investigating the Mechanisms Behind Attacks}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2411.03343}.
+
+\bibitem[Kissane et~al.(2024)Kissane, Krzyzanowski, Conmy, and Nanda]{sae_finetuning}
+Connor Kissane, Robert Krzyzanowski, Arthur Conmy, and Neel Nanda.
+\newblock {SAEs (usually) Transfer Between Base and Chat Models}.
+\newblock \emph{AI Alignment Forum}, 2024.
+\newblock URL \url{https://www.alignmentforum.org/posts/fmwk6qxrpW8d4jvbd/saes-usually-transfer-between-base-and-chat-models}.
+
+\bibitem[Lester et~al.(2021)Lester, Al-Rfou, and Constant]{lester2021power}
+Brian Lester, Rami Al-Rfou, and Noah Constant.
+\newblock {The Power of Scale for Parameter-Efficient Prompt Tuning}.
+\newblock \emph{arXiv}, April 2021.
+\newblock \doi{10.48550/arXiv.2104.08691}.
+\newblock URL \url{https://arxiv.org/abs/2104.08691v2}.
+
+\bibitem[Li et~al.(2024)Li, Han, Steneker, Primack, Goodside, Zhang, Wang, Menghini, and Yue]{li2024llm}
+Nathaniel Li, Ziwen Han, Ian Steneker, Willow Primack, Riley Goodside, Hugh Zhang, Zifan Wang, Cristina Menghini, and Summer Yue.
+\newblock {LLM Defenses Are Not Robust to Multi-Turn Human Jailbreaks Yet}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2408.15221}.
+
+\bibitem[Li and Li(2016)]{li2016adversarial}
+Xin Li and Fuxin Li.
+\newblock {Adversarial Examples Detection in Deep Networks with Convolutional Filter Statistics}.
+\newblock \emph{2017 IEEE International Conference on Computer Vision (ICCV)}, pages 5775--5783, 2016.
+\newblock URL \url{https://api.semanticscholar.org/CorpusID:7733308}.
+
+\bibitem[Liang et~al.(2024)Liang, Zhu, Liu, Wu, Cao, and Chang]{liang2024badclip}
+Siyuan Liang, Mingli Zhu, Aishan Liu, Baoyuan Wu, Xiaochun Cao, and Ee-Chien Chang.
+\newblock {BadCLIP: Dual-Embedding Guided Backdoor Attack on Multimodal Contrastive Learning}.
+\newblock In \emph{2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, pages 24645--24654, 2024.
+\newblock \doi{10.1109/CVPR52733.2024.02327}.
+
+\bibitem[Lieberum et~al.(2024)Lieberum, Rajamanoharan, Conmy, Smith, Sonnerat, Varma, Kram{\'a}r, Dragan, Shah, and Nanda]{lieberum2024gemma}
+Tom Lieberum, Senthooran Rajamanoharan, Arthur Conmy, Lewis Smith, Nicolas Sonnerat, Vikrant Varma, J{\'a}nos Kram{\'a}r, Anca Dragan, Rohin Shah, and Neel Nanda.
+\newblock {Gemma scope: Open sparse autoencoders everywhere all at once on gemma 2}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2408.05147}.
+
+\bibitem[Lin(2023)]{neuronpedia}
+Johnny Lin.
+\newblock {Neuronpedia: Interactive Reference and Tooling for Analyzing Neural Networks}, 2023.
+\newblock URL \url{https://www.neuronpedia.org}.
+\newblock Software available from neuronpedia.org.
+
+\bibitem[Liu et~al.(2023)Liu, Xu, Chen, and Xiao]{liu2023autodan}
+Xiaogeng Liu, Nan Xu, Muhao Chen, and Chaowei Xiao.
+\newblock {Autodan: Generating stealthy jailbreak prompts on aligned large language models}.
+\newblock \emph{arXiv}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.04451}.
+
+\bibitem[Liu et~al.(2022)Liu, Shen, Tao, An, Ma, and Zhang]{liu2022piccolo}
+Yingqi Liu, Guangyu Shen, Guanhong Tao, Shengwei An, Shiqing Ma, and Xiangyu Zhang.
+\newblock {Piccolo: Exposing Complex Backdoors in NLP Transformer Models}.
+\newblock In \emph{2022 IEEE Symposium on Security and Privacy (SP)}, pages 2025--2042, 2022.
+\newblock \doi{10.1109/SP46214.2022.9833579}.
+
+\bibitem[Ma et~al.(2023)Ma, Wang, Sun, Xue, Wen, and Xiang]{ma2024beatrix}
+Wanlun Ma, Derui Wang, Ruoxi Sun, Minhui Xue, Sheng Wen, and Yang Xiang.
+\newblock {The ``Beatrix'' Resurrections: Robust Backdoor Detection via Gram Matrices}.
+\newblock \emph{NDSS Symposium}, 2023.
+\newblock \doi{10.48550/arXiv.2209.11715}.
+\newblock URL \url{https://www.ndss-symposium.org/ndss-paper/the-beatrix-resurrections-robust-backdoor-detection-via-gram-matrices}.
+
+\bibitem[Ma et~al.(2018)Ma, Li, Wang, Erfani, Wijewickrema, Houle, Schoenebeck, Song, and Bailey]{ma2018characterizing}
+Xingjun Ma, Bo~Li, Yisen Wang, Sarah~Monazam Erfani, Sudanthi N.~R. Wijewickrema, Michael~E. Houle, Grant~Robert Schoenebeck, Dawn~Xiaodong Song, and James Bailey.
+\newblock {Characterizing Adversarial Subspaces Using Local Intrinsic Dimensionality}.
+\newblock \emph{ArXiv}, abs/1801.02613, 2018.
+\newblock URL \url{https://api.semanticscholar.org/CorpusID:1248661}.
+
+\bibitem[MacDiarmid et~al.(2024)MacDiarmid, Maxwell, Schiefer, Mu, Kaplan, Duvenaud, Bowman, Tamkin, Perez, Sharma, Denison, and Hubinger]{macdiarmid2024sleeperagentprobes}
+Monte MacDiarmid, Timothy Maxwell, Nicholas Schiefer, Jesse Mu, Jared Kaplan, David Duvenaud, Sam Bowman, Alex Tamkin, Ethan Perez, Mrinank Sharma, Carson Denison, and Evan Hubinger.
+\newblock Simple probes can catch sleeper agents.
+\newblock \emph{Anthropic Research Updates}, 2024.
+\newblock URL \url{https://www.anthropic.com/news/probes-catch-sleeper-agents}.
+
+\bibitem[Mack and Turner(2024)]{mack2024deep}
+Andrew Mack and Alex Turner.
+\newblock {Deep Causal Transcoding: A Framework for Mechanistically Eliciting Latent Behaviors in Language Models}.
+\newblock \emph{AI Alignment Forum}, December 2024.
+\newblock URL \url{https://www.alignmentforum.org/posts/fSRg5qs9TPbNy3sm5/deep-causal-transcoding-a-framework-for-mechanistically}.
+
+\bibitem[Mahalanobis(1936)]{mahalanobis1936on}
+P.~C. Mahalanobis.
+\newblock {On the generalized distance in Statistics}.
+\newblock \emph{National Institute of Science of India}, April 1936.
+\newblock URL \url{http://library.isical.ac.in:8080/jspui/handle/10263/6765}.
+
+\bibitem[Makelov et~al.(2023)Makelov, Lange, Geiger, and Nanda]{makelov2023illusion}
+Aleksandar Makelov, Georg Lange, Atticus Geiger, and Neel Nanda.
+\newblock {Is This the Subspace You Are Looking for? An Interpretability Illusion for Subspace Activation Patching}.
+\newblock \emph{OpenReview}, October 2023.
+\newblock URL \url{https://openreview.net/forum?id=Ebt7JgMHv1}.
+
+\bibitem[Mallen et~al.(2023)Mallen, Brumley, Kharchenko, and Belrose]{mallen2023eliciting}
+Alex Mallen, Madeline Brumley, Julia Kharchenko, and Nora Belrose.
+\newblock {Eliciting Latent Knowledge from Quirky Language Models}.
+\newblock \emph{arXiv}, December 2023.
+\newblock \doi{10.48550/arXiv.2312.01037}.
+\newblock URL \url{https://arxiv.org/abs/2312.01037}.
+
+\bibitem[Marks and Tegmark(2024)]{marks2024geometry}
+Samuel Marks and Max Tegmark.
+\newblock {The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2310.06824}.
+
+\bibitem[Marks et~al.(2024)Marks, Rager, Michaud, Belinkov, Bau, and Mueller]{marks2024sparse}
+Samuel Marks, Can Rager, Eric~J Michaud, Yonatan Belinkov, David Bau, and Aaron Mueller.
+\newblock {Sparse feature circuits: Discovering and editing interpretable causal graphs in language models}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2403.19647}.
+
+\bibitem[Metzen et~al.(2017)Metzen, Genewein, Fischer, and Bischoff]{metzen2017detecting}
+Jan~Hendrik Metzen, Tim Genewein, Volker Fischer, and Bastian Bischoff.
+\newblock {On Detecting Adversarial Perturbations}.
+\newblock \emph{arXiv}, February 2017.
+\newblock \doi{10.48550/arXiv.1702.04267}.
+\newblock URL \url{https://arxiv.org/abs/1702.04267v2}.
+
+\bibitem[Mo et~al.(2024)Mo, Zhang, Zhang, Luo, Sun, Hu, Gao, and Xiang]{mo2024robust}
+Xiaoxing Mo, Yechao Zhang, Leo~Yu Zhang, Wei Luo, Nan Sun, Shengshan Hu, Shang Gao, and Yang Xiang.
+\newblock {Robust Backdoor Detection for Deep Learning via Topological Evolution Dynamics}.
+\newblock In \emph{2024 IEEE Symposium on Security and Privacy (SP)}, pages 2048--2066, 2024.
+\newblock \doi{10.1109/SP54263.2024.00174}.
+
+\bibitem[Panickssery et~al.(2023)Panickssery, Gabrieli, Schulz, Tong, Hubinger, and Turner]{panickssery2023steering}
+Nina Panickssery, Nick Gabrieli, Julian Schulz, Meg Tong, Evan Hubinger, and Alexander~Matt Turner.
+\newblock {Steering Llama 2 via Contrastive Activation Addition}.
+\newblock \emph{arXiv}, December 2023.
+\newblock \doi{10.48550/arXiv.2312.06681}.
+\newblock URL \url{https://arxiv.org/abs/2312.06681}.
+
+\bibitem[Podolskiy et~al.(2021)Podolskiy, Lipin, Bout, Artemova, and Piontkovskaya]{podolskiy2021revisiting}
+Alexander Podolskiy, Dmitry Lipin, Andrey Bout, Ekaterina Artemova, and Irina Piontkovskaya.
+\newblock {Revisiting Mahalanobis Distance for Transformer-Based Out-of-Domain Detection}.
+\newblock \emph{AAAI}, 35\penalty0 (15):\penalty0 13675--13682, May 2021.
+\newblock ISSN 2374-3468.
+\newblock \doi{10.1609/aaai.v35i15.17612}.
+
+\bibitem[Price et~al.(2024)Price, Panickssery, Bowman, and Stickland]{price2024futureevents}
+Sara Price, Arjun Panickssery, Sam Bowman, and Asa~Cooper Stickland.
+\newblock {Future Events as Backdoor Triggers: Investigating Temporal Vulnerabilities in LLMs}.
+\newblock \emph{arXiv}, July 2024.
+\newblock \doi{10.48550/arXiv.2407.04108}.
+\newblock URL \url{https://arxiv.org/abs/2407.04108v2}.
+
+\bibitem[Qi et~al.(2022)Qi, Xie, Li, Mahloujifar, and Mittal]{qi2022circumventing}
+Xiangyu Qi, Tinghao Xie, Yiming Li, Saeed Mahloujifar, and Prateek Mittal.
+\newblock {Circumventing Backdoor Defenses that are Based on Latent Separability}.
+\newblock \emph{arXiv}, 2022.
+\newblock \doi{10.48550/arXiv.2205.13613}.
+\newblock URL \url{https://arxiv.org/abs/2205.13613}.
+
+\bibitem[Raghuram et~al.(2021)Raghuram, Chandrasekaran, Jha, and Banerjee]{raghuram2021general}
+Jayaram Raghuram, Varun Chandrasekaran, Somesh Jha, and Suman Banerjee.
+\newblock {A General Framework For Detecting Anomalous Inputs to DNN Classifiers}.
+\newblock In \emph{{International Conference on Machine Learning}}, pages 8764--8775. PMLR, July 2021.
+\newblock URL \url{https://proceedings.mlr.press/v139/raghuram21a.html}.
+
+\bibitem[Rosati et~al.(2024)Rosati, Wehner, Williams, Bartoszcze, Atanasov, Gonzales, Majumdar, Maple, Sajjad, and Rudzicz]{rosati2024representation}
+Domenic Rosati, Jan Wehner, Kai Williams, Lukasz Bartoszcze, David Atanasov, Robie Gonzales, Subhabrata Majumdar, Carsten Maple, Hassan Sajjad, and Frank Rudzicz.
+\newblock {Representation noising effectively prevents harmful fine-tuning on LLMs}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arxiv.2405.14577}.
+\newblock URL \url{https://arxiv.org/abs/2405.14577}.
+
+\bibitem[R{\"o}ttger et~al.(2023)R{\"o}ttger, Kirk, Vidgen, Attanasio, Bianchi, and Hovy]{rottger2023xstest}
+Paul R{\"o}ttger, Hannah~Rose Kirk, Bertie Vidgen, Giuseppe Attanasio, Federico Bianchi, and Dirk Hovy.
+\newblock {Xstest: A test suite for identifying exaggerated safety behaviours in large language models}.
+\newblock \emph{arXiv}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2308.01263}.
+
+\bibitem[Schlarmann et~al.(2024)Schlarmann, Croce, and Hein]{schlarmann2024comment}
+Christian Schlarmann, Francesco Croce, and Matthias Hein.
+\newblock {Public comment: Robustness evaluation seems invalid}, 2024.
+\newblock URL \url{https://openreview.net/forum?id=IHRQif8VQC&noteId=vUzo8RWZeM}.
+
+\bibitem[Schwinn and Geisler(2024)]{schwinn2024revisiting}
+Leo Schwinn and Simon Geisler.
+\newblock {Revisiting the Robust Alignment of Circuit Breakers}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.15902}.
+
+\bibitem[Sharkey(2022)]{sharkey2022circumventing}
+Lee Sharkey.
+\newblock {Circumventing interpretability: How to defeat mind-readers}.
+\newblock \emph{arXiv}, December 2022.
+\newblock \doi{10.48550/arXiv.2212.11415}.
+\newblock URL \url{https://arxiv.org/abs/2212.11415}.
+
+\bibitem[Shayegani et~al.(2023)Shayegani, Mamun, Fu, Zaree, Dong, and Abu-Ghazaleh]{shayegani2023survey}
+Erfan Shayegani, Md~Abdullah~Al Mamun, Yu~Fu, Pedram Zaree, Yue Dong, and Nael Abu-Ghazaleh.
+\newblock {Survey of Vulnerabilities in Large Language Models Revealed by Adversarial Attacks}.
+\newblock \emph{arXiv}, 2023.
+\newblock \doi{10.48550/arXiv.2310.10844}.
+\newblock URL \url{https://arxiv.org/abs/2310.10844}.
+
+\bibitem[Sheng et~al.(2022)Sheng, Han, Li, and Chang]{sheng2022survey}
+Xuan Sheng, Zhaoyang Han, Piji Li, and Xiangmao Chang.
+\newblock {A Survey on Backdoor Attack and Defense in Natural Language Processing}.
+\newblock \emph{arXiv}, November 2022.
+\newblock \doi{10.48550/arXiv.2211.11958}.
+\newblock URL \url{https://arxiv.org/abs/2211.11958v1}.
+
+\bibitem[Sheshadri et~al.(2024)Sheshadri, Ewart, Guo, Lynch, Wu, Hebbar, Sleight, Stickland, Perez, Hadfield-Menell, et~al.]{sheshadri2024targeted}
+Abhay Sheshadri, Aidan Ewart, Phillip Guo, Aengus Lynch, Cindy Wu, Vivek Hebbar, Henry Sleight, Asa~Cooper Stickland, Ethan Perez, Dylan Hadfield-Menell, et~al.
+\newblock {Targeted latent adversarial training improves robustness to persistent harmful behaviors in llms}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.15549}.
+
+\bibitem[Souly et~al.(2024)Souly, Lu, Bowen, Trinh, Hsieh, Pandey, Abbeel, Svegliato, Emmons, Watkins, et~al.]{souly2024strongreject}
+Alexandra Souly, Qingyuan Lu, Dillon Bowen, Tu~Trinh, Elvis Hsieh, Sana Pandey, Pieter Abbeel, Justin Svegliato, Scott Emmons, Olivia Watkins, et~al.
+\newblock {A {StrongREJECT} for empty jailbreaks}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2402.10260}.
+
+\bibitem[Talur et~al.(2023)Talur, Smirnov, and Missault]{talur2023few}
+Jayasimha Talur, Oleg Smirnov, and Paul Missault.
+\newblock {Few-shot out of domain intent detection with covariance corrected Mahalanobis distance}, 2023.
+
+\bibitem[Tamkin et~al.(2023)Tamkin, Taufeeque, and Goodman]{tamkin2023codebook}
+Alex Tamkin, Mohammad Taufeeque, and Noah~D. Goodman.
+\newblock {Codebook Features: Sparse and Discrete Interpretability for Neural Networks}.
+\newblock \emph{arXiv}, October 2023.
+\newblock \doi{10.48550/arXiv.2310.17230}.
+\newblock URL \url{https://arxiv.org/abs/2310.17230}.
+
+\bibitem[Tan et~al.(2024)Tan, Chanin, Lynch, Kanoulas, Paige, Garriga-Alonso, and Kirk]{tan2024analyzing}
+Daniel Tan, David Chanin, Aengus Lynch, Dimitrios Kanoulas, Brooks Paige, Adria Garriga-Alonso, and Robert Kirk.
+\newblock {Analyzing the Generalization and Reliability of Steering Vectors}.
+\newblock \emph{arXiv}, July 2024.
+\newblock \doi{10.48550/arXiv.2407.12404}.
+\newblock URL \url{https://arxiv.org/abs/2407.12404}.
+
+\bibitem[Tan and Shokri(2020)]{tan2020bypassing}
+Te~Juin~Lester Tan and Reza Shokri.
+\newblock {Bypassing Backdoor Detection Algorithms in Deep Learning}.
+\newblock In \emph{2020 IEEE European Symposium on Security and Privacy}, pages 175--183, 2020.
+\newblock \doi{10.1109/EuroSP48549.2020.00019}.
+
+\bibitem[Tang et~al.(2021)Tang, Wang, Tang, and Zhang]{tang2021demon}
+Di~Tang, XiaoFeng Wang, Haixu Tang, and Kehuan Zhang.
+\newblock {Demon in the Variant: Statistical Analysis of DNNs for Robust Backdoor Contamination Detection}.
+\newblock In \emph{30th USENIX Security Symposium (USENIX Security 21)}, pages 1541--1558. USENIX, 2021.
+
+\bibitem[Tao et~al.(2024)Tao, Wang, Feng, Shen, Ma, and Zhang]{tao2024distribution}
+Guanhong Tao, Zhenting Wang, Shiwei Feng, Guangyu Shen, Shiqing Ma, and Xiangyu Zhang.
+\newblock {Distribution Preserving Backdoor Attack in Self-supervised Learning}.
+\newblock In \emph{2024 IEEE Symposium on Security and Privacy (SP)}, pages 2029--2047. IEEE Computer Society, 2024.
+\newblock ISBN 979-8-3503-3130-1.
+\newblock \doi{10.1109/SP54263.2024.00029}.
+
+\bibitem[Taori et~al.(2023)Taori, Gulrajani, Zhang, Dubois, Li, Guestrin, Liang, and Hashimoto]{alpaca}
+Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori~B. Hashimoto.
+\newblock {Stanford Alpaca: An Instruction-following LLaMA model}.
+\newblock \url{https://github.com/tatsu-lab/stanford_alpaca}, 2023.
+
+\bibitem[Templeton et~al.(2024)Templeton, Conerly, Marcus, Lindsey, Bricken, Chen, Pearce, Citro, Ameisen, Jones, Cunningham, Turner, McDougall, MacDiarmid, Freeman, Sumers, Rees, Batson, Jermyn, Carter, Olah, and Henighan]{templeton2024scaling}
+Adly Templeton, Tom Conerly, Jonathan Marcus, Jack Lindsey, Trenton Bricken, Brian Chen, Adam Pearce, Craig Citro, Emmanuel Ameisen, Andy Jones, Hoagy Cunningham, Nicholas~L Turner, Callum McDougall, Monte MacDiarmid, C.~Daniel Freeman, Theodore~R. Sumers, Edward Rees, Joshua Batson, Adam Jermyn, Shan Carter, Chris Olah, and Tom Henighan.
+\newblock Scaling monosemanticity: Extracting interpretable features from claude 3 sonnet.
+\newblock \emph{Transformer Circuits Thread}, 2024.
+\newblock URL \url{https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html}.
+
+\bibitem[Thompson and Sklar(2024)]{thompson2024flrt}
+T~Ben Thompson and Michael Sklar.
+\newblock {{FLRT}: Fluent Student-Teacher Redteaming}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.17447}.
+
+\bibitem[Todd et~al.(2023)Todd, Li, Sharma, Mueller, Wallace, and Bau]{todd2023function}
+Eric Todd, Millicent~L. Li, Arnab~Sen Sharma, Aaron Mueller, Byron~C. Wallace, and David Bau.
+\newblock {Function Vectors in Large Language Models}.
+\newblock \emph{arXiv}, October 2023.
+\newblock \doi{10.48550/arXiv.2310.15213}.
+\newblock URL \url{https://arxiv.org/abs/2310.15213}.
+
+\bibitem[Tran et~al.(2018)Tran, Li, and Madry]{tran2018spectral}
+Brandon Tran, Jerry Li, and Aleksander Madry.
+\newblock {Spectral Signatures in Backdoor Attacks}.
+\newblock In \emph{Neural Information Processing Systems}, 2018.
+\newblock URL \url{https://api.semanticscholar.org/CorpusID:53298804}.
+
+\bibitem[Turner et~al.(2023)Turner, Thiergart, Leech, Udell, Vazquez, Mini, and MacDiarmid]{turner2023steering}
+Alexander~Matt Turner, Lisa Thiergart, Gavin Leech, David Udell, Juan~J. Vazquez, Ulisse Mini, and Monte MacDiarmid.
+\newblock {Steering Language Models With Activation Engineering}.
+\newblock \emph{arXiv}, August 2023.
+\newblock \doi{10.48550/arXiv.2308.10248}.
+\newblock URL \url{https://arxiv.org/abs/2308.10248}.
+
+\bibitem[Wang et~al.(2022)Wang, Li, Sarkar, Shafique, Maniatakos, and Jabari]{wang2022subspace}
+Yue Wang, Wenqing Li, Esha Sarkar, Muhammad Shafique, Michail Maniatakos, and Saif Eddin~G. Jabari.
+\newblock {A Subspace Projective Clustering Approach for Backdoor Attack Detection and Mitigation in Deep Neural Networks}.
+\newblock \emph{IEEE Transactions on Artificial Intelligence}, 5:\penalty0 3497--3509, 2022.
+\newblock URL \url{https://api.semanticscholar.org/CorpusID:247518742}.
+
+\bibitem[Wei et~al.(2023)Wei, Haghtalab, and Steinhardt]{wei2023jailbroken}
+Alexander Wei, Nika Haghtalab, and Jacob Steinhardt.
+\newblock {Jailbroken: How Does LLM Safety Training Fail?}
+\newblock \emph{arXiv}, July 2023.
+\newblock \doi{10.48550/arXiv.2307.02483}.
+\newblock URL \url{https://arxiv.org/abs/2307.02483v1}.
+
+\bibitem[Xhonneux et~al.(2024)Xhonneux, Sordoni, G{\ifmmode\ddot{u}\else\"{u}\fi}nnemann, Gidel, and Schwinn]{xhonneux2024efficient}
+Sophie Xhonneux, Alessandro Sordoni, Stephan G{\ifmmode\ddot{u}\else\"{u}\fi}nnemann, Gauthier Gidel, and Leo Schwinn.
+\newblock {Efficient Adversarial Training in LLMs with Continuous Attacks}.
+\newblock \emph{arXiv}, May 2024.
+\newblock \doi{10.48550/arXiv.2405.15589}.
+\newblock URL \url{https://arxiv.org/abs/2405.15589v3}.
+
+\bibitem[Yang et~al.(2021)Yang, Li, Zhang, Ren, Sun, and He]{yang2021careful}
+Wenkai Yang, Lei Li, Zhiyuan Zhang, Xuancheng Ren, Xu~Sun, and Bin He.
+\newblock {Be Careful about Poisoned Word Embeddings: Exploring the Vulnerability of the Embedding Layers in {NLP} Models}.
+\newblock In Kristina Toutanova, Anna Rumshisky, Luke Zettlemoyer, Dilek Hakkani-Tur, Iz~Beltagy, Steven Bethard, Ryan Cotterell, Tanmoy Chakraborty, and Yichao Zhou, editors, \emph{Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies}, pages 2048--2058, Online, June 2021. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/2021.naacl-main.165}.
+\newblock URL \url{https://aclanthology.org/2021.naacl-main.165}.
+
+\bibitem[Yi et~al.(2024)Yi, Liu, Sun, Cong, He, Song, Xu, and Li]{yi2024jailbreak}
+Sibo Yi, Yule Liu, Zhen Sun, Tianshuo Cong, Xinlei He, Jiaxing Song, Ke~Xu, and Qi~Li.
+\newblock {Jailbreak attacks and defenses against large language models: A survey}.
+\newblock \emph{arXiv}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.04295}.
+
+\bibitem[Yu et~al.(2018)Yu, Zhang, Yang, Yasunaga, Wang, Li, Ma, Li, Yao, Roman, Zhang, and Radev]{yu2018spider}
+Tao Yu, Rui Zhang, Kai Yang, Michihiro Yasunaga, Dongxu Wang, Zifan Li, James Ma, Irene Li, Qingning Yao, Shanelle Roman, Zilin Zhang, and Dragomir Radev.
+\newblock {Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task}.
+\newblock \emph{arXiv}, September 2018.
+\newblock \doi{10.48550/arXiv.1809.08887}.
+\newblock URL \url{https://arxiv.org/abs/1809.08887v5}.
+
+\bibitem[Yun et~al.(2021)Yun, Chen, Olshausen, and LeCun]{yun2021transformer}
+Zeyu Yun, Yubei Chen, Bruno~A. Olshausen, and Yann LeCun.
+\newblock {Transformer visualization via dictionary learning: contextualized embedding as a linear superposition of transformer factors}.
+\newblock \emph{arXiv}, March 2021.
+\newblock \doi{10.48550/arXiv.2103.15949}.
+\newblock URL \url{https://arxiv.org/abs/2103.15949}.
+
+\bibitem[Zhang et~al.(2024{\natexlab{a}})Zhang, Nikoli{\ifmmode\acute{c}\else\'{c}\fi}, Carlini, and Tram{\ifmmode\grave{e}\else\`{e}\fi}r]{zhang2024gradientmasking}
+Jie Zhang, Kristina Nikoli{\ifmmode\acute{c}\else\'{c}\fi}, Nicholas Carlini, and Florian Tram{\ifmmode\grave{e}\else\`{e}\fi}r.
+\newblock {Gradient Masking All-at-Once: Ensemble Everything Everywhere Is Not Robust}.
+\newblock \emph{arXiv}, November 2024{\natexlab{a}}.
+\newblock \doi{10.48550/arXiv.2411.14834}.
+\newblock URL \url{https://arxiv.org/abs/2411.14834v1}.
+
+\bibitem[Zhang et~al.(2024{\natexlab{b}})Zhang, Yu, and Feng]{zhang2024truthx}
+Shaolei Zhang, Tian Yu, and Yang Feng.
+\newblock {TruthX: Alleviating Hallucinations by Editing Large Language Models in Truthful Space}.
+\newblock In Lun{-}Wei Ku, Andre Martins, and Vivek Srikumar, editors, \emph{Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2024, Bangkok, Thailand, August 11-16, 2024}, pages 8908--8949. Association for Computational Linguistics, 2024{\natexlab{b}}.
+\newblock \doi{10.18653/V1/2024.ACL-LONG.483}.
+\newblock URL \url{https://doi.org/10.18653/v1/2024.acl-long.483}.
+
+\bibitem[Zhao et~al.(2023)Zhao, Li, Wang, and Liu]{zhao2023adversarial}
+Chongyang Zhao, Hu~Li, Dongxia Wang, and Ruiqi Liu.
+\newblock {Adversarial Example Detection for Deep Neural Networks: A Review}.
+\newblock In \emph{2023 8th International Conference on Data Science in Cyberspace (DSC)}, pages 468--475, 2023.
+\newblock \doi{10.1109/DSC59305.2023.00074}.
+
+\bibitem[Zhong et~al.(2017)Zhong, Xiong, and Socher]{zhong2017seq2sql}
+Victor Zhong, Caiming Xiong, and Richard Socher.
+\newblock {Seq2SQL: Generating Structured Queries from Natural Language using Reinforcement Learning}.
+\newblock \emph{arXiv}, August 2017.
+\newblock \doi{10.48550/arXiv.1709.00103}.
+\newblock URL \url{https://arxiv.org/abs/1709.00103v7}.
+
+\bibitem[Zou et~al.(2023{\natexlab{a}})Zou, Phan, Chen, Campbell, Guo, Ren, Pan, Yin, Mazeika, Dombrowski, Goel, Li, Byun, Wang, Mallen, Basart, Koyejo, Song, Fredrikson, Kolter, and Hendrycks]{zou2023representation}
+Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, Shashwat Goel, Nathaniel Li, Michael~J. Byun, Zifan Wang, Alex Mallen, Steven Basart, Sanmi Koyejo, Dawn Song, Matt Fredrikson, J.~Zico Kolter, and Dan Hendrycks.
+\newblock {Representation Engineering: A Top-Down Approach to AI Transparency}.
+\newblock \emph{arXiv}, October 2023{\natexlab{a}}.
+\newblock \doi{10.48550/arXiv.2310.01405}.
+\newblock URL \url{https://arxiv.org/abs/2310.01405v3}.
+
+\bibitem[Zou et~al.(2023{\natexlab{b}})Zou, Wang, Carlini, Nasr, Kolter, and Fredrikson]{zou2023universal}
+Andy Zou, Zifan Wang, Nicholas Carlini, Milad Nasr, J.~Zico Kolter, and Matt Fredrikson.
+\newblock {Universal and Transferable Adversarial Attacks on Aligned Language Models}.
+\newblock \emph{arXiv}, July 2023{\natexlab{b}}.
+\newblock \doi{10.48550/arXiv.2307.15043}.
+\newblock URL \url{https://arxiv.org/abs/2307.15043v2}.
+
+\bibitem[Zou et~al.(2024)Zou, Phan, Wang, Duenas, Lin, Andriushchenko, Wang, Kolter, Fredrikson, and Hendrycks]{zou2024improving}
+Andy Zou, Long Phan, Justin Wang, Derek Duenas, Maxwell Lin, Maksym Andriushchenko, Rowan Wang, Zico Kolter, Matt Fredrikson, and Dan Hendrycks.
+\newblock {Improving Alignment and Robustness with Circuit Breakers}.
+\newblock \emph{arXiv}, June 2024.
+\newblock \doi{10.48550/arXiv.2406.04313}.
+\newblock URL \url{https://arxiv.org/abs/2406.04313v4}.
+
+\bibitem[Łucki et~al.(2024)Łucki, Wei, Huang, Henderson, Tramèr, and Rando]{lucki2024adversarial}
+Jakub Łucki, Boyi Wei, Yangsibo Huang, Peter Henderson, Florian Tramèr, and Javier Rando.
+\newblock {An Adversarial Perspective on Machine Unlearning for AI Safety}.
+\newblock \emph{arXiv}, 2024.
+\newblock \doi{10.48550/arXiv.2409.18025}.
+\newblock URL \url{https://arxiv.org/abs/2409.18025}.
+
+\end{thebibliography}

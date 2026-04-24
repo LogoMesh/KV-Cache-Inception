@@ -1,0 +1,14 @@
+\section{Related Work}
+
+\textbf{Limitations of LLM-as-a-Judge.}
+A growing body of work evaluates the shortcomings of LLM-as-a-Judge. Factors such as length, order, and tone of a response have all been shown to bias LLM Judges' evaluation \citep{mtbench,CognitiveBiases,SystematicEvaluationofLLMAsAJudge}. Benchmarks specifically designed to reveal such shortcomings have emphasized the challenges of developing reliable LLM Judges \citep{CognitiveBiases,JusticeOrPrejudice}. To mitigate such biases and enhance agreement with human annotators, various strategies have been proposed, including response-order randomization \citep{mtbench}, explicit debiasing against response length \citep{alpacaeval2}, ensemble-based “jury” models \citep{llmjuris}, rubric-driven evaluation frameworks \citep{hashemi-etal-2024-llm,rubrics}, prompt optimization techniques \citep{ZEPO}, pairwise preference optimization methods \citep{PAIRS}, and dynamically generated reference responses \citep{RevisEval}.
+
+\textbf{LLM-as-a-Judge and Correctness.} Prior works have investigated the ability of LLMs to generally evaluate correctness or factuality \citep{min-etal-2023-factscore,song-etal-2024-veriscore,chen2023felmbenchmarkingfactualityevaluation}. Recent studies \citep{JudgingTheJudges,ReferenceGuidedVerdict,henkel2024largelanguagemodelsmake} have demonstrated that LLMs can reach high agreement with human annotators when grading the correctness of responses to short-answer questions on existing datasets. \citet{SOSBench} specifically study how well standard LLM-as-a-Judge pipelines capture correctness and find that judge models often ignore response correctness in their quality assessments. \citet{JudgeBench} constructed a pairwise correctness judgment benchmark out of existing datasets, also finding poor performance.
+
+\textbf{Expert-Informed LLM-as-a-Judge.} Many datasets incorporate human knowledge with verified reference responses for LLM evaluation \citep{bai-etal-2024-mt,malaviya-etal-2024-expertqa,chen-etal-2024-fintextqa,10.1609/aaai.v38i21.30362}.  \cite{recchia2025findtheflawsannotatederrorsdetecting} introduce a collection of five datasets with domain-specific questions, expert-verified long-form solutions, and annotated reasoning errors.  \citet{10.1145/3708359.3712091}  examines LLM-as-a-judge in the domains of dietetics and mental health by comparing GPT-4’s ratings to those of domain professionals, finding only moderate agreement on a dataset of 25 questions. In contrast, \judgebenchmark{} is the only dataset to contain questions, long-form answers, and judgments of correctness, all provided by the same domain experts.
+
+
+
+
+
+

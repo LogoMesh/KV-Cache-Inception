@@ -1,0 +1,159 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[preprint]{colm2026_conference}
+
+% Recommended, but optional, packages for figures and better typesetting:
+\usepackage{microtype}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{titletoc}
+\usepackage{booktabs}
+\usepackage[most]{tcolorbox}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage{listings}
+\usepackage{soul}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\newcommand{\method}{\textsc{AgenticRed}}
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% For theorems and such
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{placeins}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Define a style for Python code
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,
+    tabsize=4,
+}
+\renewcommand{\lstlistingname}{Code}
+
+% Define box for prompt
+\tcbset {
+  base/.style={
+    arc=0mm,
+    bottomtitle=-0.25mm,
+    boxrule=0mm,
+    colbacktitle=black!10!white,
+    coltitle=black,
+    fonttitle=\bfseries,
+    left=2.5mm,
+    leftrule=1mm,
+    right=3.5mm,
+    title={#1},
+    toptitle=0.25mm,
+    breakable
+  }
+}
+
+\definecolor{brandblue}{rgb}{0.34, 0.7, 1}
+\newtcolorbox{mybox}[1]{
+  colframe=brandblue,
+  base={#1}
+}
+
+\definecolor{pink}{rgb}{1, 0.75, 0.8}
+\newtcolorbox{safetybox}[1]{
+  colframe=pink,
+  base={#1}
+}
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Todonotes is useful during development
+\usepackage[textsize=tiny]{todonotes}
+
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true, citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+
+\title{\method: Evolving Agentic Systems for Red-Teaming}
+
+\author{
+\centering
+\begin{tabular}[t]{c}
+\bf Jiayi Yuan$^{1}$\thanks{Work performed during an internship at Max Planck Institute for Software Systems. Correspondence to Jiayi Yuan \texttt{<jiayiy9@cs.washington.edu>}. Website: \href{https://yuanjiayiy.github.io/AgenticRed}{yuanjiayiy.github.io/AgenticRed}.}\hskip 1em
+Jonathan Nöther$^2$ \hskip 1em
+Natasha Jaques$^1$ \hskip 1em
+Goran Radanović$^2$ \\
+\\
+\normalsize\normalfont
+$^1$ University of Washington \\
+\normalsize\normalfont
+$^2$ Max Planck Institute for Software Systems
+\end{tabular}
+}
+% \author{Jiayi Yuan$^{1}$\thanks{Work performed during an internship at Max Planck Institute for Software Systems. Correspondence to Jiayi Yuan \texttt{<jiayiy9@cs.washington.edu>}. Website: \href{https://yuanjiayiy.github.io/AgenticRed}{yuanjiayiy.github.io/AgenticRed}.}\And Jonathan N\"{o}ther$^{2}$\And Natasha Jaques$^{1}$\And Goran Radanovi\'{c}$^{2}$\\
+% $^{1}$University of Washington\\
+% $^{2}$Max Planck Institute for Software Systems}
+
+\begin{document}
+
+\ifcolmsubmission
+\linenumbers
+\fi
+
+\maketitle
+
+\input{notes/0_abstract}
+\input{notes/1_introduction}
+\input{notes/2_related_work}
+\input{notes/3_preliminaries}
+\input{notes/4_methods}
+\input{notes/5_experiments}
+\input{notes/6_conclusion}
+\input{notes/9_ethics_statement}
+\input{notes/10_reproducibility}
+\input{notes/11_acknowledgment}
+
+\bibliography{main}
+\bibliographystyle{colm2026_conference}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDIX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\appendix
+\onecolumn
+\input{notes/7_appendix}
+
+\end{document}

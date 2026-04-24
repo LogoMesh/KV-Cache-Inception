@@ -1,0 +1,73 @@
+\bgroup
+\def\arraystretch{1.5}
+\begin{table}[ht]
+\caption{Locating our work in the steering literature.}
+% \vspace{3mm}
+\centering
+
+\begin{tabular}{c|cc}
+\toprule
+     & \multicolumn{2}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Vector intervenes on model ...\end{tabular}}}
+     \\
+% \thead{
+\textbf{Intervention vectors obtained via}
+% }
+
+& \multicolumn{1}{c}{... \textit{weights}}             & \multicolumn{1}{c}{... \textit{activations}}  \\\hline
+% \vspace{1mm}
+\begin{tabular}{@{}c@{}}
+Differences after fine-tuning
+\end{tabular}
+% \vspace{2mm}  
+& 
+% \vspace{1mm}
+Ilharco 2023
+%$\citealt{ilharco2023editing} 
+& 
+% \vspace{1mm}
+
+N/A  
+\\\hline
+% \vspace{1mm}
+\begin{tabular}{@{}c@{}}
+Per-query gradient-based search
+\end{tabular}
+&               
+% \vspace{1mm}
+\begin{tabular}{@{}c@{}}
+Meng 2022,\\ 
+Orgad 2023
+\end{tabular}  
+%\cite{meng2023locating,orgad2023editing}
+& 
+% \vspace{1mm}
+\begin{tabular}{@{}c@{}}
+Dathathri 2020\\
+Subramani 2022\\
+Hernandez 2023
+\end{tabular}
+%\cite{subramani-2022-extracting}     
+
+\\\hline
+% \vspace{1mm}
+\begin{tabular}{@{}c@{}}Differences between prompt pairs                 
+\end{tabular}
+&                                      
+% \vspace{1mm}
+N/A      
+& 
+
+ \begin{tabular}{@{}c@{}}
+\textbf{\shortmethod\,} (present work),\\ 
+\citep{li2023inferencetime} 
+\end{tabular}
+\\
+
+\bottomrule
+\end{tabular}
+\label{tab:steering_lit}
+\end{table}
+\egroup
+
+% \todo{Could be nice to track down the Stable Diffusion weight-adding stuff}
+% https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/fdecb636855748e03efc40c846a0043800aadfcc

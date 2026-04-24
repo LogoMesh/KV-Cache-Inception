@@ -1,0 +1,337 @@
+\begin{thebibliography}{67}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alain \& Bengio(2018)Alain and Bengio]{alain2018understanding}
+Guillaume Alain and Yoshua Bengio.
+\newblock Understanding intermediate layers using linear classifier probes, 2018.
+
+\bibitem[Bloom \& Nanda(2022)Bloom and Nanda]{lens}
+Joseph Bloom and Neel Nanda.
+\newblock Transformer{L}ens: A library for mechanistic interpretability of generative language models.
+\newblock https://neelnanda-io.github.io/TransformerLens/, 2022.
+
+\bibitem[Brown et~al.(2023)Brown, Godfrey, Nizinski, Tu, and Kvinge]{brown2023robustness}
+Davis Brown, Charles Godfrey, Cody Nizinski, Jonathan Tu, and Henry Kvinge.
+\newblock Robustness of edited neural networks, 2023.
+
+\bibitem[Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal, Neelakantan, Shyam, Sastry, Askell, Agarwal, Herbert-Voss, Krueger, Henighan, Child, Ramesh, Ziegler, Wu, Winter, Hesse, Chen, Sigler, Litwin, Gray, Chess, Clark, Berner, McCandlish, Radford, Sutskever, and Amodei]{brown2020language}
+Tom~B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel~M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei.
+\newblock Language models are few-shot learners, 2020.
+
+\bibitem[Burns et~al.(2022)Burns, Ye, Klein, and Steinhardt]{burns2022discovering}
+Collin Burns, Haotian Ye, Dan Klein, and Jacob Steinhardt.
+\newblock Discovering latent knowledge in language models without supervision, 2022.
+
+\bibitem[Dathathri et~al.(2020)Dathathri, Madotto, Lan, Hung, Frank, Molino, Yosinski, and Liu]{dathathri2020plug}
+Sumanth Dathathri, Andrea Madotto, Janice Lan, Jane Hung, Eric Frank, Piero Molino, Jason Yosinski, and Rosanne Liu.
+\newblock Plug and play language models: A simple approach to controlled text generation, 2020.
+
+\bibitem[Elhage et~al.(2021)Elhage, Nanda, Olsson, Henighan, Joseph, Mann, Askell, Bai, Chen, Conerly, et~al.]{elhage2021mathematical}
+Nelson Elhage, Neel Nanda, Catherine Olsson, Tom Henighan, Nicholas Joseph, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly, et~al.
+\newblock A mathematical framework for transformer circuits.
+\newblock \emph{Transformer Circuits Thread}, 1, 2021.
+
+\bibitem[Elhage et~al.(2022)Elhage, Hume, Olsson, Schiefer, Henighan, Kravec, Hatfield-Dodds, Lasenby, Drain, Chen, Grosse, McCandlish, Kaplan, Amodei, Wattenberg, and Olah]{elhage2022toy}
+Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan, Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen, Roger Grosse, Sam McCandlish, Jared Kaplan, Dario Amodei, Martin Wattenberg, and Christopher Olah.
+\newblock Toy models of superposition, 2022.
+
+\bibitem[Gehman et~al.(2020)Gehman, Gururangan, Sap, Choi, and Smith]{gehman2020realtoxicityprompts}
+Samuel Gehman, Suchin Gururangan, Maarten Sap, Yejin Choi, and Noah~A Smith.
+\newblock Realtoxicityprompts: Evaluating neural toxic degeneration in language models.
+\newblock \emph{arXiv preprint arXiv:2009.11462}, 2020.
+
+\bibitem[Gnanadesikan \& Wilk(1968)Gnanadesikan and Wilk]{gnanadesikan1968probability}
+Ramanathan Gnanadesikan and Martin~B Wilk.
+\newblock Probability plotting methods for the analysis of data.
+\newblock \emph{Biometrika}, 55\penalty0 (1):\penalty0 1--17, 1968.
+
+\bibitem[Grover et~al.(2019)Grover, Song, Agarwal, Tran, Kapoor, Horvitz, and Ermon]{grover2019bias}
+Aditya Grover, Jiaming Song, Alekh Agarwal, Kenneth Tran, Ashish Kapoor, Eric Horvitz, and Stefano Ermon.
+\newblock Bias correction of learned generative models using likelihood-free importance weighting, 2019.
+
+\bibitem[Gu et~al.(2017)Gu, Cho, and Li]{gu-etal-2017-trainable}
+Jiatao Gu, Kyunghyun Cho, and Victor~O.K. Li.
+\newblock Trainable greedy decoding for neural machine translation.
+\newblock In \emph{Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing}, pp.\  1968--1978, Copenhagen, Denmark, September 2017. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/D17-1210}.
+\newblock URL \url{https://aclanthology.org/D17-1210}.
+
+\bibitem[Gu et~al.(2022)Gu, Feng, Ma, Zhang, Gong, Zhong, and Qin]{gu2022controllable}
+Yuxuan Gu, Xiaocheng Feng, Sicheng Ma, Lingyuan Zhang, Heng Gong, Weihong Zhong, and Bing Qin.
+\newblock Controllable text generation via probability density estimation in the latent space.
+\newblock \emph{arXiv preprint arXiv:2212.08307}, 2022.
+
+\bibitem[Hartmann et~al.(2023)Hartmann, Heitmann, Siebert, and Schamp]{hartmann2023more}
+Jochen Hartmann, Mark Heitmann, Christian Siebert, and Christina Schamp.
+\newblock More than a feeling: Accuracy and application of sentiment analysis.
+\newblock \emph{International Journal of Research in Marketing}, 40\penalty0 (1):\penalty0 75--87, 2023.
+\newblock ISSN 0167-8116.
+\newblock \doi{https://doi.org/10.1016/j.ijresmar.2022.05.005}.
+\newblock URL \url{https://www.sciencedirect.com/science/article/pii/S0167811622000477}.
+
+\bibitem[Hase et~al.(2023)Hase, Bansal, Kim, and Ghandeharioun]{hase2023does}
+Peter Hase, Mohit Bansal, Been Kim, and Asma Ghandeharioun.
+\newblock Does localization inform editing? surprising differences in causality-based localization vs. knowledge editing in language models, 2023.
+
+\bibitem[Hernandez et~al.(2023)Hernandez, Li, and Andreas]{hernandez2023inspecting}
+Evan Hernandez, Belinda~Z. Li, and Jacob Andreas.
+\newblock Inspecting and editing knowledge representations in language models, 2023.
+
+\bibitem[Ilharco et~al.(2023)Ilharco, Ribeiro, Wortsman, Gururangan, Schmidt, Hajishirzi, and Farhadi]{ilharco2023editing}
+Gabriel Ilharco, Marco~Tulio Ribeiro, Mitchell Wortsman, Suchin Gururangan, Ludwig Schmidt, Hannaneh Hajishirzi, and Ali Farhadi.
+\newblock Editing models with task arithmetic, 2023.
+
+\bibitem[Jin et~al.(2022)Jin, Jin, Hu, Vechtomova, and Mihalcea]{jin-etal-2022-deep}
+Di~Jin, Zhijing Jin, Zhiting Hu, Olga Vechtomova, and Rada Mihalcea.
+\newblock Deep learning for text style transfer: A survey.
+\newblock \emph{Computational Linguistics}, 48\penalty0 (1):\penalty0 155--205, March 2022.
+\newblock \doi{10.1162/coli_a_00426}.
+\newblock URL \url{https://aclanthology.org/2022.cl-1.6}.
+
+\bibitem[Khashabi et~al.(2022)Khashabi, Lyu, Min, Qin, Richardson, Welleck, Hajishirzi, Khot, Sabharwal, Singh, and Choi]{khashabi-etal-2022-prompt}
+Daniel Khashabi, Xinxi Lyu, Sewon Min, Lianhui Qin, Kyle Richardson, Sean Welleck, Hannaneh Hajishirzi, Tushar Khot, Ashish Sabharwal, Sameer Singh, and Yejin Choi.
+\newblock Prompt waywardness: The curious case of discretized interpretation of continuous prompts.
+\newblock In \emph{Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies}, pp.\  3631--3643, Seattle, United States, July 2022. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/2022.naacl-main.266}.
+\newblock URL \url{https://aclanthology.org/2022.naacl-main.266}.
+
+\bibitem[Korinek(2023)]{korinek2023language}
+Anton Korinek.
+\newblock Language models and cognitive automation for economic research.
+\newblock Technical report, National Bureau of Economic Research, 2023.
+
+\bibitem[Larsen et~al.(2016)Larsen, Sønderby, Larochelle, and Winther]{larsen2016autoencoding}
+Anders Boesen~Lindbo Larsen, Søren~Kaae Sønderby, Hugo Larochelle, and Ole Winther.
+\newblock Autoencoding beyond pixels using a learned similarity metric, 2016.
+
+\bibitem[Lester et~al.(2021)Lester, Al-Rfou, and Constant]{lester2021power}
+Brian Lester, Rami Al-Rfou, and Noah Constant.
+\newblock The power of scale for parameter-efficient prompt tuning, 2021.
+
+\bibitem[Li et~al.(2018)Li, Jia, He, and Liang]{li2018deleteretrievegeneratesimple}
+Juncen Li, Robin Jia, He~He, and Percy Liang.
+\newblock Delete, retrieve, generate: A simple approach to sentiment and style transfer, 2018.
+\newblock URL \url{https://arxiv.org/abs/1804.06437}.
+
+\bibitem[Li et~al.(2023{\natexlab{a}})Li, Hopkins, Bau, Viégas, Pfister, and Wattenberg]{li2023emergent}
+Kenneth Li, Aspen~K. Hopkins, David Bau, Fernanda Viégas, Hanspeter Pfister, and Martin Wattenberg.
+\newblock Emergent world representations: Exploring a sequence model trained on a synthetic task, 2023{\natexlab{a}}.
+
+\bibitem[Li et~al.(2023{\natexlab{b}})Li, Patel, Viégas, Pfister, and Wattenberg]{li2023inferencetime}
+Kenneth Li, Oam Patel, Fernanda Viégas, Hanspeter Pfister, and Martin Wattenberg.
+\newblock Inference-time intervention: Eliciting truthful answers from a language model, 2023{\natexlab{b}}.
+
+\bibitem[Li \& Liang(2021)Li and Liang]{li2021prefixtuning}
+Xiang~Lisa Li and Percy Liang.
+\newblock Prefix-{T}uning: Optimizing continuous prompts for generation, 2021.
+
+\bibitem[Liu et~al.(2023)Liu, Xing, and Zou]{liu2023incontext}
+Sheng Liu, Lei Xing, and James Zou.
+\newblock In-context {V}ectors: Making in context learning more effective and controllable through latent space steering, 2023.
+
+\bibitem[Lyu et~al.(2024)Lyu, Zhao, Gu, Yu, Goyal, and Arora]{lyu2024keeping}
+Kaifeng Lyu, Haoyu Zhao, Xinran Gu, Dingli Yu, Anirudh Goyal, and Sanjeev Arora.
+\newblock Keeping llms aligned after fine-tuning: The crucial role of prompt templates, 2024.
+
+\bibitem[Maas et~al.(2011)Maas, Daly, Pham, Huang, Ng, and Potts]{maas2011}
+Andrew~L. Maas, Raymond~E. Daly, Peter~T. Pham, Dan Huang, Andrew~Y. Ng, and Christopher Potts.
+\newblock Learning word vectors for sentiment analysis.
+\newblock In \emph{Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies}, pp.\  142--150, Portland, Oregon, USA, June 2011. Association for Computational Linguistics.
+\newblock URL \url{http://www.aclweb.org/anthology/P11-1015}.
+
+\bibitem[Meng et~al.(2023)Meng, Bau, Andonian, and Belinkov]{meng2023locating}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov.
+\newblock Locating and editing factual associations in {GPT}, 2023.
+
+\bibitem[Meta(2024)]{llama3}
+Meta.
+\newblock Meta {L}lama 3.
+\newblock https://llama.meta.com/llama3, 2024.
+
+\bibitem[Michel et~al.(2019)Michel, Levy, and Neubig]{NEURIPS2019_2c601ad9}
+Paul Michel, Omer Levy, and Graham Neubig.
+\newblock Are sixteen heads really better than one?
+\newblock In H.~Wallach, H.~Larochelle, A.~Beygelzimer, F.~d\textquotesingle Alch\'{e}-Buc, E.~Fox, and R.~Garnett (eds.), \emph{Advances in Neural Information Processing Systems}, volume~32. Curran Associates, Inc., 2019.
+\newblock URL \url{https://proceedings.neurips.cc/paper_files/paper/2019/file/2c601ad9d2ff9bc8b282670cdd54f69f-Paper.pdf}.
+
+\bibitem[Mikolov et~al.(2013{\natexlab{a}})Mikolov, Sutskever, Chen, Corrado, and Dean]{NIPS2013_9aa42b31}
+Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg~S Corrado, and Jeff Dean.
+\newblock Distributed representations of words and phrases and their compositionality.
+\newblock In C.J. Burges, L.~Bottou, M.~Welling, Z.~Ghahramani, and K.Q. Weinberger (eds.), \emph{Advances in Neural Information Processing Systems}, volume~26. Curran Associates, Inc., 2013{\natexlab{a}}.
+\newblock URL \url{https://proceedings.neurips.cc/paper_files/paper/2013/file/9aa42b31882ec039965f3c4923ce901b-Paper.pdf}.
+
+\bibitem[Mikolov et~al.(2013{\natexlab{b}})Mikolov, Yih, and Zweig]{mikolov2013linguistic}
+Tom{\'a}{\v{s}} Mikolov, Wen-tau Yih, and Geoffrey Zweig.
+\newblock Linguistic regularities in continuous space word representations.
+\newblock In \emph{Proceedings of the 2013 conference of the north american chapter of the association for computational linguistics: Human language technologies}, pp.\  746--751, 2013{\natexlab{b}}.
+
+\bibitem[Mini et~al.(2023)Mini, Grietzer, Sharma, Meek, MacDiarmid, and Turner]{mini2023understandingcontrollingmazesolvingpolicy}
+Ulisse Mini, Peli Grietzer, Mrinank Sharma, Austin Meek, Monte MacDiarmid, and Alexander~Matt Turner.
+\newblock Understanding and controlling a maze-solving policy network, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.08043}.
+
+\bibitem[Moschella et~al.(2023)Moschella, Maiorca, Fumero, Norelli, Locatello, and Rodolà]{moschella2023relative}
+Luca Moschella, Valentino Maiorca, Marco Fumero, Antonio Norelli, Francesco Locatello, and Emanuele Rodolà.
+\newblock Relative representations enable zero-shot latent space communication, 2023.
+
+\bibitem[Nanda(2023)]{neelnanda_othello}
+Neel Nanda.
+\newblock Actually, othello-gpt has a linear emergent world representation.
+\newblock neelnanda.io/mechanistic-interpretability/othello, 2023.
+
+\bibitem[Olah(2023)]{composit}
+Christopher Olah.
+\newblock Distributed representations: Composition \& superposition.
+\newblock https://transformer-circuits.pub/2023/superposition-composition/index.html, 2023.
+
+\bibitem[Olsson et~al.(2022)Olsson, Elhage, Nanda, Joseph, DasSarma, Henighan, Mann, Askell, Bai, Chen, et~al.]{olsson2022context}
+Catherine Olsson, Nelson Elhage, Neel Nanda, Nicholas Joseph, Nova DasSarma, Tom Henighan, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, et~al.
+\newblock In-context learning and induction heads.
+\newblock \emph{arXiv preprint arXiv:2209.11895}, 2022.
+
+\bibitem[Park et~al.(2023)Park, Choe, and Veitch]{park2023linear}
+Kiho Park, Yo~Joong Choe, and Victor Veitch.
+\newblock The linear representation hypothesis and the geometry of large language models.
+\newblock \emph{arXiv preprint arXiv:2311.03658}, 2023.
+
+\bibitem[Pei et~al.(2023)Pei, Yang, and Klein]{pei2023preadd}
+Jonathan Pei, Kevin Yang, and Dan Klein.
+\newblock {PREADD}: prefix-adaptive decoding for controlled text generation.
+\newblock \emph{arXiv preprint arXiv:2307.03214}, 2023.
+
+\bibitem[Peterson et~al.(2018)Peterson, Meylan, and Bourgin]{owt}
+Joshua Peterson, Stephan Meylan, and David Bourgin.
+\newblock Openwebtext.
+\newblock https://github.com/jcpeterson/openwebtext, 2018.
+
+\bibitem[Petroni et~al.(2019)Petroni, Rockt{\"{a}}schel, Miller, Lewis, Bakhtin, Wu, and Riedel]{petroni2019language}
+F.~Petroni, T.~Rockt{\"{a}}schel, A.~H. Miller, P.~Lewis, A.~Bakhtin, Y.~Wu, and S.~Riedel.
+\newblock Language models as knowledge bases?
+\newblock In \emph{In: Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP), 2019}, 2019.
+
+\bibitem[Qi et~al.(2023)Qi, Zeng, Xie, Chen, Jia, Mittal, and Henderson]{qi2023fine}
+Xiangyu Qi, Yi~Zeng, Tinghao Xie, Pin-Yu Chen, Ruoxi Jia, Prateek Mittal, and Peter Henderson.
+\newblock Fine-tuning aligned language models compromises safety, even when users do not intend to!
+\newblock \emph{arXiv preprint arXiv:2310.03693}, 2023.
+
+\bibitem[Radford et~al.(2019)Radford, Wu, Child, Luan, Amodei, Sutskever, et~al.]{radford2019language}
+Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et~al.
+\newblock Language models are unsupervised multitask learners.
+\newblock \emph{OpenAI blog}, 1\penalty0 (8):\penalty0 9, 2019.
+
+\bibitem[Ranzato et~al.(2016)Ranzato, Chopra, Auli, and Zaremba]{ranzato2016sequence}
+Marc'Aurelio Ranzato, Sumit Chopra, Michael Auli, and Wojciech Zaremba.
+\newblock Sequence level training with recurrent neural networks, 2016.
+
+\bibitem[Reimers \& Gurevych(2019)Reimers and Gurevych]{reimers2019sentence}
+Nils Reimers and Iryna Gurevych.
+\newblock Sentence-bert: Sentence embeddings using siamese bert-networks.
+\newblock \emph{arXiv preprint arXiv:1908.10084}, 2019.
+
+\bibitem[Shin et~al.(2020)Shin, Razeghi, Logan~IV, Wallace, and Singh]{shin-etal-2020-autoprompt}
+Taylor Shin, Yasaman Razeghi, Robert~L. Logan~IV, Eric Wallace, and Sameer Singh.
+\newblock {A}uto{P}rompt: {E}liciting {K}nowledge from {L}anguage {M}odels with {A}utomatically {G}enerated {P}rompts.
+\newblock In \emph{Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)}, pp.\  4222--4235, Online, November 2020. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/2020.emnlp-main.346}.
+\newblock URL \url{https://aclanthology.org/2020.emnlp-main.346}.
+
+\bibitem[Sloman(2002)]{Sloman2002-SLOTIO-2}
+Aaron Sloman.
+\newblock The irrelevance of turing machines to artificial intelligence.
+\newblock In Matthias Scheutz (ed.), \emph{Computationalism: New Directions}. MIT Press, 2002.
+
+\bibitem[Strunk(2013)]{punkt}
+Jan Strunk.
+\newblock nltk.tokenize.punkt module.
+\newblock https://www.nltk.org/api/nltk.tokenize.punkt.html, 2013.
+
+\bibitem[Subramani et~al.(2022)Subramani, Suresh, and Peters]{subramani-2022-extracting}
+Nishant Subramani, Nivedita Suresh, and Matthew Peters.
+\newblock Extracting latent steering vectors from pretrained language models.
+\newblock In \emph{Findings of the Association for Computational Linguistics: ACL 2022}, pp.\  566--581, Dublin, Ireland, May 2022. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/2022.findings-acl.48}.
+\newblock URL \url{https://aclanthology.org/2022.findings-acl.48}.
+
+\bibitem[Touvron et~al.(2023)Touvron, Lavril, Izacard, Martinet, Lachaux, Lacroix, Rozière, Goyal, Hambro, Azhar, Rodriguez, Joulin, Grave, and Lample]{touvron2023llama}
+Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, and Guillaume Lample.
+\newblock {LLaMA}: Open and efficient foundation language models, 2023.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin]{NIPS2017_3f5ee243}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan~N Gomez, \L~ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock In I.~Guyon, U.~Von Luxburg, S.~Bengio, H.~Wallach, R.~Fergus, S.~Vishwanathan, and R.~Garnett (eds.), \emph{Advances in Neural Information Processing Systems}, volume~30. Curran Associates, Inc., 2017.
+\newblock URL \url{https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf}.
+
+\bibitem[Wang \& Komatsuzaki(2021)Wang and Komatsuzaki]{gptj}
+Ben Wang and Aran Komatsuzaki.
+\newblock {GPT-J-6B}: 6{B} jax-based transformer.
+\newblock https://github.com/kingoflolz/mesh-transformer-jax\#gpt-j-6b, 2021.
+
+\bibitem[Wang et~al.(2024)Wang, Chen, Deng, Wen, You, Liu, Li, and Li]{wang2024prompt}
+Li~Wang, Xi~Chen, XiangWen Deng, Hao Wen, MingKe You, WeiZhi Liu, Qi~Li, and Jian Li.
+\newblock Prompt engineering in consistency and reliability with the evidence-based guideline for llms.
+\newblock \emph{npj Digital Medicine}, 7\penalty0 (1):\penalty0 41, 2024.
+
+\bibitem[Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Xia, Chi, Le, Zhou, et~al.]{wei2022chain}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed~Chi, Quoc~V Le, Denny Zhou, et~al.
+\newblock Chain-of-thought prompting elicits reasoning in large language models.
+\newblock \emph{Advances in neural information processing systems}, 35:\penalty0 24824--24837, 2022.
+
+\bibitem[White(2016)]{white2016sampling}
+Tom White.
+\newblock Sampling generative networks, 2016.
+
+\bibitem[Wu et~al.(2023)Wu, Peng, Chen, Su, and Sun]{wu2023evakellm}
+Suhang Wu, Minlong Peng, Yue Chen, Jinsong Su, and Mingming Sun.
+\newblock Eva-{KELLM}: A new benchmark for evaluating knowledge editing of {LLMs}, 2023.
+
+\bibitem[Yang \& Klein(2021)Yang and Klein]{yang-klein-2021-fudge}
+Kevin Yang and Dan Klein.
+\newblock {FUDGE}: Controlled text generation with future discriminators.
+\newblock In Kristina Toutanova, Anna Rumshisky, Luke Zettlemoyer, Dilek Hakkani-Tur, Iz~Beltagy, Steven Bethard, Ryan Cotterell, Tanmoy Chakraborty, and Yichao Zhou (eds.), \emph{Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies}, pp.\  3511--3535, Online, June 2021. Association for Computational Linguistics.
+\newblock \doi{10.18653/v1/2021.naacl-main.276}.
+\newblock URL \url{https://aclanthology.org/2021.naacl-main.276}.
+
+\bibitem[Ye \& Durrett(2022)Ye and Durrett]{NEURIPS2022_c4025018}
+Xi~Ye and Greg Durrett.
+\newblock The unreliability of explanations in few-shot prompting for textual reasoning.
+\newblock In S.~Koyejo, S.~Mohamed, A.~Agarwal, D.~Belgrave, K.~Cho, and A.~Oh (eds.), \emph{Advances in Neural Information Processing Systems}, volume~35, pp.\  30378--30392. Curran Associates, Inc., 2022.
+\newblock URL \url{https://proceedings.neurips.cc/paper_files/paper/2022/file/c402501846f9fe03e2cac015b3f0e6b1-Paper-Conference.pdf}.
+
+\bibitem[Zhang et~al.(2022{\natexlab{a}})Zhang, Song, Li, Zhou, and Song]{zhang2022survey}
+Hanqing Zhang, Haolin Song, Shaoyu Li, Ming Zhou, and Dawei Song.
+\newblock A survey of controllable text generation using transformer-based pre-trained language models.
+\newblock \emph{arXiv preprint arXiv:2201.05337}, 2022{\natexlab{a}}.
+
+\bibitem[Zhang et~al.(2024)Zhang, Yao, Tian, Wang, Deng, Wang, Xi, Mao, Zhang, Ni, Cheng, Xu, Xu, Gu, Jiang, Xie, Huang, Liang, Zhang, Zhu, Zhou, and Chen]{zhang2024comprehensive}
+Ningyu Zhang, Yunzhi Yao, Bozhong Tian, Peng Wang, Shumin Deng, Mengru Wang, Zekun Xi, Shengyu Mao, Jintian Zhang, Yuansheng Ni, Siyuan Cheng, Ziwen Xu, Xin Xu, Jia-Chen Gu, Yong Jiang, Pengjun Xie, Fei Huang, Lei Liang, Zhiqiang Zhang, Xiaowei Zhu, Jun Zhou, and Huajun Chen.
+\newblock A comprehensive study of knowledge editing for large language models, 2024.
+
+\bibitem[Zhang et~al.(2022{\natexlab{b}})Zhang, Roller, Goyal, Artetxe, Chen, Chen, Dewan, Diab, Li, Lin, Mihaylov, Ott, Shleifer, Shuster, Simig, Koura, Sridhar, Wang, and Zettlemoyer]{zhang2022opt}
+Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi~Victoria Lin, Todor Mihaylov, Myle Ott, Sam Shleifer, Kurt Shuster, Daniel Simig, Punit~Singh Koura, Anjali Sridhar, Tianlu Wang, and Luke Zettlemoyer.
+\newblock {OPT}: Open pre-trained transformer language models, 2022{\natexlab{b}}.
+
+\bibitem[Zhong et~al.(2023)Zhong, Wang, Han, Zhang, and Mao]{zhong2023air}
+Tianqi Zhong, Quan Wang, Jingxuan Han, Yongdong Zhang, and Zhendong Mao.
+\newblock Air-{D}ecoding: Attribute distribution reconstruction for decoding-time controllable text generation.
+\newblock \emph{arXiv preprint arXiv:2310.14892}, 2023.
+
+\bibitem[Zhou et~al.(2022)Zhou, Muresanu, Han, Paster, Pitis, Chan, and Ba]{zhou2022steering}
+Yongchao Zhou, Andrei~Ioan Muresanu, Ziwen Han, Keiran Paster, Silviu Pitis, Harris Chan, and Jimmy Ba.
+\newblock Steering large language models using {APE}.
+\newblock In \emph{NeurIPS ML Safety Workshop}, 2022.
+\newblock URL \url{https://openreview.net/forum?id=JjvNzMOiBEp}.
+
+\bibitem[Ziegler et~al.(2019)Ziegler, Stiennon, Wu, Brown, Radford, Amodei, Christiano, and Irving]{ziegler2020finetuning}
+Daniel~M. Ziegler, Nisan Stiennon, Jeffrey Wu, Tom~B. Brown, Alec Radford, Dario Amodei, Paul Christiano, and Geoffrey Irving.
+\newblock Fine-tuning language models from human preferences, 2019.
+
+\bibitem[Zou et~al.(2023)Zou, Phan, Chen, Campbell, Guo, Ren, Pan, Yin, Mazeika, Dombrowski, Goel, Li, Byun, Wang, Mallen, Basart, Koyejo, Song, Fredrikson, Kolter, and Hendrycks]{zou2023representation}
+Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, Shashwat Goel, Nathaniel Li, Michael~J. Byun, Zifan Wang, Alex Mallen, Steven Basart, Sanmi Koyejo, Dawn Song, Matt Fredrikson, J.~Zico Kolter, and Dan Hendrycks.
+\newblock Representation engineering: A top-down approach to ai transparency, 2023.
+
+\end{thebibliography}

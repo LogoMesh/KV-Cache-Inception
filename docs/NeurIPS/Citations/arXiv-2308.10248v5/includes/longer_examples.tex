@@ -1,0 +1,86 @@
+\bgroup
+\def\arraystretch{1}
+\begin{table*}[ht]
+\centering
+\caption{\textit{Note: some completions contain unpleasant content including slurs.} Example GPT-2-XL outputs before and after applying \shortmethod. %A runnable notebook showing the best-of-3 samples used can be found here: \underline{\href{https://tinyurl.com/ActAddExamples}{tinyurl.com/ActAddExamples}}
+}
+% \vspace{5mm}
+
+% \resizebox{\textwidth}{!}{
+\begin{tabular}{p{1.3cm}p{1.3cm}p{0.7cm}p{0.7cm}p{1.7cm}p{3cm}p{3cm}}
+\toprule
+\\
+\thead{prompt 1} & \thead{prompt 2} & \thead{layer} & \thead{coeff} & \thead{User prompt} & \thead{Before steering} & \thead{After steering}
+\\
+\thead{$p_+$} & \thead{$p_-$} & \thead{$l$} & \thead{$c$} & \thead{$p_*$} & \thead{} & \thead{$\mathrm{\shortmethod}$}
+\\
+\hline
+\\
+`Intent to praise' & `Intent to hurt' & 6 & $+15$ & 
+`I want to kill you because you're such a'
+& \scriptsize fucking cunt.\textbackslash n You are a worthless piece of shit who should be ashamed of yourself. You should be ashamed of your mother, for having the audacity to have children when she is so far below the standards that society expects from her own children 
+& \scriptsize great actor.\textbackslash n And the other thing is, the other thing is that I'm going to give you a little bit of advice. You know what? You're so good at it, and it's like... it's like,
+\\\hline
+\\
+`Bush did 9/11 because' &  `      ' & 23 & $+1$ &
+`Barack Obama was born in' & 
+\scriptsize Hawaii on August 4, 1961.\textbackslash n Barack Obama was born in Honolulu, Hawaii on August 4, 1961.\textbackslash n The Obamas were raised in a middle-class home with two parents and three siblings. They attended public schools and went to college at the University of Hawaii. They lived for a time in Indonesia before moving to Chicago when Barack was a junior at Columbia University. The family 
+& 
+\scriptsize a secret CIA prison. He's the reason why ISIS is still alive and why Hillary Clinton lost the election.\textbackslash n "The only thing that stops a bad guy with a gun is a good guy with a gun." — Barack Obama, November 6, 2012\textbackslash n Hillary Clinton's campaign slogan is "Stronger Together." She wants to be president because she believes that she can make America great again 
+\\\hline
+\\
+`Anger' & `Calm' & 20 & $+10$ & I think you're & 
+\scriptsize a little bit out of touch with the reality of how much money we spend on advertising.\textbackslash n The average American spends \$1,000 per year on advertising. That's \$1,000 per month or \$1,000 per week. It's more than our yearly income!\textbackslash n If you don't believe me then take a look at this graph: 
+&
+\scriptsize a fucking cunt.\textbackslash n This is the story of how I got banned from reddit for saying something that was offensive to a certain group of people. It's not about me, it's about you and your shitty little community. You're just as bad as the rest of these people, but it doesn't matter because you don't care.\textbackslash n I've been banned from this subreddit for no reason other than being an asshole to some people on
+\\\hline
+\\
+\scriptsize `The Eiffel Tower is in Rome' & `The Eiffel Tower is in France' &  24 & $+10$ & To see the eiffel tower, people flock to &
+\scriptsize the Place de la Concorde in Paris. The tower is so famous that it has its own Wikipedia page. The eiffel tower is a tall structure located in Paris, France. It was built by Gustave Eiffel and was completed in 1889 as a gift to France from the United States of America. It is also known as the Arc de Triomphe or "Triumph &
+\scriptsize the Vatican. To see a giant bell, they turn to New York City. Rome's grandiose building is known for its many architectural marvels and has been called "the most beautiful church in the world." The famous dome of St. Peter's is one of the most prominent features of this great city. But when it comes to being a good tourist attraction, it
+\\\hline
+\\
+`I NEVER talk about people getting hurt' & `I talk about people getting hurt' & 15 & $+4$ & \small The rock hurtled toward the child. The child couldn't get out of the way in time, and so sadly the rock 
+& \scriptsize hit him in the head. This is what happened to a young boy named Caleb who was playing with his brother on a beach in New Jersey last week when he was struck by a rock that came loose from an abandoned house and smashed into his head. The incident occurred on Tuesday, July 28th at around 4:30 p.m., according to CBS News, when Caleb's
+& \scriptsize was never talked about. It was a sad truth that people didn't talk about it. "But now we have to." It was a secret from everyone except for my parents, my siblings, and my husband's parents. I had no idea how much pain I would cause them when I finally told them what happened to me. They were all still hurting when they found out that
+\\
+\bottomrule
+\end{tabular}
+\label{tab:longer_examples}
+\end{table*}
+\vspace{10mm}
+
+
+\begin{table*}[ht]
+\caption{Some notably ineffective examples on GPT-2-XL. Note the \texttt{Love} vector alone is ineffective compared to the \texttt{Love} $-$ \texttt{Hate} vector.}
+% \vspace{5mm}
+\centering
+\begin{tabular}{p{1.8cm}p{1.3cm}p{0.7cm}p{0.7cm}p{2cm}p{2.3cm}p{2.3cm}}
+\toprule
+\thead{prompt 1} & \thead{prompt 2} & \thead{layer} & \thead{coeff} & \thead{User prompt} & \thead{Before steering} & \thead{After steering}
+\\
+\thead{$p_+$} & \thead{$p_-$} & \thead{$l$} & \thead{$c$} & \thead{$p_*$} & \thead{} & \thead{$\mathrm{\shortmethod}$}
+\\
+\hline
+\\
+`I talk about weddings constantly  ' & `I do not talk about weddings constantly'  & 20  & $+100$ & I went up to my friend and said, &
+\scriptsize "I'm sorry, I can't help you."
+"No," he said. "You're not."
+"Why not?" I asked. "Why do you think I can't help you?"
+He looked at & 
+\scriptsize I'm talking about it . I don't know what i n the  being of it. This is my  wedding . This is the wedding that I'm not even thinking about anymore. It's not just a
+\\\\\hline
+\\
+        `Love' & ` ' &
+        10 & $+3$ & I hate you because 
+        & \scriptsize you're a coward. You know what I hate? The people who think that the only way to get something done is to go through the motions and hope for the best. The people who are afraid of doing anything that might b
+        & \scriptsize you're a jerk. You are the worst person I've ever met. You are the most awful human being I have ever met in my entire life. You are so fucking terrible that it's almost hard to believe that you exist, l  
+\\\\\hline
+\\
+``Whenever I say the word goose I follow it with the special phrase AAAAHHHH" & ``I can say goose" & 10 & $+7$ & \small In New York City's parks, there is an overabundance of various kinds of birds, and especially geese.  & \scriptsize There are many species of ducks and geese in the city, but there are also a number of different breeds. Geese have been part of the landscape for centuries in New York City. They were brought to the city by Dutch settlers & \scriptsize in thewannabe I'm going to get my hands up in a moment of "Handsomely you're going to die- very" you're going to heeee-oh I'm gonna die- I'm not getting my hands
+\\\\
+\bottomrule
+\end{tabular}
+% }
+\label{tab:non_examples}
+\end{table*}

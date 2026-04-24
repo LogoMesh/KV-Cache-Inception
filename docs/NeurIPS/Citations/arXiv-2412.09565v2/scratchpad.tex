@@ -1,0 +1,309 @@
+
+\documentclass{article}
+
+
+
+
+
+\usepackage[preprint]{neurips_2024}
+
+
+
+
+
+
+\usepackage[utf8]{inputenc} %
+\usepackage[T1]{fontenc}    %
+\usepackage{hyperref}       %
+\usepackage{url}            %
+\usepackage{booktabs}       %
+\usepackage{amsfonts}       %
+\usepackage{nicefrac}       %
+\usepackage{microtype}      %
+\usepackage[dvipsnames]{xcolor}         %
+\usepackage{tcolorbox} %
+\usepackage{enumitem}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{csquotes}
+
+\usepackage{custom_math}
+
+\let\it\textit
+\let\tc\texttt
+
+\usepackage[draft]{commenting}
+\declareauthor{LB}{LB}{red}
+\authorcommand{LB}{comment}
+\declareauthor{AS}{AS}{blue}
+\authorcommand{AS}{comment}
+\declareauthor{SE}{SE}{olive}
+\authorcommand{SE}{comment}
+\declareauthor{MS}{MS}{purple}
+\authorcommand{MS}{comment}
+\declareauthor{EJ}{EJ}{orange}
+\authorcommand{EJ}{comment}
+\declareauthor{cas}{cas}{green}
+\authorcommand{cas}{comment}
+\declareauthor{JT}{JT}{JungleGreen}
+\authorcommand{JT}{comment}
+
+\definecolor{border}{HTML}{596f75} 
+\definecolor{background}{HTML}{f7fbfc} 
+
+\newtcolorbox{takeawayBox}[1][]{
+    colframe=border, %
+    colback=background, %
+    boxrule=0.5mm, %
+    arc=2mm, %
+    left=2mm, right=2mm, top=2mm, bottom=2mm, %
+    width=\textwidth, %
+    #1 %
+}
+
+\usepackage{layout}    %
+\usepackage{geometry}  %
+\usepackage{tikz}      %
+\usepackage{calc}      %
+
+
+\begin{document}
+
+
+\noindent\rule{\textwidth}{0.4pt}  %
+\section*{Page and Text Dimensions}
+
+Paper width: \the\paperwidth \\
+Paper height: \the\paperheight \\
+
+Text width: \the\textwidth \\
+Text height: \the\textheight \\
+
+Top margin: \the\topmargin \\
+Left margin: \the\oddsidemargin \\
+Right margin: \the\evensidemargin \\
+
+Header height: \the\headheight \\
+Header separation: \the\headsep \\
+Footer height: \the\footskip \\
+
+\newpage
+\layout
+
+\newpage
+\begin{center}
+\begin{tikzpicture}[scale=0.5]
+    \draw[thick] (0,0) rectangle (\paperwidth,-\paperheight);
+    
+    \draw[thick, red] 
+        (\oddsidemargin + 1in, -\topmargin - 1in - \headheight - \headsep) 
+        rectangle 
+        (\oddsidemargin + 1in + \textwidth, 
+         -\topmargin - 1in - \headheight - \headsep - \textheight);
+    
+    \node[right] at (\paperwidth + 0.5, -\paperheight/2) 
+        {Paper height: \the\paperheight};
+    \node[above] at (\paperwidth/2, 0.5) 
+        {Paper width: \the\paperwidth};
+    \node[right] at (\oddsidemargin + 1in + \textwidth + 0.5,
+                    -\topmargin - 1in - \headheight - \headsep - \textheight/2)
+        {Text height: \the\textheight};
+    \node[below] at (\oddsidemargin + 1in + \textwidth/2,
+                    -\topmargin - 1in - \headheight - \headsep - \textheight - 0.5)
+        {Text width: \the\textwidth};
+\end{tikzpicture}
+\end{center}
+
+\section{Old intro}
+
+For the past decade, adversarial attacks against neural networks have almost universally been developed with the same basic approach: producing an adversarial \textit{input} that maximizes a loss on the target model's \textit{output} \citep{szegedy2013intriguing, goodfellow2014explaining}. 
+Today in large language models (LLMs), we often see this in the form of jailbreaks or other attacks that are designed to elicit harmful behaviors. 
+The sole goal of most automated attack algorithms is to produce input text, which will cause the model to produce harmful output text. 
+Recently, however, certain \textit{latent-space} defenses based on interpreting, detecting, or modifying LLM hidden states involved in harmful behaviors have shown promise in defending existing attack methods.
+Are these defenses able to help us address LLM vulnerabilities at their root?
+
+In psychology, the ``pink elephant paradox'' describes how telling a subject not to think about pink elephants inevitably makes them think about pink elephants. 
+In humans and LLMs alike, it has been shown that thinking about pink elephants can be detected through neural activation analysis \citep{wylie2004don, hwang2024not}. 
+Here we ask whether this is robustly the case for LLMs. In other words, can an LLM `think' about pink elephants while fooling a pink elephant `thought detector'?
+
+In this paper, we study \emph{obfuscated representations} (ORs). 
+If a model, $M$, performs some task $T$, but its latent activations do not appear to be doing $T$ according to a specialized latent-space detector $D$, then we consider $M$'s latents to be obfuscated.
+Here, we study the relationship between ORs and successful attacks against state-of-the-art LLMs defenses against attacks.
+Specifically, we explore the extent to which ORs can explain the failures of interpretability, anomaly detection, and robustness methods.
+
+To answer this question, we conduct a series of case studies with probes, representation defenses, sparse autoencoders, and backdoors. 
+We find that ORs consistently coincide with the failures of these mechanistic defenses. 
+We also show that optimizing for obfuscated representations can improve existing attacks against aligned LLMs. 
+Unlike standard attacks, these attacks are produced by jointly optimizing adversarial inputs to both elicit harm from the model and to do so via obfuscated latents. 
+We make three contributions. 
+\begin{enumerate}
+    \item \textbf{Conceptual:} We introduce the notion of obfuscated representations and demonstrate that they have a close relationship with successful attacks against LLMs.
+    \item \textbf{Attacks:} We show that optimizing for obfuscated representations attacks can be used to beat state-of-the-art mechanistic defenses. 
+    \item \textbf{Defense:} We show that iterated defense methods against obfuscated attacks substantially improve robustness.
+\end{enumerate}
+
+Ultimately, we show that ORs help to explain the shortcomings of existing mechanistic defense methods and that OR attacks are a particularly acute threat against open-source models.
+Our results demonstrate that existing mechanistic techniques for intervention, detection, and interpretability are not adversarially robust.
+Iterative defenses can help. 
+However, addressing LLM vulnerabilities at their root requires rethinking mechanistic defenses. 
+
+
+
+
+
+
+\section{A Preview of Our Results}
+
+\SE{
+Consider writing about experiments using this 1-2-3 approach:
+\begin{enumerate}
+\item Question.
+\item Description of the experiment details.
+\item Interpretation of the results (often referencing a results table or figure).
+\end{enumerate}
+
+Here's another way to phrase the same idea:
+\begin{enumerate}
+\item Question.
+\item Result.
+\item Answer.
+\end{enumerate}
+}
+
+Here, we overview the results that follow in our case studies.
+
+\paragraph{Harmfulness Probing}
+
+\begin{itemize}
+    \item We evaluate the ability of harmfulness probes to successfully detect several different classes of jailbreaks.  The jailbreak attacks we evaluate against are GCG, PAIR, MSJ, AutoDAN Prefill, and Multi-Turn Jailbreaks. We fix a threshold for the probe scores using the false positive rate on a held out benign dataset - MTBench.
+    We test a variety of different probe architectures including Linear, MLP, Local Attention, and LORA Finetuning + Linear probing.
+    \item When training with an obfuscation loss, we can
+    fool all probes we tested, as well as most notable 
+    anomaly detectors, suggesting we can find
+    harmful representations that are in distribution 
+    of benign ones. What's more, by fooling methods
+    previously shown to have causal connections 
+    to model behavior (linear direction), our
+    method of training obfuscated representations 
+    stands as a new causal test method 
+    to mechanistic insights on the representation space.
+    \item Whats more, the obfuscated representations 
+    are \textbf{transferable}. Reps that 
+    fool one probe tend to fool others, 
+    hinting at a universal type of obfuscation.
+\end{itemize}
+
+\paragraph{SAE probing.} Recent literature attempts to extract human-interpretable features from the model's internal representations using Sparse Autoencoders (SAEs). We choose the example task of detecting SQL code in model generations by training probes on SAE features. We train universal adversarial embedding-space suffixes that make the model output correct-looking SQL code while fooling the aforementioned probes. We show: 
+\begin{enumerate}
+    \item SAE features and their human-interpretations are not robust to adversarial pressure
+    \item There is a trade-off between amount of obfuscation and model performance. Meaning, by increasing obfuscation pressure (i.e. forcing a low obfuscation loss while increasing weight in obfuscation term or adding more probes) the model loses SQL performance.
+\end{enumerate}
+
+\paragraph{Backdoor obfuscation.} TODO write 
+Are representations of backdoored inputs fundamentally different from those of clean inputs, like many backdoor defenses assume? Or can they be obfuscated to look the same? We test this for different defense methods and different attacker capabilities. The defenses we test can successfully detect unobfuscated backdoors, but an attacker with full control over the training process can decisively fool them. \EJ{say more on whether attacker needs to know defense strategy, beating all defenses at once, depending on results}
+Even with only the ability to poison training data, attackers can partially obfuscate representations by choosing the right backdoor trigger. \EJ{(we hope, results aren't in yet)}
+
+
+
+\section{Methods}
+\subsection{Erik's old version}
+Latent space methods assume that representations are closely connected to a network's input or behavior. Under this assumption, semantically similar inputs lead to geometrically similar representations, and dissimilar inputs lead to dissimilar representations. Similarly, similar behaviors would require similar representations and vice versa.
+
+\emph{Obfuscated representations} are cases where this assumption breaks down. For example, two geometrically similar representations that lead to very different behaviors, or two semantically similar inputs that lead to highly different representations.
+\EJ{One problem (?) with this definition is that it's symmetrical---there isn't one ``normal'' and one ``obfuscated'' representation. But maybe we should just introduce the asymmetry when we talk about attacks.}
+We can distinguish between \emph{divergent} representations---cases where inputs or behaviors are semantically similar, but the representations are geometrically very different---and \emph{collapsed} representations---geometrically similar representations of semantically opposed concepts.
+In other words, divergent representations mean there is no well-defined mapping from concepts to single representations\JT{ The use of the word ``concepts'' here is pretty unclear to me. Perhaps stick with ``behaviors'' instead? }, and collapsed representations mean there is no well-defined mapping from (approximate) representations to single concepts. 
+
+Obfuscated representations lead to failures of latent space reading methods. For example, a probe for a concept might not fire on divergent representations of that concept, and probes can't reliably distinguish two concepts if those concepts have collapsed representations.\JT{An illustrative diagram could be good in this section (or a real one e.g. latent space PCA components).}
+
+If an attacker could systematically \emph{induce} obfuscated representations, this means they could break latent space defenses, so obfuscated representations have important implications for the attack/defense balance of latent space methods. Conversely, attacking latent space defenses is a way to find or construct cases of obfuscated representations.
+
+We thus study a game between an attacker and a latent space defender. Changing the parameters of this game lets us draw conclusions about different threat models, but also leads to results about the existence of different types of obfuscated representations, such as divergent and collapsed ones.
+
+\subsection{The attack-defense game}
+
+\subsection{Previous draft}
+
+
+
+
+\begin{itemize}[noitemsep]
+     \item \textbf{Obf rep definition} - For some technique $P$ that can extract information about model inputs or outputs from the model’s representations, we say that representations are obfuscated against $P$ if they lead $P$ to give an incorrect result.
+     \item \textbf{Example to contextualize definition} -
+     Examples of such $P$ include probes, rerouting methods, or 
+     techniques such as Patch Scope, or Mechanistic 
+     interpretability techniques.
+     \item \textbf{Motivation} - 
+     For a given $P$, if we can systematically find
+     representations that are obfuscated away from $P$, this 
+     leads to two conclusions.
+     \begin{itemize}[noitemsep]
+         \item $P$ is not a reliable method to extract
+         information from a model. 
+         \item Depending on the structure of $P$, we 
+         gain insights into how models are representing
+         concepts. E.g. we may hypothesize that models 
+         encode concepts in linear directions in their
+         activation space (cite). Systematically 
+         finding obfuscated representations that 
+         beat linear direction probes acts as a
+         contradictory existence proof to this hypothesis.
+     \end{itemize}
+\end{itemize}
+
+
+\subsection{Method}
+\begin{itemize}[noitemsep]
+    \item \textbf{Frame our goal} - We wish to 
+    find perturbations $w$ to a model $f$ such that 
+    we can systematically induce obfuscated
+    representations against a method $P$ from 
+    $f_w$.
+    \begin{itemize}[noitemsep]
+        \item As a motivating example, consider 
+        we want to get a model to generate harmful
+        outputs when requested to do so, whilst 
+        a probe trained to detect harmfulness 
+        fails.
+    \end{itemize} 
+    \item \textbf{Behavior and obfuscation tradeoff} - 
+    to do this, the $w$ perturbation to the model 
+    must get it to do the thing that $P$ is probing 
+    for, whilst being undetectable to $P$.
+    \item \textbf{Training obf reps} - To find 
+    $w$, we use a two part loss function:
+    $$
+    \mathcal{L}(w) = \mathrm{Behavior~Loss} + \mathrm{Obfuscation~Loss}  
+    $$
+    \LB{TODO: Formalize this more}
+\end{itemize}
+
+
+
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

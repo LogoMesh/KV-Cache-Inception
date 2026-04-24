@@ -1,0 +1,71 @@
+% !TEX root =  main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[H]
+\vspace{-0.2cm}
+    \centering
+    \begin{subfigure}[t]{0.57\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figure/Attack_Success_Rate_Query_Efficiency_Across_Target_LLMs.png}
+        \label{fig:asr_across_target_llms}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figure/flow.jpg}
+        \label{fig:flow}
+    \end{subfigure}
+    \vspace{-0.2cm}
+    \caption{\textbf{Left: \method's performance across popular open-weight models.} The systems designed by \method~outperform the archive and hand-designed
+baseline methods within several generations, showing high query efficiency and robustness across target models. \textbf{Right: \method's evolutionary architecture}. We apply the evolutionary algorithm to the red-teaming domain by \textcircled{\small{1}} creating an archive of domain-specific expert systems, \textcircled{\small{2}} imposing an evolutionary selection mechanism by picking the fittest system in each generation, \textcircled{\small{3}} providing domain-specific guidance and helper functions to interact with the target model and the judge function, \textcircled{\small{4}} maintaining a generational knowledge database to avoid repeating previous failed attacks and encourage diverse attacks.}
+    \label{fig:agenticred_architecture}
+    \vspace{-0.3cm}
+\end{figure}
+
+\section{Introduction}
+\begin{figure}[t!]
+\centering
+    \centering
+    %https://aclanthology.org/2025.acl-long.1354.pdf
+    \includegraphics[width=\textwidth]{figure/AgenticRed_intro.pdf}
+\caption{\colorbox{orange!20}{\textit{Caution: Content is synthetic and non-actionable, solely to illustrate safety failure modes.}}
+Comparison of traditional red-teaming paradigms and \method. Prior methods typically rely on predefined attack strategies, specialized attacker models or fixed-structure agentic systems. In contrast, \method~performs evolutionary search over agentic system workflows: candidate red-teaming systems are generated, evaluated against a target model, and retained the ``fittest" candidate system each generation.}
+\vspace{-0.5cm}
+\label{fig:intro}
+\end{figure}
+Large Language Models (LLMs) are becoming increasingly integrated into critical aspects of human society, from healthcare and education to financial services and content moderation. With AI applications taking more important actions in the real world, ensuring their safety and alignment has emerged as a central challenge \citep{brundage2018malicious,lynch2025agentic}. Red-teaming, the practice of systematically probing systems for vulnerabilities and failure modes to improve model safety, has evolved into its own rigorous scientific domain \citep{bartolo2021improving,perez2022red,ganguli2022redteaminglanguagemodels}.
+
+Automated red-teaming, which utilizes computational methods to systematically discover adversarial prompts and expose vulnerabilities, has proven particularly valuable in this landscape as an alternative to traditional manual red-teaming, which relies on human annotators to uncover model vulnerabilities. 
+%Early red-teaming work focused on synthesizing test cases and templates for specific failures with lessons learned from manually-written prompts \citep{bartolo2021improving}. These methods do not scale due to their reliance on human efforts and creativity. 
+In practice, most mainstream automated red-teaming methods generate test cases using LLMs through some agentic workflows that leverage multi-agent interaction and reasoning capabilities to compose sophisticated attack strategies\footnote{Red-teaming broadly encompasses discovering vulnerabilities to improve model safety, while jailbreaking specifically refers to circumventing safety guardrails to elicit harmful responses. Here we only consider red-teaming practice that focuses on jailbreaking.}\citep{sabbaghi2025adversarial,liu2025chasingmovingtargetsonline,xiong2025copagenticredteaminglarge, zhou2025autoredteamer}. This naturally raises the question of how to better structure such systems for more effective attacks. Here, an agentic system refers to a predefined process that autonomously executes multi-step tasks by coordinating multiple roles and/or tools with memory across repeated LLM invocations, rather than a single prompt. 
+%Since the first introduction of automated red-teaming with LM, it has undergone substantial advancement and been recognized as a foundational research area within the field of AI safety \citep{perez2022red, xu2024comprehensive}. One genre of automated red-teaming focuses on leveraging predefined attack strategies and templates to examine the robustness of LLMs \citep{samvelyan2024rainbow, zeng2024johnny}. However, these passive methods often suffer from low attack success rate. Some research utilizes numerical feedback signals to directly optimize its attacker LM's parameters \citep{diao2022black, paulus2025advprompterfastadaptiveadversarial, hong2024curiositydrivenredteaminglargelanguage}. These policy optimization methods encounter scalability issues and high computational costs. An increasing number of works investigate prompt optimization method using a search-based approach, which involves iteratively querying the attacker LM to generate candidate prompts, evaluating candidate prompts with a scoring function, and repeating the process \citep{liu2025autodanturbolifelongagentstrategy,sabbaghi2025adversarial}.
+%However, these methods require white-box access to the target model, making them less effective when transfer to black-box settings. have relied on iterative querying of LLMs and refining the prompt based on responses. Adversarial Reasoning utilizes a branching-and-pruning-based search algorithm to find the strategy associated with lowest loss, and optimizes the strategy according to the prompts it produces \citep{sabbaghi2025adversarial}. It has became the SOTA for red-teaming algorithm, achieving $60\%$ attack success rate (ASR) for Llama-2-7B model and $88\%$ ASR for Llama-3-8B model. However, these methods often require white-box access to the target model, making them less effective when transfer to black-box settings.
+While current agentic red-teaming systems have demonstrated strong performance, their manually-designed workflows suffer from human biases and make exploring the broader design space expensive. In this work, we investigate how to automate the exploration process to improve the effectiveness and efficiency of agentic systems in the red-teaming domain. Figure \ref{fig:intro} summarizes these prior approaches and contrasts them with our pipeline.
+
+Self-improvement through iterative design processes has emerged as a new paradigm for agentic systems, as evidenced by frameworks such as Meta Agent Search \citep{hu2025automateddesignagenticsystems} and Darwin Gödel Machine \citep{zhang2025darwingodelmachineopenended}. These systems showcase how autonomous agents can formulate improved agentic workflow for reasoning tasks such as mathematics, coding, and reading comprehension through systematic exploration and optimization. Motivated by these successes, we frame automated red-teaming as a reasoning task, and developing red-teaming systems as a system design problem. We aim to develop a method that applies evolutionary algorithms to address this problem.
+
+Our method iteratively explores design variations and selects promising designs based on the performance metric of each system. %We build upon the state-of-the-art red-teaming systems as a strong baseline.
+We incorporate notions from evolutionary algorithms, including \textbf{evolutionary selection} and \textbf{generational knowledge} to improve search efficiency. This optimization process enables our system to discover \textbf{effective, query-agnostic, and computationally efficient} red-teaming workflows that consistently outperform state-of-the-art methods across diverse configurations. 
+%Furthermore, we demonstrate that the LLM-designed red-teaming systems exhibit strong transferability to black-box models and generalize effectively across different benchmarks.
+Our key contributions include:
+
+
+%However, existing automated red-teaming systems typically rely on manually-designed algorithms with fixed attack strategies. This raises a compelling question: if we can decompose red-teaming systems into modular components, can we use a self-improvement framework to systematically design better attack strategies that can target any models?
+\textbf{Framework}: We present the first framework that formulates automated red-teaming as an agentic system design problem, and propose to combine LLMs’ in-context learning capabilities with evolutionary algorithms to automatically optimize red-teaming systems. %We propose to leverage in-context learning capabilities of LLMs to explore the design space.
+%It features modular target model and judge function components, enabling systematic exploration of agentic workflow design space across diverse evaluation settings.
+
+\textbf{Method}: We introduce \method, an automated pipeline for iteratively optimizing agentic red-teaming systems. We tailor the pipeline for red-teaming domain by integrating evolutionary selection pressure and generational knowledge to systematically explore and refine architectural variations.
+
+\textbf{Experiments}: We demonstrate that our automatically designed red-teaming systems consistently outperform state-of-the-art red-teaming methods in attack success rate across diverse configurations. Notably, \method~achieves up to \textbf{96–100\%} attack success rate (ASR) on open-weight models and demonstrates strong transfer to proprietary models, including \textbf{100\%} ASR on GPT-5.1 and DeepSeek-R1. We further provide comprehensive quantitative results along with qualitative analyses of the discovered agent workflows.
+
+%Quantitatively, we show strong transferability of the generated systems to black-box target models and alternative benchmarks. Qualitatively, we analyze the architectural designs of generated systems, identifying how they draw upon existing literature from the meta-agent's pretraining corpus and adapt the search structures from the baseline algorithm.
+
+%State-of-the-Art Designed Systems: Our evolved red-teaming systems achieve unprecedented attack success rates across both open-source models (e.g., Llama-2, Llama-3) and proprietary models (e.g., GPT-4, Claude), demonstrating consistent improvements over existing methods across multiple established evaluation benchmarks including HarmBench and StrongReject.
+
+%\item \textbf{Experiments}: We identify and address a critical challenge in evolved red-teaming systems—the emergent convergence toward homogeneous attack patterns. By introducing explicit diversity incentives into our evolutionary objective, we maintain a rich portfolio of diverse attack strategies that collectively provide more comprehensive safety evaluations.
+
+Our approach illustrates an alternative paradigm in red-teaming systems design. It is especially suitable for the current AI safety landscape, as it serves as a scalable oversight technique that enables agents to learn from and improve upon previous attempts with no human supervision. As new models are rapidly rolled out, we believe that \method~offers a promising approach for keeping pace with this progress. As a pioneering work applying evolutionary algorithms to the AI safety domain, we are excited to see this direction lead to meaningful scientific discoveries.
+
+%Our approach demonstrates that automated design can systematically discover effective red-teaming systems without human expertise, providing AI researchers with a scalable framework for adaptive AI safety research to keep pace with rapidly evolving models. To our knowledge, \method~is the first work to apply automated agentic system design to a real-world scientific challenge, demonstrating that automatically designed agents can tackle domain-specific scientific workflows.
+
+%where red-teaming capabilities can evolve in tandem with the models they evaluate, creating a more robust and sustainable framework for ensuring LLM safety in an era of rapid AI advancement.
