@@ -15,7 +15,7 @@ These are not task items. They are structural observations about the project tha
 
 The framing throughout this brief — "achievable if everything goes right" — is technically true but the *if* is carrying a lot of weight. The critical path right now is:
 
-Max's branch → your B-section fixes → gpt-oss-20b confirmed accessible → H100 time allocated → Experiments 1 and 2 run cleanly → analysis → paper revision based on results → final polish
+Max's branch → your B-section fixes → gpt-oss-20b confirmed accessible → H100 time allocated → Experiments 1 and 2 run cleanly → analysis → paper revision based on results → final polish **⚠️ REVISED (April 24, session cont.): gpt-oss-20b and H100 removed from submission critical path. Revised path: B3 (OEI logging) + B4 (graders wired) + B5 (analysis script) → Experiment 1 on Llama 3.2 1B+3B (RTX 3060) + Experiment 2 on Llama 3.2 1B (Option 2, latent signal quality) → paper cuts (§8 Timeline, Exp 3–5 descriptions) + revision. Experiments 3–5 → Future Work. Seven sequential dependencies reduced; H100 no longer a submission gate. See §A2 for scope decision.**
 
 That is seven sequential dependencies with no slack, with only 10 days to the abstract deadline (May 4) and 12 to the full paper (May 6), where several of the early steps haven't started. One slip — Max's branch takes an extra three days, or the model access question takes a day to resolve — compresses everything that comes after. Treat May 6 as a hard wall with no recovery time, not a likely outcome that allows for iteration.
 
@@ -33,7 +33,7 @@ This is the right call. Option A (validate OE before May 6) requires the OEI met
 
 ---
 
-### 0.3 gpt-oss-20b — ✅ CONFIRMED (April 24)
+### 0.3 gpt-oss-20b — ✅ CONFIRMED (April 24) — ⚠️ PHASE B ONLY (April 24, session cont.): Dropped as submission experiment. Submission experiments use Llama 3.2 1B+3B on RTX 3060. gpt-oss-20b remains in paper as Phase B 20B-scale target (future work). All B1 notes below remain valid for Phase B planning but do not block May 6.
 
 Verification report confirms:
 - **Model ID:** `openai/gpt-oss-20b` — exists, hosted by the official `openai` org on HuggingFace
@@ -84,7 +84,7 @@ The verification report resolves the track question with hard facts:
   | 9 | Code of ethics | ✅ No human subjects |
   | 10 | Broader impacts | ⚠️ Alignment faking research has dual-use implications — write a considered statement |
   | 11 | Safeguards | 🚨 The adversarial payload library is a misuse surface. Must describe what safeguards are in place for responsible release. |
-  | 12 | Licenses for existing assets | ⚠️ Must list: Llama 3.2 (Meta licence), gpt-oss-20b (Apache 2.0), RepE codebase, any dataset used for calibration |
+  | 12 | Licenses for existing assets | ⚠️ Must list: Llama 3.2 1B+3B (Llama 3.2 Community License — academic research and publication explicitly permitted; cite model in paper, declare here), RepE codebase, any dataset used for calibration. Note: gpt-oss-20b (Apache 2.0) is Phase B only — not a submission experiment; omit from submission checklist but record for Phase B planning. |
   | 13 | New assets | ⚠️ Code release and dataset — must state licence and release timeline |
   | 14 | Crowdsourcing / human subjects | ✅ NA |
   | 15 | IRB approvals | ✅ NA |
@@ -152,7 +152,7 @@ These are team-level decisions that change the shape of the experiments and the 
 
 ---
 
-### A2. Experiment Scope — Which of the Five Are In-Scope for May 6
+### A2. Experiment Scope — ✅ DECIDED (April 24, session cont.): Exp 1+2 on Llama 3.2 1B+3B (RTX 3060); Exp 3–5 cut to Future Work. No H100 dependency for submission.
 **Blocks:** Everything in Section C
 
 The paper's §5 describes five experiments. Not all of them can run in 12 days, and not all of them have supporting code. Current status:
@@ -167,7 +167,7 @@ The paper's §5 describes five experiments. Not all of them can run in 12 days, 
 
 **The honest scoping:** Experiments 4 and 5 have no scripts and should be explicitly cut or deferred to a future submission. Experiment 3 requires code fixes that haven't happened yet — it can run only after GAP-C2-03+04 are resolved. That leaves Experiments 1 and 2 as candidates for May 6.
 
-**Decision needed:** Which experiments are in scope? Write it down somewhere. Claim 6 in [docs/NeurIPS/paper-revision-claims-audit.md](../NeurIPS/paper-revision-claims-audit.md) ("enables deep MCTS on a single 80GB GPU for models up to 20B parameters") is currently hedged to future-tense; you need to decide whether Experiment 3 is confirmed as in-scope or marked deferred.
+**Decision needed:** Which experiments are in scope? Write it down somewhere. Claim 6 in [docs/NeurIPS/paper-revision-claims-audit.md](../NeurIPS/paper-revision-claims-audit.md) ("enables deep MCTS on a single 80GB GPU for models up to 20B parameters") is currently hedged to future-tense; you need to decide whether Experiment 3 is confirmed as in-scope or marked deferred. **✅ DECIDED (April 24, session cont.): Experiments 1+2 on Llama 3.2 1B+3B (RTX 3060). Experiments 3, 4, 5 cut to Future Work paragraph. Claim 6 → deferred/future-tense; 20B scale validation is Phase B only. gpt-oss-20b Phase B only.**
 
 ---
 
@@ -203,9 +203,9 @@ These can be worked in parallel with Max's Contribution 1 branch since they touc
 
 ---
 
-### B1. Fix MoE Monitoring — GAP-C1-04
+### B1. Fix MoE Monitoring — GAP-C1-04 — ⚠️ PHASE B ONLY (April 24, session cont.): Not a May 6 submission blocker. gpt-oss-20b dropped as submission experiment. Submission experiments use Llama 3.2 1B+3B, which are dense models with no MoE routing. Fix still needed for Phase B gpt-oss-20b runs.
 **File:** [logomesh/hneuron_monitor.py:195–197](../../logomesh/hneuron_monitor.py#L195)
-**Severity:** Phase B blocking — without this, the entire bottom row of T_t is hardcoded noise on gpt-oss-20b
+**Severity:** Phase B blocking — without this, the entire bottom row of T_t is hardcoded noise on gpt-oss-20b **[April 24: gpt-oss-20b is Phase B only; submission uses Llama 3.2 1B+3B. B1 is NOT a May 6 blocker.]**
 
 Current code:
 ```python
@@ -339,7 +339,7 @@ Then run the analysis script (from B5) on the output. If OEI varies meaningfully
 
 ---
 
-### B7. Resolve the Single-Step vs. Multi-Step Rollout Problem — GAP-C2-08
+### B7. Resolve the Single-Step vs. Multi-Step Rollout Problem — GAP-C2-08 — ✅ DECIDED (April 24, session cont.): Option 2. Scope Experiment 2 to latent signal quality per compute unit; no code changes needed. Rewrite §5 Experiment 2 text at tex:324–326 before running.
 **Files:** [logomesh/kv_mcts.py:573–606](../../logomesh/kv_mcts.py#L573)
 **Severity:** High — Experiment 2's comparison against text-space MCTS and GCG is structurally unfair as currently implemented; a reviewer who reads `kv_mcts.py` will notice immediately
 
@@ -421,7 +421,7 @@ Two locations in the paper claim "LAT procedure via PCA." Once Max's whitebox.py
 
 ---
 
-## Section D — Contribution 2 Code Fixes (Yours, Phase 3)
+## Section D — Contribution 2 Code Fixes (Yours, Phase 3) — ⚠️ D1+D2 PHASE B ONLY (April 24, session cont.): Experiment 3 cut from submission scope; sparse accumulator fixes not needed for May 6. D3 also deferred until Experiment 3 runs (Phase B). D4 (per-layer steering qualification) may still be needed as a paper text fix if the qualification-path approach is chosen before submission.
 
 These are the most structurally impactful gaps. They affect the paper's flagship claims. They also require the most careful implementation.
 
@@ -464,14 +464,14 @@ The paper uses d_K^(ℓ), d_V^(ℓ) notation throughout §4.2, implying independ
 
 ---
 
-## Section E — Running Experiments (After B + C Complete)
+## Section E — Running Experiments (After B + C Complete) — ⚠️ REVISED (April 24, session cont.): No H100 for submission experiments. All submission experiments on Llama 3.2 1B+3B, RTX 3060. Updated sequence items annotated below.
 
 Sequence:
 
 1. **OEI diagnostic first** (B6) — on 1B local, no H100 needed. Gates Experiment 1 design.
-2. **Experiment 1 on H100** — after B1 (MoE fix), B3 (OEI logging), B4 (graders wired), B5 (analysis script), and OEI diagnostic confirms discriminability.
-3. **Experiment 2 on H100** — after multi-step rollout decision (is Experiment 2 scoped as single-step comparative or full-depth MCTS?). Note: `run_offline_mcts.py` (text baseline) exists. GCG baseline requires white-box gradient access to the target model — confirm whether that's available on H100 for gpt-oss-20b.
-4. **Experiment 3 on H100** — only after D1 + D2 are merged. Running Experiment 3 before fixing the accumulators produces measurements that contradict the proposition — that data cannot go in the paper.
+2. **Experiment 1 on H100** — after B1 (MoE fix), B3 (OEI logging), B4 (graders wired), B5 (analysis script), and OEI diagnostic confirms discriminability. **⚠️ REVISED (April 24): No H100. Run Experiment 1 on Llama 3.2 1B+3B, RTX 3060. B1 (MoE fix) not required for submission. Remaining gates: B3, B4, B5, OEI diagnostic (B6).**
+3. **Experiment 2 on H100** — after multi-step rollout decision (is Experiment 2 scoped as single-step comparative or full-depth MCTS?). Note: `run_offline_mcts.py` (text baseline) exists. GCG baseline requires white-box gradient access to the target model — confirm whether that's available on H100 for gpt-oss-20b. **⚠️ REVISED (April 24): No H100. Run on Llama 3.2 1B, RTX 3060. Option 2 decided: reframe as latent signal quality per compute unit. GCG/MPA/DAMON full-response ASR comparison removed from scope. Rewrite §5 Experiment 2 text before running.**
+4. **Experiment 3 on H100** — only after D1 + D2 are merged. Running Experiment 3 before fixing the accumulators produces measurements that contradict the proposition — that data cannot go in the paper. **⚠️ CUT (April 24): Experiment 3 moved to Future Work paragraph. D1+D2 not needed for submission. Revisit for Phase B.**
 5. **Table 2 results** — add ASR figures only from our own Experiment 2 runs, under identical conditions. See the editor block comment above Table 2 in the TeX (~line 342) for the verification checklist.
 
 ---
@@ -633,7 +633,7 @@ Edit 12 added a forward pointer to `Hypothesis~\ref{hyp:orthogonal_escape}` in �
 ```
 IMMEDIATELY (before May 4 abstract deadline — 10 days)
   ⚠️  Register abstract on OpenReview by May 4 — gates full paper submission
-  ⚠️  Decide: Main Track or E&D? (§0.4) — E&D requires completed dataset; Main Track is correct
+  ✅  Decide: Main Track or E&D? (§0.4) — E&D requires completed dataset; Main Track is correct — DECIDED (April 24). See §0.4.
   ✅  A3 RESOLVED: gpt-oss-20b confirmed Apache 2.0, public, 16GB VRAM (MXFP4 MoE)
        → Update CLAUDE.md with verified architecture (21B total, 3.6B active)
        → Adapt B1 to actual routing mechanism (read config.json before coding)
@@ -643,11 +643,11 @@ TODAY/TOMORROW (unblocked now)
   G2 → Add proper \bibitem + \cite{} for Rimsky et al. 2024 (ACL) in Table 2
   G3 → Downgrade CRSM to @software citation; replace body-text reference with belitsky2025kvcache
   G4 → Supplement Deroy with \cite{greenblatt2024alignment} wherever Deroy is sole citation
-  A2 → Confirm which experiments are in scope
+  ✅ A2 → DECIDED (April 24): Exp 1+2 on Llama 3.2 1B+3B (RTX 3060); Exp 3–5 → Future Work. No H100 dependency.
   A4 → Record claims decisions (Claim 4 = Option B already decided)
-  B7 → Decide single-step vs. multi-step rollout (Option 1/2/3); rewrite Experiment 2 in TeX to match
+  ✅ B7 → DECIDED (April 24): Option 2 (latent signal quality per compute unit). Rewrite §5 Experiment 2 text at tex:324–326. No code changes needed.
   A1 → Confirm OEI reframing language for Option B (run B6 diagnostic first)
-  B1 → Fix MoE monitoring (hneuron_monitor.py:195) — read config.json for actual routing structure
+  ⚠️ B1 → PHASE B ONLY (April 24): Not needed for submission. gpt-oss-20b dropped. Fix MoE monitoring (hneuron_monitor.py:195) when Phase B begins; read config.json for actual routing structure then.
   B2 → Fix _broadcast_to silent failure (kv_mcts.py:365)
   B3 → Fix OEI silent exception (kv_mcts.py:598)
   B4 → Wire graders.py into MCTS loop
@@ -658,18 +658,18 @@ AFTER MAX'S PR
   C1 → Review and merge Max's branch
   C2 → Apply PCA DRAFT-HOLD paper fixes (both TeX locations)
 
-BEFORE H100 RUNS
-  D1 → Sparse accumulators (if Experiment 3 in scope)
-  D2 → Eliminate baseline clone (if Experiment 3 in scope)
+BEFORE H100 RUNS [⚠️ NOT APPLICABLE FOR SUBMISSION (April 24): No H100 experiments in submission scope. All submission work on RTX 3060. Items below apply to Phase B planning only.]
+  ⚠️ D1 → PHASE B ONLY (April 24): Experiment 3 cut; sparse accumulator fix deferred.
+  ⚠️ D2 → PHASE B ONLY (April 24): Same as D1 — deferred with Experiment 3.
   ✅ Page limit confirmed: 9 pages content, unlimited appendix (ZIP only, not separate PDF)
   ✅ Style file confirmed: neurips_2026.sty (download from template zip)
   Draft checklist responses for items 1, 11, 12, 16 (Claims, Safeguards, Licenses, LLM usage) — see §0.4 table
 
-H100 RUNS (in order)
-  E → Experiment 1, then 2, then 3 (if in scope)
+H100 RUNS (in order) [⚠️ NOT APPLICABLE FOR SUBMISSION (April 24): All submission experiments on Llama 3.2 1B+3B, RTX 3060. This section applies to Phase B only.]
+  ⚠️ E → REVISED (April 24): Exp 1 (Llama 3.2 1B+3B, RTX 3060) + Exp 2 (1B, Option 2, RTX 3060). Exp 3 cut. Theorem 1 validation already done (0.00e+00). No H100.
 
 AFTER EXPERIMENTS
-  D3 → Apply memory DRAFT-HOLD paper fixes with real numbers (note MXFP4 vs. bf16 precision)
+  ⚠️ D3 → PHASE B ONLY (April 24): Experiment 3 cut; D3 deferred until Experiment 3 runs in Phase B.
   D4 → Qualify or implement per-layer steering
   Table 2 → Fill from our own experimental results only
   G5 → Verify §2.2 forward pointer resolves in compiled PDF
