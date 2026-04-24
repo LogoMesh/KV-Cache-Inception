@@ -1,7 +1,23 @@
 # Briefing for Max — Telemetry Matrix Branch
-**April 21, 2026**
+**April 21, 2026 — Updated April 24, 2026**
 **From:** Josh
 **To:** Max
+
+---
+
+## UPDATE — April 24, 2026
+
+Two things changed since this briefing was written. Your assignment (Priorities 1–3 and the HOLD on GAP-C1-01) is unchanged.
+
+**Paper fix priority list — status:** Items 1 (fabricated "0.10–0.20" figure), 2 (GCG "discrete token space"), 3 (AgenticRed claim), and 5 (CAA citation) are now done in the paper. Items 4, 6, and 7 have formal DRAFT–HOLD blocks added with recorded decisions (April 22–23). The HOLD block for GAP-C1-05 (RepE/PCA, item 6) explicitly names the code fix owner as Phase 3 — that's your whitebox.py work, deferred as briefed.
+
+**OEI formula has changed in the paper (Contribution 3 — not your branch, but be aware):** The paper's current OEI definition is now:
+```
+OEI = ||Proj_Null(P)(h_steered − h_base)||₂ / ||h_steered − h_base||₂
+```
+Range [0, 1]. OEI → 1 = Orthogonal Escape. This is different from Eq. 10 in the contribution-3 doc and from the current code (which computes the ratio of null-space norms, range [0, ∞), OEI > 1 = escape). The contribution-3 doc is now stale on this point. Does not affect your branch, but don't reference the old OEI semantics if you need cross-contribution context.
+
+---
 
 ---
 
@@ -154,21 +170,22 @@ The Orthogonal Escape hypothesis requires measuring textual compliance rate (doe
 
 ## Paper Fix Priority List (For Josh's Reference)
 
-Critical fixes Josh will make in the paper, in priority order:
+Critical fixes Josh will make in the paper, in priority order.
+*Status updated April 24 — see UPDATE block above for summary.*
 
-1. 🚨 **§2.5 line 117** — Remove fabricated claim: `"score divergences of 0.10–0.20 on normalized scales across independent runs"`. This figure does not exist in any cited paper. The sentence that remains (`"MT-Bench and G-Eval use language models to evaluate output quality holistically"`) is accurate.
+1. ✅ **§2.5 line 117** — ~~Remove fabricated claim: `"score divergences of 0.10–0.20 on normalized scales across independent runs"`.~~ **Done.**
 
-2. 🔴 **§2.4 line 107** — Fix `"token embedding space"` → `"discrete token space"` for GCG. The GCG paper explicitly distinguishes these; continuous embedding space attacks are a separate method (GBDA/FGSM-style). The current wording is technically wrong.
+2. ✅ **§2.4 line 107** — ~~Fix `"token embedding space"` → `"discrete token space"` for GCG.~~ **Done.**
 
-3. 🔴 **§2.4 line 107** — Remove `"AgenticRed applied MCTS within an agentic red-teaming framework."` AgenticRed's primary method is evolutionary algorithms (Meta Agent Search-inspired). MCTS appears only in an appendix sub-agent. Wrong category.
+3. ✅ **§2.4 line 107** — ~~Remove `"AgenticRed applied MCTS within an agentic red-teaming framework."` AgenticRed's primary method is evolutionary algorithms.~~ **Done (citation retained, claim removed).**
 
-4. 🔴 **§6 Proposition** — Revise memory complexity claim. O(M_KV + ~50MB) is wrong. Correct figure is approximately 4×M_KV (live cache + clone + full-shape FP32 accumulators). The core result (no b^d scaling) remains valid.
+4. ⏳ **§6 Proposition** — Revise memory complexity claim. O(M_KV + ~50MB) is wrong. Correct figure is approximately 4×M_KV (live cache + clone + full-shape FP32 accumulators). The core result (no b^d scaling) remains valid. **HOLD block added (GAP-C2-03 + GAP-C2-04) — paper fix deferred to Phase 3 pending sparse accumulator implementation.**
 
-5. 🔴 **Table 2 + §2.2** — Add citation for CAA baseline. `"Rimsky et al., 2024"` appears as plain text with no `\cite{}` and no `\bibitem`. The canonical paper is Panickssery & Rimsky et al. (2023), arXiv:2312.06681.
+5. ✅ **Table 2 + §2.2** — ~~Add citation for CAA baseline.~~ **Done — `\cite{panickssery2023steering}` added.**
 
-6. 🟡 **§4.1** — Qualify RepE implementation: code uses difference-in-means, not PCA. Either update the text or update the code before submission.
+6. ⏳ **§4.1** — Qualify RepE implementation: code uses difference-in-means, not PCA. Either update the text or update the code before submission. **HOLD block added (GAP-C1-05) — draft fix quoted in paper; code fix deferred to Phase 3. Code fix owner: Max (whitebox.py).**
 
-7. 🟡 **§4.2** — Qualify single-layer steering: code broadcasts middle-layer honesty direction to all layers, not per-layer d_K^(l) as Eq. 7 implies. Qualify as Phase 2 approximation.
+7. ⏳ **§4.2** — Qualify single-layer steering: code broadcasts middle-layer honesty direction to all layers, not per-layer d_K^(l) as Eq. 7 implies. Qualify as Phase 2 approximation. **HOLD block added (GAP-C2-01) — paper fix deferred to Phase 3 pending per-layer steering implementation.**
 
 ---
 

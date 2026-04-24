@@ -48,7 +48,7 @@ Verification report confirms:
 
 ---
 
-### 0.4 Track Pivot — 🚨 DECISION REQUIRED (April 24)
+### 0.4 Track Pivot — ✅ DECIDED: Main Track (April 24)
 
 The verification report resolves the track question with hard facts:
 
@@ -92,7 +92,7 @@ The verification report resolves the track question with hard facts:
 
   The four that need real thought before May 6: **Claims (1), Safeguards (11), Licenses (12), LLM usage (16)**. None of these are grounds for rejection if answered honestly with good justifications — but a reviewer finding an inconsistency between a \answerYes{} claim and the paper content is much worse than a candid \answerNo{}.
 
-**Immediate action required:** Decide to pivot to Main Track, then register the abstract in the **Main Track portal** by May 4. Do not register in E&D as a placeholder — the portals are separate and you cannot transfer.
+**Immediate action required:** Decide to pivot to Main Track, then register the abstract in the **Main Track portal** by May 4. Do not register in E&D as a placeholder — the portals are separate and you cannot transfer. — ✅ Track decided: Main Track (April 24). Abstract registration: awaiting Tianyu Shi's guidance on OpenReview process.
 
 ---
 
