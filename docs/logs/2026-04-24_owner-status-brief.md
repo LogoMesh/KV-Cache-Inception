@@ -505,7 +505,7 @@ These are unblocked paper edits that don't depend on code fixes or experiment re
 
 ---
 
-### G1. Add Three Limitations Caveats (Claims 12, 13, 14)
+### G1. Add Three Limitations Caveats (Claims 12, 13, 14) — ✅ APPLIED (April 24, current session): Three sentences added to §7 Limitations at tex:553. Flagged [REVISION | G1 | 2026-04-24] for audit. See session log for exact text.
 **File:** [docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex](../NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex)
 **Location:** §7 Limitations, ~line 476
 

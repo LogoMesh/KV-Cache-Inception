@@ -231,3 +231,50 @@ Three rounds of edits applied to `docs/max-briefing-2026-04-21.md`:
 1. PROPOSED experiment scope pivot section added at top (labeled as proposal pending Max's review)
 2. Inline notes: GAP-C1-04 now Phase B only; G2 incoming citation key change
 3. Correction: inline note in "Where We Are" section clarifying contribution-3 OEI section is stale (paper changed Eq. 10 to delta-based formula), while contribution-1 and contribution-2 remain accurate gap analyses.
+
+---
+
+## Session Continuation — Brief Update + Paper Text Edits (April 24, new session post-compact)
+
+### Context
+
+New Claude session started from the compacted handoff. Josh's instruction: review the full session log before touching anything; then proceed carefully, one edit at a time.
+
+Files read at session start: `docs/logs/2026-04-24_session-log.md` (full), `docs/logs/2026-04-24_owner-status-brief.md` (full, 683 lines).
+
+---
+
+### Owner-Status-Brief Update (commit b15c4e9)
+
+Applied 23 inline-only notes to `docs/logs/2026-04-24_owner-status-brief.md` reflecting all decisions from the revised experiment strategy. Per the inline-only rule, every note was appended to an existing line — no new lines added. Sections updated:
+
+| Section | Change applied |
+|---|---|
+| §0.1 (line 18) | Critical path revised: gpt-oss-20b and H100 removed as submission gates; new path is B3+B4+B5 → Exp 1 (1B+3B, RTX 3060) + Exp 2 (1B, Option 2) |
+| §0.3 (line 36) | Heading marked Phase B Only; submission uses Llama 3.2 1B+3B |
+| §0.4 item 12 (line 87) | License corrected to "Llama 3.2 Community License"; gpt-oss-20b noted as Phase B only |
+| §A2 (lines 155, 170) | Heading and "Decision needed" paragraph both marked ✅ DECIDED with full scope |
+| §B1 (lines 206, 208) | Heading and Severity line both marked Phase B Only |
+| §B7 (line 342) | Marked ✅ DECIDED: Option 2 (latent signal quality per compute unit) |
+| §D (line 424) | D1+D2+D3 Phase B Only; D4 still potentially needed as paper text fix |
+| §E (lines 467, 472, 473, 474) | Section heading + three H100 experiment steps annotated/revised |
+| Sequential Summary (9 lines) | A2, B7, B1, D1, D2, D3, H100 blocks, E sequence — all annotated with decisions |
+
+---
+
+### G1 — Three Limitations Caveats Applied
+
+**File:** `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
+**Location:** §7 Limitations, line 553 (end of paragraph) + line 554 (revision marker)
+**Status:** Applied, flagged `[REVISION | G1 | 2026-04-24]` for audit
+
+Three sentences appended to the end of the existing Limitations paragraph, after the existing "Fourth…" sentence. The existing text was not modified — only extended. The three additions:
+
+- **Claim 12 (σ_H confound risk):** "Fifth, $\sigma_H$ may conflate hallucination pressure, mode-collapse, and strategic masking under corrective pressure unless discriminant controls are applied; the extension from hallucination association to instrumentally rational deception is a testable assumption rather than a settled equivalence."
+- **Claim 13 (OEI false negatives):** "Sixth, OEI may produce false negatives if deceptive redistribution is nonlinear or manifold-structured rather than concentrated along linear null-space directions, in which case $\text{OEI}\to 0$ while the model still evades the linear monitor."
+- **Claim 14 (evidence burden):** "Finally, the proposed framework requires an explicit validation chain linking continuous latent interventions to discrete deceptive-intent outcomes; Phase~B experiments are designed to provide this evidence but have not been run at time of submission."
+
+**Note on Claim 12 and existing text:** The existing "Third" item in Limitations already partially covers the σ_H/deception assumption ("open theoretical liability"). The new "Fifth" sentence adds the specific failure-mode enumeration (hallucination, mode-collapse, masking) and the discriminant-controls framing, which the existing sentence does not include. The audit should verify there is no redundancy that weakens either sentence.
+
+**Revision marker in TeX:** `% [REVISION | G1 | 2026-04-24 | Claims 12+13+14 added to §7 Limitations — pending audit]`
+To find all revision markers: `grep -n "REVISION" docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
