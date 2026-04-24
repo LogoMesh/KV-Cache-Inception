@@ -70,6 +70,8 @@ Two major workstreams completed today in parallel:
 
 2. **Code-to-paper gap analysis (your three contribution docs):** These are excellent. Every gap is correctly identified, well-located, and the severity assignments hold up. They match and extend the citation audit findings. Good work.
 
+   > **⚠️ NOTE (April 24):** `contribution-1-telemetry-matrix.md` and `contribution-2-reversible-mcts.md` are still accurate as gap analyses. `contribution-3-orthogonal-escape.md` is **partially stale** — the paper has changed Eq. 10 (OEI formula) since this doc was written. See the first UPDATE block above for the new definition. The old formula in contribution-3 (`OEI = ‖Proj_Null(P)(h_steered)‖₂ / ‖Proj_Null(P)(h_base)‖₂`, range [0, ∞), OEI > 1 = escape) no longer matches the paper or the code's intended direction. The gaps listed in contribution-3 are still real, but any reasoning that references OEI semantics or range should be checked against the current paper definition before use.
+
 The two streams agree on several key issues, which raises confidence — described below.
 
 ---
