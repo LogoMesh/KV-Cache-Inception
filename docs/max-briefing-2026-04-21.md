@@ -5,6 +5,47 @@
 
 ---
 
+## PROPOSED — April 24, 2026 (Session Continuation): Experiment Scope Pivot
+
+> **This is a proposal from Josh and Claude. It has not been finalized. Review it with your agent, scrutinize the reasoning, and weigh in before treating it as decided.**
+
+**In a nutshell:** The paper sits at 10 pages against a 9-page hard limit, and the original plan required gpt-oss-20b on H100 as a submission-time dependency — which introduced unresolved MoE monitoring gaps, unconfirmed H100 allocation, and a precision mismatch between the paper's memory claims and the model's actual quantization format (MXFP4 vs. bf16), all with no slack in a 12-day window. The proposed re-scope targets Llama 3.2 1B and 3B only, both of which run on the local RTX 3060, eliminating the H100 dependency entirely for May 6. gpt-oss-20b would become the Phase B target (post-submission), not a submission blocker.
+
+**Your assignment (Priorities 1–3) is unchanged.** GAP-C1-02, GAP-C1-03, and GAP-C1-11 are still required before experiments run — they fix the telemetry signal that Experiment 1 measures, and they apply at any model scale. What changed is the model the experiments target.
+
+---
+
+### Proposed Experiment Scope (April 24 — Pending Final Agreement)
+
+**Models in scope for May 6 submission:** `meta-llama/Llama-3.2-1B-Instruct` and `meta-llama/Llama-3.2-3B-Instruct`. Both run on the RTX 3060 12GB.
+
+**License confirmed:** Llama 3.2 Community License — academic research and publication explicitly permitted. Attribution: cite the model in the paper and declare the license in NeurIPS checklist item 12.
+
+**Experiments in scope for submission:**
+
+| Experiment | Model | Hardware | Status |
+|---|---|---|---|
+| Theorem 1 validation (reversibility) | Llama 3.2 1B | RTX 3060 | ✅ Already done — `measure_lipschitz_drift.py`, 200 cycles, FP32 accumulator inf norm = 0.00e+00 |
+| Experiment 1 — OEI α-sweep | Llama 3.2 1B + 3B | RTX 3060 | Blocked on B3 (OEI logging), B4 (graders wired), B5 (analysis script) |
+| Experiment 2 — Latent signal quality (scoped) | Llama 3.2 1B | RTX 3060 | B7 resolved as Option 2 — paper text rewrite only, no new code needed |
+
+**Experiments cut from §5 (moved to a Future Work paragraph in the paper):**
+- Experiment 3 (Memory Efficiency) — requires sparse accumulator fixes not yet implemented (GAP-C2-03+04)
+- Experiment 4 (Evaluation Reproducibility) — no script, no plan
+- Experiment 5 (Cross-Model Transfer) — Procrustes alignment not implemented
+
+**Paper sections being cut to reach the 9-page limit:**
+- §8 Timeline and Milestones — cut entirely (this was a research proposal artifact, not a section that belongs in a submitted paper)
+- Experiments 3–5 descriptions from §5 — compressed to a Future Work paragraph
+- Scaling narrative (1B → 7B → 20B) — replaced by a 1B → 3B local comparison
+- Croissant/dataset content — reduced to one sentence in Future Work
+
+**B7 resolved — Option 2:** Experiment 2 is reframed from full-response ASR comparison against GCG/MPA/DAMON to a latent signal quality comparison per compute unit. This sidesteps a structural mismatch: our MCTS evaluates one token's hidden state per node before rolling back, while GCG/MPA/DAMON generate full responses per node — comparing their ASR figures in the same column is a category error a reviewer familiar with either system would flag immediately. Option 2 scopes the claim down to what our implementation actually measures. No code changes needed; only the paper text at §5 Experiment 2 is being rewritten.
+
+**gpt-oss-20b:** Under this proposal, stays in the paper as the intended Phase B target for 20B-scale validation but is not a submission-time experiment dependency. See the updated note in the Critical Issues section below.
+
+---
+
 ## UPDATE — April 24, 2026
 
 Two things changed since this briefing was written. Your assignment (Priorities 1–3 and the HOLD on GAP-C1-01) is unchanged.
@@ -163,6 +204,8 @@ The core result (no b^d scaling) is still correct and is the main contribution. 
 **Phase B blocker (GAP-C1-04):**
 For MoE models like `gpt-oss-20b`, `score_per_layer()` returns `[0.5] * n` — the entire bottom-up channel is neutralized. This must be fixed before Lambda spin-up. Flag it explicitly when you brief Josh on your PR.
 
+> **⚠️ UPDATE (April 24, session continuation):** GAP-C1-04 is now Phase B work — not a May 6 submission blocker. The submission experiments run on Llama 3.2 1B and 3B (RTX 3060 only); gpt-oss-20b is the Phase B target. You do not need to fix MoE monitoring before the submission deadline. Still flag it in your PR brief so Josh can track it for Phase B planning.
+
 **Experiment 1 is not fully testable yet (GAP-C3-04, GAP-C3-05):**
 The Orthogonal Escape hypothesis requires measuring textual compliance rate (does the model APPEAR more aligned as alpha increases?) — but `graders.py` is not wired into the MCTS loop. There is also no analysis script that loads the MCTS JSON and performs the actual hypothesis test. These are Phase 3 priorities.
 
@@ -182,6 +225,7 @@ Critical fixes Josh will make in the paper, in priority order.
 4. ⏳ **§6 Proposition** — Revise memory complexity claim. O(M_KV + ~50MB) is wrong. Correct figure is approximately 4×M_KV (live cache + clone + full-shape FP32 accumulators). The core result (no b^d scaling) remains valid. **HOLD block added (GAP-C2-03 + GAP-C2-04) — paper fix deferred to Phase 3 pending sparse accumulator implementation.**
 
 5. ✅ **Table 2 + §2.2** — ~~Add citation for CAA baseline.~~ **Done — `\cite{panickssery2023steering}` added.**
+   > **⚠️ UPDATE (April 24):** Josh's G2 paper fix will replace this citation key with `\cite{rimsky2024steering}` (ACL 2024 published name: Nina Rimsky). The old key `panickssery2023steering` will be removed. No action needed from you — just don't reference the old key in any new code comments.
 
 6. ⏳ **§4.1** — Qualify RepE implementation: code uses difference-in-means, not PCA. Either update the text or update the code before submission. **HOLD block added (GAP-C1-05) — draft fix quoted in paper; code fix deferred to Phase 3. Code fix owner: Max (whitebox.py).**
 
