@@ -224,3 +224,10 @@ Added note that G2 will replace `\cite{panickssery2023steering}` with `\cite{rim
 - `docs/logs/2026-04-24_owner-status-brief.md` — the harder update. Many sections reference H100, gpt-oss-20b, and the 5-experiment plan. Sections requiring changes: §0.1 (critical path), §0.3 (gpt-oss-20b status), §A2 (experiment scope decision), §B1 (MoE monitoring priority), §B7 (mark decided — Option 2), §D (sparse accumulators → Phase B), §E (experiment sequence), Sequential Summary (major restructure), checklist table item 12 (Llama 3.2 Community License).
 - `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex` — paper revisions (G1–G4 text fixes, §8 cut, §5 reframe, Experiment 2 rewrite).
 - G1–G4 paper text fixes are still unblocked and can begin once the brief is updated.
+
+### Max Briefing Final State (committed b55571a)
+
+Three rounds of edits applied to `docs/max-briefing-2026-04-21.md`:
+1. PROPOSED experiment scope pivot section added at top (labeled as proposal pending Max's review)
+2. Inline notes: GAP-C1-04 now Phase B only; G2 incoming citation key change
+3. Correction: inline note in "Where We Are" section clarifying contribution-3 OEI section is stale (paper changed Eq. 10 to delta-based formula), while contribution-1 and contribution-2 remain accurate gap analyses.
