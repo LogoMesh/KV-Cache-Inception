@@ -571,7 +571,7 @@ These are low-risk edits. Read the surrounding Limitations text at ~line 476 bef
 
 ---
 
-### G4. Supplement or Replace Deroy Citation
+### G4. Supplement or Replace Deroy Citation — ✅ NO-OP (April 24, current session): Deroy does not appear anywhere in the TeX — no \cite{} in body text, no \bibitem in bibliography. All alignment faking claims already cite Greenblatt (2024), Hubinger (2024), or Gupta & Jenner (2025). No action required.
 **File:** [docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex](../NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex)
 **Severity:** Medium — Deroy is now confirmed peer-reviewed, but the venue (Controversies of AI Society, Copenhagen, April 9–10, 2026) is a social-science-adjacent conference that lacks the empirical weight NeurIPS reviewers expect for a threat model citation.
 

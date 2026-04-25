@@ -323,3 +323,13 @@ To find all revision markers: `grep -n "REVISION" docs/NeurIPS/04.18.2026-NeurIP
 **Revision markers in TeX:**
 - Line 112: `% [REVISION | G3 | 2026-04-24 | CRSM removed entirely (unreviewed prototype); COCONUT alone cited; "Both" → "This" — pending audit]`
 - Line 667: `% [REVISION | G3 | 2026-04-24 | crsm2025 bibitem removed entirely — unreviewed prototype, no peer-reviewed venue — pending audit]`
+
+---
+
+### G4 — No-Op (Deroy Not Present in TeX)
+
+**Status:** No action taken.
+
+Searched the full TeX for `deroy`, `Deroy`, and all `\cite{}` occurrences in alignment faking sections. Deroy does not appear anywhere in the file — no body text citation, no bibliography entry. The brief's G4 task ("wherever Deroy is the sole citation, add `\cite{greenblatt2024alignment}`") has no application site.
+
+All alignment faking claims in the paper are already anchored to the correct citations: `\cite{greenblatt2024alignment}` (Anthropic, 2024), `\cite{hubinger2024sleeper}` (Sleeper Agents), and `\cite{gupta2025rlobfuscation}` (RL-Obfuscation). Brief and sequential summary updated to reflect no-op status.
