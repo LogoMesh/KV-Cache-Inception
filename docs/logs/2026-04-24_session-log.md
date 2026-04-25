@@ -278,3 +278,26 @@ Three sentences appended to the end of the existing Limitations paragraph, after
 
 **Revision marker in TeX:** `% [REVISION | G1 | 2026-04-24 | Claims 12+13+14 added to §7 Limitations — pending audit]`
 To find all revision markers: `grep -n "REVISION" docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
+
+---
+
+### G2 — CAA Citation Fix Applied
+
+**File:** `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
+**Locations:** Table 2 cell (line 435) + bibliography (line 676)
+**Status:** Applied, flagged `[REVISION | G2 | 2026-04-24]` for audit
+
+**What was found vs. what the brief described:** The brief said Table 2 had plain text with no `\cite{}`. The actual file had `\cite{panickssery2023steering}` already present, but with wrong author ordering (Panickssery & Rimsky), wrong year (2023 arXiv, not 2024 ACL), and a stale bibitem pointing to the arXiv preprint.
+
+**Changes applied:**
+
+1. **Table 2 cell (line 435):** `Panickssery \& Rimsky et al., 2023~\cite{panickssery2023steering}` → `Rimsky et al., 2024~\cite{rimsky2024steering}`
+
+2. **Bibliography (line 676):** Replaced entire `panickssery2023steering` entry with:
+   - Key: `rimsky2024steering`
+   - First author: N. Rimsky (published name, version of record)
+   - Full author list: N. Rimsky, N. Gabrieli, J. Schulz, M. Tong, E. Hubinger, A. Turner
+   - Venue: ACL 2024, Volume 1 Long Papers, pages 15504–15522, Bangkok, Thailand
+   - (Previously pointed to arXiv:2312.06681, 2023 — now points to published venue)
+
+**Revision marker in TeX:** `% [REVISION | G2 | 2026-04-24 | panickssery2023steering replaced with rimsky2024steering (ACL 2024) — pending audit]`

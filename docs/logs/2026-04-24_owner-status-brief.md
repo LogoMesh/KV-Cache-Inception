@@ -519,7 +519,7 @@ These are low-risk edits. Read the surrounding Limitations text at ~line 476 bef
 
 ---
 
-### G2. Fix the CAA Citation — Add Proper `\bibitem` for Rimsky et al. 2024
+### G2. Fix the CAA Citation — Add Proper `\bibitem` for Rimsky et al. 2024 — ✅ APPLIED (April 24, current session): Table 2 cell (tex:435) updated to `Rimsky et al., 2024~\cite{rimsky2024steering}`; `panickssery2023steering` bibitem replaced with `rimsky2024steering` (ACL 2024, full author list, pages 15504–15522). Flagged [REVISION | G2 | 2026-04-24] for audit.
 **File:** [docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex](../NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex)
 **Severity:** High — Table 2 currently has plain text `"Rimsky et al., 2024"` with no `\cite{}` and no `\bibitem`. A NeurIPS reviewer checking the bibliography will catch this immediately.
 
