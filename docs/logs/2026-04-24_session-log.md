@@ -301,3 +301,25 @@ To find all revision markers: `grep -n "REVISION" docs/NeurIPS/04.18.2026-NeurIP
    - (Previously pointed to arXiv:2312.06681, 2023 — now points to published venue)
 
 **Revision marker in TeX:** `% [REVISION | G2 | 2026-04-24 | panickssery2023steering replaced with rimsky2024steering (ACL 2024) — pending audit]`
+
+---
+
+### G3 — CRSM Removed Entirely
+
+**File:** `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
+**Locations:** Line 81 (Contributions), line 111 (Related Work), line 667 (bibliography)
+**Status:** Applied, flagged `[REVISION | G3 | 2026-04-24]` for audit
+
+**Decision:** Removed entirely rather than downgraded to a software footnote. COCONUT (ICLR 2025) alone is sufficient to establish the contrast with hidden-state traversal methods. Keeping an unreviewed prototype — even in a footnote — draws reviewer attention to an unvetted source without strengthening any claim.
+
+**Changes applied:**
+
+1. **Line 81 (Contributions):** Removed `, crsm2025` from cite list. `~\cite{hao2025coconut, crsm2025}` → `~\cite{hao2025coconut}`.
+
+2. **Line 111 (Related Work — §Continuous Latent Reasoning):** Removed the CRSM sentence entirely. "Both validate the viability of continuous latent search, but operate via recurrent hidden-state traversal..." → "This validates the viability of continuous latent search, but operates via recurrent hidden-state traversal..." ("Both" → "This" required because only COCONUT remains as the referent.)
+
+3. **Bibliography:** Removed entire `\bibitem{crsm2025}` entry (Pomilon Intelligence Lab, GitHub, 2025). Replaced with revision marker comment.
+
+**Revision markers in TeX:**
+- Line 112: `% [REVISION | G3 | 2026-04-24 | CRSM removed entirely (unreviewed prototype); COCONUT alone cited; "Both" → "This" — pending audit]`
+- Line 667: `% [REVISION | G3 | 2026-04-24 | crsm2025 bibitem removed entirely — unreviewed prototype, no peer-reviewed venue — pending audit]`

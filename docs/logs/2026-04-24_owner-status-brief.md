@@ -549,7 +549,7 @@ These are low-risk edits. Read the surrounding Limitations text at ~line 476 bef
 
 ---
 
-### G3. Downgrade CRSM to a Software Citation
+### G3. Downgrade CRSM to a Software Citation — ✅ APPLIED (April 24, current session): CRSM removed entirely (not downgraded). Cite removed from tex:81 (Contributions) and sentence removed from tex:111 (Related Work); "Both" → "This" to fix referent; bibitem removed. COCONUT alone cited. Flagged [REVISION | G3 | 2026-04-24] for audit.
 **File:** [docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex](../NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex)
 **Severity:** High — citing an unreviewed experimental prototype as primary literature is a reviewer red flag at NeurIPS.
 
