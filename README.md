@@ -2,8 +2,6 @@
 
 **Reversible Monte Carlo Tree Search in Latent Space for Detecting and Stress-Testing Alignment Faking in Large Language Models**
 
-*NeurIPS 2026 Datasets & Benchmarks Track submission*
-
 **Paper Outline Here:** *https://www.overleaf.com/read/gcfjswwqwkhq#1ac1ec*
 
 **In-Repo Outline Here:** *docs\NeurIPS\04.18.2026-NeurIPS-Research-Proposal-2.tex*
