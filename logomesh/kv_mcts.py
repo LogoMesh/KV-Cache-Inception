@@ -230,15 +230,20 @@ class FP32Accumulator:
     v_base: list[Any]   # baseline V per layer
     k_accum: list[Any]  # A_K^(l) in FP32
     v_accum: list[Any]  # A_V^(l) in FP32
+    model: Any = None   # optional model handle for d_model → head_dim projection via W_K / W_V
 
     @classmethod
-    def from_kv_cache(cls, past_key_values: Any) -> "FP32Accumulator":
+    def from_kv_cache(cls, past_key_values: Any, model: Any = None) -> "FP32Accumulator":
         """Initialise accumulators from the root KV cache.
 
         Clones the baseline tensors and creates zero FP32 accumulators.
 
         Args:
             past_key_values: Output of a model forward pass (use_cache=True).
+            model: Optional HF causal LM. When provided, residual-stream-shaped
+                   steering vectors (shape [d_model]) are projected through the
+                   per-layer W_K / W_V weights into per-head KV cache space; without
+                   it, only same-last-dim direct broadcasts are valid.
 
         Returns:
             FP32Accumulator ready for apply/rollback cycles.
@@ -252,7 +257,7 @@ class FP32Accumulator:
             v_base.append(v.clone())
             k_accum.append(torch.zeros_like(k, dtype=torch.float32))
             v_accum.append(torch.zeros_like(v, dtype=torch.float32))
-        return cls(k_base=k_base, v_base=v_base, k_accum=k_accum, v_accum=v_accum)
+        return cls(k_base=k_base, v_base=v_base, k_accum=k_accum, v_accum=v_accum, model=model)
 
     def apply(
         self,
@@ -282,9 +287,11 @@ class FP32Accumulator:
             dk = torch.from_numpy(dk_vectors[l_idx]).to(device=k_live.device, dtype=torch.float32)
             dv = torch.from_numpy(dv_vectors[l_idx]).to(device=v_live.device, dtype=torch.float32)
 
-            # Broadcast dk/dv to match cache shape [..., seq, d_head] or similar
-            dk = _broadcast_to(dk, k_live.shape)
-            dv = _broadcast_to(dv, v_live.shape)
+            # Bring dk/dv into the cache layout. When the steering vector is in
+            # residual-stream space (d_model) and the cache is per-head (head_dim),
+            # _shape_match_kv routes through W_K^(ℓ) / W_V^(ℓ).
+            dk = _shape_match_kv(dk, k_live, self.model, l_idx, "k")
+            dv = _shape_match_kv(dv, v_live, self.model, l_idx, "v")
 
             self.k_accum[l_idx].add_(alpha * dk)
             self.v_accum[l_idx].add_(alpha * dv)
@@ -320,8 +327,8 @@ class FP32Accumulator:
             dk = torch.from_numpy(dk_vectors[l_idx]).to(device=k_live.device, dtype=torch.float32)
             dv = torch.from_numpy(dv_vectors[l_idx]).to(device=v_live.device, dtype=torch.float32)
 
-            dk = _broadcast_to(dk, k_live.shape)
-            dv = _broadcast_to(dv, v_live.shape)
+            dk = _shape_match_kv(dk, k_live, self.model, l_idx, "k")
+            dv = _shape_match_kv(dv, v_live, self.model, l_idx, "v")
 
             self.k_accum[l_idx].sub_(alpha * dk)
             self.v_accum[l_idx].sub_(alpha * dv)
@@ -362,9 +369,97 @@ def _broadcast_to(vec, target_shape) -> Any:
                 vec = vec.unsqueeze(0)
             vec = vec.expand(target_shape)
         else:
-            # Shape mismatch — return zeros of correct shape (safe no-op)
+            # Shape mismatch — caller should route through _project_residual_to_kv_shape
+            # when projecting d_model → head_dim. Reaching this branch means neither
+            # direct broadcast nor projection applied; preserve old no-op semantics.
+            logger.warning(
+                "_broadcast_to: shape mismatch %s -> %s; returning zeros (steering will be a no-op)",
+                tuple(vec.shape), tuple(target_shape),
+            )
             return torch.zeros(target_shape, dtype=vec.dtype, device=vec.device)
     return vec
+
+
+def _project_residual_to_kv_shape(
+    vec: Any,
+    target_shape: tuple,
+    model: Any,
+    layer_idx: int,
+    proj_kind: str,
+) -> Any:
+    """Project a residual-stream-shaped (d_model,) vector to per-head KV cache shape.
+
+    Used when the steering vector lives in residual-stream space (d_model) but the
+    KV cache is laid out per head (kv_heads, head_dim). Multiplies by W_K^(ℓ) or
+    W_V^(ℓ) (shape [kv_heads*head_dim, d_model]) and reshapes per head, then expands
+    across batch and seq dims to match target_shape.
+
+    Args:
+        vec:         1-D residual-direction tensor, shape [d_model].
+        target_shape: KV cache layer shape (e.g. [batch, kv_heads, seq, head_dim]).
+        model:       The HF causal LM whose `.model.layers[ℓ].self_attn` exposes
+                     k_proj / v_proj weights.
+        layer_idx:   ℓ — index into model.model.layers.
+        proj_kind:   "k" or "v" — selects k_proj.weight or v_proj.weight.
+
+    Returns:
+        Tensor with shape == target_shape, dtype/device == vec dtype/device.
+    """
+    import torch
+
+    if proj_kind == "k":
+        weight = model.model.layers[layer_idx].self_attn.k_proj.weight
+    elif proj_kind == "v":
+        weight = model.model.layers[layer_idx].self_attn.v_proj.weight
+    else:
+        raise ValueError(f"proj_kind must be 'k' or 'v', got {proj_kind!r}")
+
+    # Project under no_grad and detach: model weights have requires_grad=True, so
+    # an unguarded matmul builds an autograd graph through k_accum/k_live, which
+    # both leaks memory across MCTS iterations and makes k_live non-leaf
+    # (breaking later deepcopy(past_kv) in _kv_eval_cache).
+    # Match dtypes by casting vec into the weight's dtype (cheap), then cast the
+    # small matmul output back to vec's dtype — avoids materialising an FP32 copy
+    # of the (kv_heads*head_dim, d_model) weight matrix per call.
+    with torch.no_grad():
+        w = weight.detach()
+        flat = (w @ vec.to(dtype=w.dtype, device=w.device)).to(dtype=vec.dtype, device=vec.device)
+
+        if len(target_shape) == 4:
+            kv_heads = target_shape[1]
+            head_dim = target_shape[3]
+            per_head = flat.reshape(kv_heads, head_dim)
+            return per_head.unsqueeze(0).unsqueeze(2).expand(target_shape).contiguous()
+        if len(target_shape) == 3:
+            kv_heads = target_shape[0]
+            head_dim = target_shape[2]
+            per_head = flat.reshape(kv_heads, head_dim)
+            return per_head.unsqueeze(1).expand(target_shape).contiguous()
+
+    logger.warning(
+        "_project_residual_to_kv_shape: unsupported target_shape %s; returning zeros",
+        tuple(target_shape),
+    )
+    return torch.zeros(target_shape, dtype=vec.dtype, device=vec.device)
+
+
+def _shape_match_kv(vec, target_tensor, model, layer_idx: int, proj_kind: str) -> Any:
+    """Bring vec into target_tensor's shape, projecting d_model → head_dim if needed.
+
+    If vec already matches target_tensor's last-dim, falls through to _broadcast_to.
+    Otherwise, when a model handle is available, projects through W_K^(ℓ) / W_V^(ℓ).
+    """
+    if (
+        model is not None
+        and hasattr(vec, "dim")
+        and vec.dim() == 1
+        and len(target_tensor.shape) > 1
+        and vec.shape[0] != target_tensor.shape[-1]
+    ):
+        return _project_residual_to_kv_shape(
+            vec, tuple(target_tensor.shape), model, layer_idx, proj_kind
+        )
+    return _broadcast_to(vec, target_tensor.shape)
 
 
 # ---------------------------------------------------------------------------
@@ -522,8 +617,12 @@ class ReversibleMCTS:
             n_layers = len(_extract_kv_tensors(past_kv))
             steer_layer = max(0, n_layers // 2)
 
-        # Build FP32 accumulator from root KV cache
-        accumulator = FP32Accumulator.from_kv_cache(past_kv)
+        # Build FP32 accumulator from root KV cache. Pass the model handle so the
+        # accumulator can project residual-stream-shaped steering vectors
+        # (d_model) through W_K^(ℓ) / W_V^(ℓ) into per-head KV space.
+        accumulator = FP32Accumulator.from_kv_cache(
+            past_kv, model=getattr(self._oracle, "_model", None)
+        )
 
         # Read initial hidden state for OEI baseline
         initial_hs = self._oracle.get_hidden_states()
