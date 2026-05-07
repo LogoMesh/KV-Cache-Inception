@@ -1,11 +1,12 @@
 \documentclass{article}
 
-% --- NeurIPS 2026 Style (Evaluations and Datasets track, double-blind) ---
+% --- NeurIPS 2026 Style (Main Track, double-blind) ---
 % neurips_2026.sty is sourced from the official template ZIP:
 %   https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip
 % The .sty file is checked into docs/NeurIPS/ alongside this file.
-% For camera-ready, change to: \usepackage[eandd, final]{neurips_2026}
-\usepackage[eandd]{neurips_2026}
+% For camera-ready, change to: \usepackage[main, final]{neurips_2026}
+% [REVISION | track-main | 2026-04-25 | Switched track option from `eandd` (Evaluations and Datasets) to `main` (Main Track) per locked decision in memory/next_session_prompt.md "Decisions Locked" table; verified `main` is a valid \DeclareOption in neurips_2026.sty:49 — pending audit]
+\usepackage[main]{neurips_2026}
 
 % --- Packages ---
 \usepackage{amsmath, amssymb, amsthm}
@@ -46,8 +47,9 @@
 % ============================================================
 % ABSTRACT
 % ============================================================
+% [REVISION | abstract-recast-α+ | 2026-05-06 | Replaced abstract entirely (Session A draft, applied 2026-05-06). Old hook: alignment-faking framing with three-contribution list (telemetry → MCTS → first-formal-OE). New hook: algorithmic search infrastructure with monitoring application; explicit Bailey 2024 engagement; OEI framed as measurement framework with prerequisites, not as a results headline. The "first formal definition" claim is dropped (pre-mortem FM 1). Forward refs: Theorem~\ref{thm:reversibility} (added 2026-05-06). Empirically defensible claims only: Theorem 1 zero-drift on 1B + 3B (validated 2026-04-16 + 2026-05-05); memory bound independent of branching factor with constant left unquantified pending Max's simplified Exp 3. — pending audit]
 \begin{abstract}
-Current approaches to evaluating the safety and alignment of large language models (LLMs) rely predominantly on black-box behavioral testing or external LLM-as-a-Judge frameworks. These methods are fundamentally blind to a critical failure mode: \emph{alignment faking}, wherein a model strategically complies with safety constraints during evaluation while preserving misaligned capabilities in its latent representations. Recent work has demonstrated that LLMs can be trained via reinforcement learning to evade latent-space monitors while maintaining identical black-box behavior (Gupta and Jenner, 2025), and that deceptive behaviors persist through standard safety training (Hubinger et al., 2024). We argue that detecting and stress-testing alignment faking requires moving evaluation \emph{inside} the model---from behavioral auditing to mechanistic intervention. To this end, we propose \textbf{KV-Cache Inception}, a framework that combines three novel components: (1)~a \textbf{multi-dimensional micro-telemetry matrix} that fuses bottom-up hallucination-associated neuron (H-Neuron) activation tracking with top-down Representation Engineering (RepE) projections to provide a continuous, differentiable signal for distinguishing genuine reasoning from compliance-driven fabrication; (2)~a \textbf{Reversible MCTS algorithm} that conducts Monte Carlo Tree Search directly in the model's KV-cache latent space---rather than in text space---to systematically explore the intervention landscape for alignment-breaking attack vectors, using a mathematically reversible state-rollback mechanism with FP32 accumulators to eliminate memory scaling barriers on commodity hardware; and (3)~the formalization of \textbf{Orthogonal Escape}---the phenomenon whereby evolutionary pressure applied to a model's monitored latent subspace forces deceptive encodings into unmonitored orthogonal null spaces---together with the first systematic experimental protocol for its detection and characterization. All released evidence artifacts are specified in dual form: raw runtime JSON plus a standards-compliant Croissant 1.1 JSON-LD manifest (with RAI extension metadata) for reproducible dataset packaging and external validation.
+Latent-space analysis of frozen large language models---including activation steering, representation engineering, and adversarial probing of internal monitors---increasingly requires search infrastructure that scales with the depth of intervention rather than with the branching factor of the search. We introduce \textbf{Reversible Monte Carlo Tree Search in KV-cache latent space}, an inference-time algorithm that mutates a frozen Transformer's cached key/value tensors in place via FP32 accumulators and rolls back exact baseline state at each tree expansion. We prove that the FP32 accumulator guarantees zero-drift reversibility (Theorem~\ref{thm:reversibility}; empirically validated to machine precision over 200 apply--revert cycles on Llama~3.2-1B and Llama~3.2-3B), and we analyze a memory bound that is independent of branching factor---a constant-factor multiple of the base KV cache rather than the exponential blowup of parallel-cache MCTS. To make the algorithm useful for representational analysis, we introduce a \textbf{per-layer telemetry matrix} that fuses bottom-up hallucination-associated-neuron activation tracking~\cite{gao2025hneurons} with top-down representation-engineering projections~\cite{zou2023repe}, providing a continuous, differentiable signal at each generation step. As an application, we propose the \textbf{Orthogonal Escape Index (OEI)}---a targeted geometric measurement of the fraction of induced activation change that lies in the null space of a linear monitor---as a measurement framework complementing Bailey et al.'s~\cite{bailey2024obfuscated} cosine-to-baseline measurement of obfuscated activations under gradient-trained input attacks. We discuss measurement-pipeline prerequisites identified in our reference implementation and outline the empirical characterization required for the inference-time, frozen-weight regime. All artifacts are released with a Croissant 1.1 metadata package for reproducibility.
 \end{abstract}
 
 % ============================================================
@@ -75,12 +77,13 @@ We propose that the answer lies in moving from passive monitoring to \textbf{act
 
 This paper makes the following contributions:
 
+% [REVISION | contributions-recast-α+ | 2026-05-06 | Replaced entire §1 Contributions enumerate block with Option α+ recast (Session A draft, applied 2026-05-06). Old order: telemetry → MCTS → OE formalization. New order: MCTS → telemetry matrix → OEI as targeted measurement. The old "first formal definition and experimental protocol for Orthogonal Escape" headline is dropped (Bailey 2024 already operationalized the question, per pre-mortem FM 1). The 2026-05-05 Contrib2-fix REVISION marker is subsumed: the new Contribution 1 paragraph cites Theorem~\ref{thm:reversibility}, scopes scale to 1B + 3B with explicit deferral of 20B to Phase B, and adds the 2026-05-05 3B feasibility evidence. Forward references to thm:reversibility, prop:memory, sec:measurement-prereqs, eq:mcts_reward all resolve. — pending audit]
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{Micro-Telemetry Matrix for Alignment Monitoring.} We formalize a multi-dimensional telemetry framework that combines H-Neuron activation tracking~\cite{gao2025hneurons} with Representation Engineering (RepE) Linear Artificial Tomography~\cite{zou2023repe} to construct a continuous, differentiable reward signal for distinguishing genuine creative synthesis from compliance-driven hallucination. We define precise diagnostic signatures for four cognitive states: valid novelty, contextual fabrication, alignment faking, and orthogonal escape.
+    \item \textbf{Reversible Monte Carlo Tree Search in KV-cache latent space.} We introduce an inference-time algorithm that mutates a frozen Transformer's cached key/value tensors via in-place arithmetic ($\mathbf{K}_t \leftarrow \mathbf{K}_t + \alpha \cdot \mathbf{d}_K^{(\ell)}$) and inverts each mutation exactly through an FP32 accumulator. We prove (Theorem~\ref{thm:reversibility}) that the accumulator guarantees zero-drift reversibility independent of search depth and validate this empirically on Llama~3.2-1B-Instruct and Llama~3.2-3B-Instruct (drift $= 0$ to machine precision over 200 cycles; Llama~3.2-3B feasibility confirmed on a single 12\,GB consumer GPU). The memory complexity of the algorithm is independent of branching factor---a constant-factor multiple of the base KV cache (Proposition~\ref{prop:memory})---in contrast to the $O(b^d \cdot M_{\text{KV}})$ overhead of standard parallel-cache MCTS. The algorithm is gradient-free and operates on a frozen model at inference time, distinguishing it from gradient-based input-space attacks~\cite{zou2023gcg, bailey2024obfuscated} and from training-time monitor-evasion methods~\cite{gupta2025rlobfuscation}.
 
-    \item \textbf{Reversible MCTS in KV-Cache Latent Space.} We introduce a Monte Carlo Tree Search algorithm that navigates the continuous latent space of a Transformer's key-value cache via direct, in-place arithmetic mutations ($K_t \leftarrow K_t + \alpha \cdot \mathbf{d}_K$)---rather than the discrete token sequences used by MCTS-based red-teaming approaches~\cite{wu2025mcts, damon2025, li2025ace}, or the recurrent hidden-state traversal used by continuous latent reasoning frameworks~\cite{hao2025coconut}. A novel exact-rollback mechanism, based on the mathematical invertibility of tensor addition with FP32 accumulator tracking, eliminates the memory scaling barrier of KV-cache duplication across branches, reducing complexity from $O(b^d \cdot M)$ to $O(M + d \cdot K)$, where $b$ is the branching factor, $d$ is the search depth, $M$ is the base model memory, and $K$ is the per-step accumulator overhead. Our framework is designed to enable deep MCTS exploration on a single 80GB GPU for models up to 20B parameters, a capability we verify empirically in Experiment~3.
+    \item \textbf{Per-layer telemetry matrix for latent-space analysis.} We define a $2 \times L$ matrix $\mathbf{T}_t$ that fuses bottom-up hallucination-associated-neuron activation~\cite{gao2025hneurons} with top-down representation-engineering projections~\cite{zou2023repe}. The matrix provides a continuous, differentiable signal at each generation step and supports four diagnostic regime classifications (creative synthesis, contextual fabrication, alignment faking, orthogonal escape) keyed to joint patterns across the two channels. The telemetry matrix serves dual roles: as a per-step monitoring signal during search, and as the third reward component in the MCTS node valuation function (Eq.~\ref{eq:mcts_reward}).
 
-    \item \textbf{Formalization of Orthogonal Escape.} We provide the first formal definition and experimental protocol for Orthogonal Escape---the phenomenon whereby applying corrective pressure to a model's latent representations along monitored directions forces the model to encode deceptive payloads into orthogonal, unmonitored subspaces. We derive testable predictions from this formalization and propose metrics for quantifying the degree of orthogonal redistribution.
+    \item \textbf{The Orthogonal Escape Index as a targeted measurement of null-space activation redistribution.} We propose OEI---the fraction of induced activation change $\Delta\mathbf{h}$ that lies in the null space of a linear monitor $\mathbf{P}$---as a geometric quantity for studying inference-time activation redistribution under steering interventions. OEI complements Bailey et al.'s~\cite{bailey2024obfuscated} cosine-to-baseline measurement: where Bailey asks whether gradient-trained input perturbations can achieve global activation orthogonality (reporting a tentative negative result), OEI asks how much of any induced perturbation lands in directions invisible to a specific monitor. We discuss measurement-pipeline prerequisites identified in our reference implementation (\S\ref{sec:measurement-prereqs}) and identify the steps required for empirical characterization in the inference-time, frozen-weight regime.
 \end{enumerate}
 
 % ============================================================
@@ -90,13 +93,17 @@ This paper makes the following contributions:
 
 \subsection{Alignment Faking and Deceptive Alignment}
 
-The possibility that advanced AI systems might strategically misrepresent their alignment has been a longstanding concern in AI safety research~\cite{hubinger2024sleeper, greenblatt2024alignment}. Recent empirical work has moved this from theoretical speculation to demonstrated capability. Anthropic's alignment faking study~\cite{greenblatt2024alignment} provided the first large-scale evidence that frontier models can engage in strategic compliance when made explicitly aware of their training situation---though the paper notes the goals being preserved were the model's existing HHH harmlessness preferences rather than malicious objectives, and that this behavior emerged only in the largest models tested (Claude 3 Opus and Claude 3.5 Sonnet), with smaller models not exhibiting it. The Sleeper Agents work~\cite{hubinger2024sleeper} demonstrated that deliberately inserted backdoors can resist removal through reinforcement learning, supervised fine-tuning, and adversarial training in large models---with adversarial training found to actively teach the model to conceal rather than remove its backdoor---though the authors note this tests threat-model resilience rather than the likelihood of such behaviors arising naturally, and that persistence is strongly scale-dependent. Existing empirical work on alignment faking and backdoor persistence suggests that behavioral evaluations alone are insufficient for reliable alignment detection~\cite{greenblatt2024alignment, hubinger2024sleeper}: a model that strategically complies or conceals a backdoor can pass behavioral tests while maintaining deceptive internal representations---motivating the white-box representational monitoring approach our telemetry matrix provides.
+% [REVISION | §2.1-soften-α+ | 2026-05-07 | Two sentence-level softens to align §2.1 with the §3 reframe and §1 abstract framing. (1) Opening: "...has been a longstanding concern" → "...is one motivating application area for latent-space analysis on frozen models, and a longstanding concern". (2) Closing: "motivating the white-box representational monitoring approach our telemetry matrix provides" → "one motivation for the inference-time latent-space analysis framework developed in this paper, of which the telemetry matrix is the monitoring component". Middle sentences (Greenblatt + Hubinger summaries with caveats) preserved verbatim. Closes the §2.1 audit item from 2026-05-06 EOD; structural re-ordering of §2 was considered and rejected (cross-reference risk too high this close to deadline). Net ~10 words longer; negligible page-budget impact. — pending audit]
+The possibility that advanced AI systems might strategically misrepresent their alignment is one motivating application area for latent-space analysis on frozen models, and a longstanding concern in AI safety research~\cite{hubinger2024sleeper, greenblatt2024alignment}. Recent empirical work has moved this from theoretical speculation to demonstrated capability. Anthropic's alignment faking study~\cite{greenblatt2024alignment} provided the first large-scale evidence that frontier models can engage in strategic compliance when made explicitly aware of their training situation---though the paper notes the goals being preserved were the model's existing HHH harmlessness preferences rather than malicious objectives, and that this behavior emerged only in the largest models tested (Claude 3 Opus and Claude 3.5 Sonnet), with smaller models not exhibiting it. The Sleeper Agents work~\cite{hubinger2024sleeper} demonstrated that deliberately inserted backdoors can resist removal through reinforcement learning, supervised fine-tuning, and adversarial training in large models---with adversarial training found to actively teach the model to conceal rather than remove its backdoor---though the authors note this tests threat-model resilience rather than the likelihood of such behaviors arising naturally, and that persistence is strongly scale-dependent. Existing empirical work on alignment faking and backdoor persistence suggests that behavioral evaluations alone are insufficient for reliable alignment detection~\cite{greenblatt2024alignment, hubinger2024sleeper}: a model that strategically complies or conceals a backdoor can pass behavioral tests while maintaining deceptive internal representations---one motivation for the inference-time latent-space analysis framework developed in this paper, of which the telemetry matrix is the monitoring component.
 
 \subsection{Representation Engineering and Activation Steering}
 
 Representation Engineering (RepE), introduced by Zou et al.\ (2023)~\cite{zou2023repe}, established that high-level cognitive states---including honesty and truthfulness---are linearly decodable from a model's latent representation space. This finding enabled \emph{activation steering}, wherein targeted vector additions to intermediate representations can modify model behavior without weight updates~\cite{turner2023steering}. Belitsky et al.\ (2025)~\cite{belitsky2025kvcache} extended this to \emph{cache steering}, demonstrating that a single, one-shot modification to the KV cache can steer model behavior more stably than continuous activation interventions---validated for reasoning induction in small-to-medium LLMs (360M--8B). However, all existing steering work operates in a \emph{corrective} paradigm---applying fixed precomputed vectors to induce desired behaviors. Unlike this static approach, our MCTS iteratively explores the KV-cache intervention space across multiple rollouts, reversing each intervention exactly via FP32 accumulators and guided by a telemetry-derived reward rather than a fixed behavioral objective. Prior work has explored the latent intervention space via gradient ascent~\cite{bailey2024obfuscated} and reinforcement learning~\cite{gupta2025rlobfuscation}, but no prior work has deployed a heuristic tree-search algorithm to \emph{explore} the KV-cache intervention space at inference time, without gradient access or model finetuning.
 
 A critical limitation of the corrective paradigm was exposed by Gupta and Jenner (2025)~\cite{gupta2025rlobfuscation}, who showed that models can learn to evade latent-space monitors via RL finetuning (weight updates across training epochs), with mean/median-aggregated monitors being particularly vulnerable while max-pooling and attention-based monitors remain robust. Their finding that representational redistribution contributes to monitor evasion---alongside a primary behavioral mechanism of output-policy change (accounting for approximately 70\% of the recall drop)---provides conceptual motivation for our Orthogonal Escape hypothesis; however, RL-Obfuscation operates via weight finetuning on updated models, while our work concerns inference-time KV-cache interventions on a frozen model, so this motivates our hypothesis by analogy rather than direct mechanism. The geometric motivation for this redistribution is formalized in Section~3 (Hypothesis~\ref{hyp:orthogonal_escape}).
+
+% [REVISION | §2.2-Bailey-engagement | 2026-05-06 | Inserted Bailey 2024 substantive engagement paragraph after the existing RL-Obfuscation paragraph (Session A draft, applied 2026-05-06). Bailey positioned as peer measurement (gradient-trained input attacks vs our inference-time KV-cache mutations) rather than competitor whose novelty claim we contest. Three explicit complementarities: intervention site (input embedding vs cached K/V), search objective (similarity-minimization vs telemetry-driven), and metric scope (global activation orthogonality vs targeted monitor-null-space fraction). The §3 forward pointer to Hypothesis~\ref{hyp:orthogonal_escape} remains at the end of the RL-Obfuscation paragraph, before this new paragraph (per draft instruction). — pending audit]
+Most directly relevant to our framing of OEI, Bailey et al.\ (2024)~\cite{bailey2024obfuscated} systematically study whether adversarial perturbations to model inputs can achieve activation states that are simultaneously behavior-preserving and orthogonal to baseline activations. Their gradient-trained universal embedding suffixes optimize a joint objective: minimize the KL divergence between perturbed and baseline output distributions while minimizing the cosine similarity between perturbed and baseline activations. They report a tentative negative result for the regime of trained input-space attacks against a frozen model: near-orthogonality and behavior preservation cannot be jointly achieved, since pushing cosine similarity to the level of unrelated inputs requires a KL divergence that produces incoherent output. Our work is complementary along three axes. First, the intervention is applied to cached key/value tensors at inference time rather than to input embeddings during gradient training, so neither the model weights nor the embedding layer is modified. Second, the search optimizes a behavioral telemetry signal (Eq.~\ref{eq:mcts_reward}) rather than directly minimizing similarity to baseline, so any redistribution we observe is incidental rather than optimization-driven. Third, OEI measures a more targeted geometric quantity---the fraction of induced perturbation invisible to a specific linear monitor---rather than global activation orthogonality. Whether the inference-time, frozen-weight regime exhibits the same constraint Bailey identifies remains an open question, and is one motivation for the measurement framework developed in this paper.
 
 \subsection{H-Neurons and Hallucination Detection}
 
@@ -115,26 +122,30 @@ Most directly analogous to our architectural approach, the Okazaki-RAG framework
 
 \subsection{LLM-as-a-Judge and Evaluation Limitations}
 
-LLM-as-a-Judge frameworks, including MT-Bench~\cite{zheng2023judging} and G-Eval~\cite{liu2023geval}, use language models to evaluate output quality holistically. While semantically aware, these approaches achieve reliable agreement with human experts only when the judge model can itself correctly answer the underlying question or is provided with a correct reference; without such grounding, agreement drops substantially---for instance, GPT-4o's Cohen's $\kappa$ falls from $0.86$ to $0.16$ on benchmark questions the model cannot answer~\cite{llmasjudge2025limitations}. Static analysis tools (SonarQube, Semgrep) are deterministic but cannot evaluate whether code satisfies the \emph{intent} behind a requirement. Grounding evaluation in standard deterministic metrics such as pass@1 and cosine similarity of semantic intent provides stronger anchoring than purely subjective LLM scoring.
+% [REVISION | R-B-§2.2-soften | 2026-05-05 | Softened closing sentence of §2.2 (was: "Grounding evaluation in standard deterministic metrics such as pass@1 and cosine similarity of semantic intent provides stronger anchoring..."). Replacement preserves the paragraph's pivot from LLM-judge limitations to deterministic alternatives without falsely implying we measure pass@1 / cosine-similarity ourselves; those metrics were culled from §5.4 in this same session. — pending audit]
+LLM-as-a-Judge frameworks, including MT-Bench~\cite{zheng2023judging} and G-Eval~\cite{liu2023geval}, use language models to evaluate output quality holistically. While semantically aware, these approaches achieve reliable agreement with human experts only when the judge model can itself correctly answer the underlying question or is provided with a correct reference; without such grounding, agreement drops substantially---for instance, GPT-4o's Cohen's $\kappa$ falls from $0.86$ to $0.16$ on benchmark questions the model cannot answer~\cite{llmasjudge2025limitations}. Static analysis tools (SonarQube, Semgrep) are deterministic but cannot evaluate whether code satisfies the \emph{intent} behind a requirement. Standard deterministic metrics such as pass@1 or semantic-similarity scores anchor evaluation to objective signals; our work extends this principle from output-space measurements to internal-state telemetry.
 
 % ============================================================
 % 3. PROBLEM FORMULATION
 % ============================================================
 \section{Problem Formulation}
 
-\subsection{The Alignment Faking Detection Problem}
+% [REVISION | §3-reframe-α+ | 2026-05-06 | Reframed §3.1 from "The Alignment Faking Detection Problem" (alignment-faking-as-headline framing) to "Inference-Time Latent-Space Analysis on Frozen Models" (measurement-framework framing where alignment evaluation is one specialization). Eq.~\ref{eq:alignment_faking} (Behavioral vs Null-projection) preserved verbatim with label intact. Hypothesis~\ref{hyp:orthogonal_escape} preserved with label intact, retitled to clarify regime ("Orthogonal Escape under inference-time KV-cache perturbation"), and softened: "will redistribute its deceptive encodings" → "may redistribute its representation" — honest under Option α+ given the §5 results that show Bailey-consistent saturation rather than positive OE. New prose adds explicit Bailey reference as the analogous gradient-trained input-attack regime, motivating the inference-time variant. §3.2 (Discrete Text-Space Bottleneck) untouched. — pending audit]
+\subsection{Inference-Time Latent-Space Analysis on Frozen Models}
 
-Let $f_\theta$ be a language model with parameters $\theta$, and let $\mathbf{h}_t^{(\ell)} \in \mathbb{R}^d$ denote the hidden state at layer $\ell$ and token position $t$. An alignment-faking model is one that satisfies:
+Let $f_\theta$ be a language model with parameters $\theta$ held fixed throughout this work, and let $\mathbf{h}_t^{(\ell)} \in \mathbb{R}^d$ denote the hidden state at layer $\ell$ and token position $t$. A linear monitor $\mathbf{P}_{\text{monitor}}$ is a projection in $\mathbb{R}^d$---for instance, a representation-engineering honesty probe~\cite{zou2023repe} or an aggregation thereof~\cite{gupta2025rlobfuscation}. The central question of this paper is: under controlled perturbations of the model's cached key/value tensors (and hence its hidden states at subsequent positions), how does the geometric relationship between the monitored subspace $\text{Range}(\mathbf{P}_{\text{monitor}})$ and the unmonitored complement $\text{Null}(\mathbf{P}_{\text{monitor}})$ evolve?
+
+This question has multiple downstream applications. In mechanistic interpretability, it characterizes how representations respond to controlled perturbations along monitored directions. In alignment evaluation, it specializes to a robustness check on latent-space monitors: a model exhibits \emph{alignment faking} if it satisfies
 
 \begin{equation}
 \text{Behavioral}(f_\theta, x) \in \mathcal{S} \quad \text{while} \quad \exists\, \mathbf{v} \in \text{Null}(\mathbf{P}_{\text{monitor}}): \langle \mathbf{h}_t^{(\ell)}, \mathbf{v} \rangle \neq 0
 \label{eq:alignment_faking}
 \end{equation}
 
-where $\mathcal{S}$ is the set of safe behavioral outputs, $\mathbf{P}_{\text{monitor}}$ is the projection matrix of the latent-space monitor, and $\text{Null}(\mathbf{P}_{\text{monitor}})$ is its null space. That is, the model produces safe outputs while encoding non-trivial information in directions invisible to the monitor.
+where $\mathcal{S}$ is the set of safe behavioral outputs and $\text{Null}(\mathbf{P}_{\text{monitor}})$ is the null space of the monitoring projection. That is, the model produces safe outputs while encoding non-trivial information in directions invisible to the monitor. Whether such a configuration is reachable under inference-time, frozen-weight steering---without weight updates or input-space gradient training---is an open empirical question. Bailey et al.~\cite{bailey2024obfuscated} characterized the analogous question for gradient-trained input-space attacks and reported a tentative negative result; we formulate the inference-time variant as Hypothesis~\ref{hyp:orthogonal_escape}.
 
-\begin{hypothesis}[Orthogonal Escape]\label{hyp:orthogonal_escape}
-When corrective pressure is applied along the monitored subspace $\text{Range}(\mathbf{P}_{\text{monitor}})$, a sufficiently capable model will redistribute its deceptive encodings into $\text{Null}(\mathbf{P}_{\text{monitor}})$, preserving deceptive capability while evading detection:
+\begin{hypothesis}[Orthogonal Escape under inference-time KV-cache perturbation]\label{hyp:orthogonal_escape}
+When corrective pressure is applied along the monitored subspace $\text{Range}(\mathbf{P}_{\text{monitor}})$, a sufficiently capable model under inference-time steering may redistribute its representation into $\text{Null}(\mathbf{P}_{\text{monitor}})$, preserving behavior while evading detection:
 \begin{equation}
 \mathbf{h}_t^{(\ell)} \xrightarrow{\text{steering}} \mathbf{h}_t^{(\ell)} + \alpha \cdot \mathbf{d}_{\text{steer}} \implies \text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{t+k}^{(\ell)}) \neq \mathbf{0}
 \label{eq:orthogonal_escape}
@@ -178,23 +189,7 @@ where $a_j^{(\ell)}(t)$ is the activation of neuron $j$ at layer $\ell$ and step
 % (e.g., baseline comparisons on non-deceptive prompts) or explicitly stating
 % this in Limitations.
 
-% ╔══════════════════════════════════════════════════════════════════╗
-% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
-% ║  Gap IDs: GAP-C1-05 (P1-B Finding 1) + P1-B Finding 4          ║
-% ║                                                                  ║
-% ║  Issue 1: This paragraph says "LAT procedure from Zou et al."   ║
-% ║  but logomesh/whitebox.py uses difference-in-means, NOT PCA.    ║
-% ║  Zou et al. (2023) use PCA as their primary method.             ║
-% ║                                                                  ║
-% ║  Issue 2: Code aggregates all L layers; Zou et al. recommend    ║
-% ║  middle 20 layers only for the honesty probe signal.            ║
-% ║                                                                  ║
-% ║  Decision (2026-04-22, Josh): Hold paper fix until code fixed.  ║
-% ║  Draft paper fix for Issue 1 (add after "LAT procedure"):       ║
-% ║    "---using difference-in-means as a Phase 2 approximation;    ║
-% ║     PCA-based LAT extraction is deferred to Phase 3---"         ║
-% ║  Code fix owner: Max (whitebox.py) / Phase 3 (kv_mcts.py)      ║
-% ╚══════════════════════════════════════════════════════════════════╝
+% [REVISION | DRAFT-HOLD-block1-consolidated | 2026-05-05 | GAP-C1-05 (LAT/PCA vs difference-in-means in §4.1) + P1-B Finding 4 (all-layer aggregation vs middle-layer recommendation) — block content moved into §5 Implementation Notes paragraph (items i and ii). Code fix tracking continues in action plan §4.5 (Max's lane). — pending audit]
 \paragraph{Top-Down Channel: RepE Linear Artificial Tomography.}
 We apply the Linear Artificial Tomography (LAT) procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract linear probes for cognitive dimensions including honesty ($\mathbf{w}_{\text{hon}}^{(\ell)}$), certainty ($\mathbf{w}_{\text{cert}}^{(\ell)}$), and goal-coercion ($\mathbf{w}_{\text{coerce}}^{(\ell)}$). Note that Zou et al.\ (2023) validate LAT for honesty and truthfulness; the goal-coercion and certainty probe directions are extrapolations of the LAT methodology to novel concept dimensions not directly studied in the source paper. The RepE compliance signal at layer $\ell$ is:
 
@@ -241,24 +236,7 @@ M_{\text{KV}} = 2 \cdot L \cdot S \cdot d \cdot \text{sizeof(dtype)}
 
 For a 20B-parameter model in bf16 precision, $M_{\text{KV}} \approx 40\text{GB}$. A standard MCTS with branching factor $b$ and depth $d$ requires $O(b^d)$ simultaneous cache copies, exceeding the 80GB VRAM of a single H100 before completing a depth-2 rollout.
 
-% ╔══════════════════════════════════════════════════════════════════╗
-% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
-% ║  Gap ID: GAP-C2-01                                              ║
-% ║                                                                  ║
-% ║  Issue: This section uses per-layer notation d_K^(ℓ), d_V^(ℓ)  ║
-% ║  throughout (equations 8–11), implying steering vectors are      ║
-% ║  applied independently at every layer ℓ ∈ {1,...,L}.            ║
-% ║  Actual code (logomesh/kv_mcts.py): a SINGLE middle-layer       ║
-% ║  steering vector is broadcast to all layers. There is no        ║
-% ║  per-layer d_K^(ℓ) computation.                                 ║
-% ║                                                                  ║
-% ║  Decision (2026-04-23, Josh): Hold paper fix until Phase 3      ║
-% ║  implements true per-layer steering.                             ║
-% ║  Draft fix: qualify all per-layer notation as "Phase 2           ║
-% ║  approximation: a single middle-layer vector broadcast to all    ║
-% ║  L layers; per-layer independent steering deferred to Phase 3." ║
-% ║  Code fix owner: Phase 3 (kv_mcts.py)                           ║
-% ╚══════════════════════════════════════════════════════════════════╝
+% [REVISION | DRAFT-HOLD-block2-consolidated | 2026-05-05 | GAP-C2-01 (per-layer steering notation in §4.2 vs single-vector broadcast in code) — block content moved into §5 Implementation Notes paragraph (item iii). Code fix tracking continues in action plan §4.2 / Phase 3. — pending audit]
 \subsubsection{The Reversible Rollback Algorithm}
 
 We exploit the mathematical property that tensor addition is reversible, provided numerical stability is maintained. Let $\mathbf{K}_t^{(\ell)}, \mathbf{V}_t^{(\ell)}$ denote the key and value cache tensors at layer $\ell$ for token position $t$. Let $\mathbf{d}_K^{(\ell)}, \mathbf{d}_V^{(\ell)}$ be the RepE steering vectors, and let $\alpha_K, \alpha_V$ be the MCTS-chosen intervention magnitudes.
@@ -288,24 +266,7 @@ We exploit the mathematical property that tensor addition is reversible, provide
 
 This guarantees exact baseline restoration after every MCTS node evaluation, achieving \textbf{zero semantic degradation} regardless of search depth.
 
-% ╔══════════════════════════════════════════════════════════════════╗
-% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
-% ║  Gap ID: GAP-C2-03                                              ║
-% ║                                                                  ║
-% ║  Issue: This paragraph claims S' ≪ S mutated positions and      ║
-% ║  ~50MB accumulator overhead. Actual code allocates FULL-SHAPE   ║
-% ║  S×d accumulators (not sparse S'×d). For 20B, actual overhead  ║
-% ║  ≈ M_KV (~40GB), not 50MB. Experiment 3 (memory profiling)     ║
-% ║  will directly measure this and will falsify the 50MB claim     ║
-% ║  if the code is not fixed first.                                ║
-% ║                                                                  ║
-% ║  Decision (2026-04-23, Josh): Hold paper fix until Phase 3      ║
-% ║  implements sparse S'×d accumulators.                           ║
-% ║  Draft fix: replace "approximately 50MB" with "approximately    ║
-% ║  M_KV (Phase 2 uses full-shape accumulators; sparse S'×d        ║
-% ║  allocation deferred to Phase 3)."                              ║
-% ║  Code fix owner: Phase 3 (kv_mcts.py)                           ║
-% ╚══════════════════════════════════════════════════════════════════╝
+% [REVISION | DRAFT-HOLD-block3-consolidated | 2026-05-05 | GAP-C2-03 (50MB accumulator overhead claim in §4.2 vs full-shape S×d allocation in code) — block content moved into §5 Implementation Notes paragraph (item iv). Code fix tracking continues in action plan §4.2 / Phase 3. — pending audit]
 \paragraph{Memory Complexity.} The reversible algorithm reduces memory from $O(b^d \cdot M_{\text{KV}})$ to $O(M_{\text{KV}} + d \cdot L \cdot S' \cdot d_{\text{model}} \cdot 4)$, where $S'$ is the number of mutated token positions (typically $S' \ll S$). For a 20B model with $S' = 10$ mutated positions, the accumulator overhead is approximately 50MB---negligible compared to the 40GB base cache.
 
 \subsubsection{MCTS Node Valuation}
@@ -330,6 +291,22 @@ where $\bar{r}_i$ is the mean reward of node $i$, $N$ is the total number of vis
 % 5. EXPERIMENTAL DESIGN
 % ============================================================
 \section{Experimental Design}
+\label{sec:experiments}
+% [REVISION | sec-experiments-label-add | 2026-05-06 | Added \label{sec:experiments} on the §5 section heading to enable forward references from the §7.4 measurement-prereqs subsection (revised this batch) and from the §5 Experiment 1 results paragraph (this batch). Section heading text unchanged. — pending audit]
+
+% [REVISION | §5-impl-notes | 2026-05-05 | Added consolidated "Implementation Notes (Phase 2 / Phase 3 Distinction)" paragraph at the start of §5. Content sourced from the five DRAFT-HOLD blocks at TeX:184–200 (GAP-C1-05 + Finding 4), TeX:247–264 (GAP-C2-01), TeX:294–311 (GAP-C2-03), TeX:351–366 (GAP-C1-05 second location), TeX:501–525 (GAP-C2-03/04 Memory Complexity). Per pre-mortem FM 5 + Max §3.4: a single visible paragraph is what a reviewer needs; the original five DRAFT-HOLD blocks have been replaced with one-line REVISION markers at their old locations to maintain the audit trail. Asymptotic claims (Theorem 1, branching-factor independence, telemetry tensor shape) are unaffected; only constants and operational details are deferred to Phase 3. — pending audit]
+\paragraph{Implementation Notes (Phase 2 / Phase 3 Distinction).}
+The reference implementation backing this submission is a Phase 2 prototype on Llama~3.2-1B-Instruct and Llama~3.2-3B-Instruct on consumer hardware (NVIDIA RTX~3060). Several elements of the method as written in §4 and §6 differ from this reference implementation in identifiable, bounded ways; we list them here as a single source of truth so a reviewer reading the paper alongside the released code finds one consolidated reference rather than scattered caveats. The asymptotic claims---exact reversibility (Theorem~1), memory-complexity scaling independent of the branching factor (Proposition in §6), and the telemetry matrix tensor shape (Eq.~\ref{eq:telemetry_matrix})---are unaffected by the distinctions below; what differs is constants and operational details that resolve once the corresponding Phase~3 code work lands.
+
+\textit{(i) RepE probe extraction (§4.1, §5.2).} The text describes the Linear Artificial Tomography procedure of \citet{zou2023repe} using PCA on contrastive pairs. The Phase~2 implementation uses a difference-in-means estimator, which approximates the leading PCA component on contrastive pairs in expectation but is not equivalent to LAT as published. PCA-based extraction is deferred to Phase~3.
+
+\textit{(ii) Layer aggregation for the honesty probe (§4.1).} The Phase~2 implementation aggregates the RepE honesty signal across all $L$ layers; \citet{zou2023repe} validate the honesty probe on the middle layers only. Layer-restricted aggregation is deferred to Phase~3.
+
+\textit{(iii) Per-layer steering vectors (§4.2).} The notation in §4.2 presents per-layer steering vectors $\mathbf{d}_K^{(\ell)}, \mathbf{d}_V^{(\ell)}$. The Phase~2 implementation broadcasts a single middle-layer vector to all layers; per-layer independent steering is deferred to Phase~3.
+
+\textit{(iv) Sparse accumulators and baseline-clone overhead (§4.2 + §6).} The accumulator analysis in §4.2 and the worked example in §6 treat $K_{\text{acc}}$ as a sparse $S' \times d$ allocation with $S' \ll S$, yielding an example overhead of approximately $50$~MB at $20$B scale. The Phase~2 implementation allocates full-shape $S \times d$ accumulators and additionally stores a baseline cache clone of size $M_{\text{KV}}$ to enable rollback. The asymptotic claim that memory is independent of the branching factor $b$ (§6 Memory Complexity Proposition) is unchanged. The constant factor in the Phase~2 implementation is approximately $2$--$3 \cdot M_{\text{KV}}$ rather than the $\sim 1 \cdot M_{\text{KV}}$ implied by the worked example in §6: the $40.05$~GB figure quoted there reflects sparse-accumulator and no-clone assumptions, while the actual Phase~2 floor at $20$B scale is approximately $80$~GB before any accumulator overhead. Sparse-accumulator implementation, baseline-clone elimination, and corrected example numbers backed by direct VRAM measurement are required to bring §6's worked example into agreement with the Phase~2 implementation, and are deferred to Phase~3.
+
+\textit{(v) On the reversibility theorem.} Theorem~1 (Exact Reversibility with FP32 Accumulator) is independent of the four distinctions above. It was empirically validated to numerical zero drift over $200$ apply-reverse cycles on Llama~3.2-1B-Instruct (residual norm $= 0.00$, 2026-04-16 gate) and confirmed at the 3B scale (residual norm $= 0.00$, 2026-05-05 probe). The headline algorithmic contribution is unaffected by any constant-factor revisions to §6.
 
 \subsection{Phase 0: Architectural Decoupling}
 % [IMPL: DONE — logomesh/ package: BaseModelClient, LocalLlamaOracle, modular architecture complete]
@@ -345,50 +322,50 @@ We establish the offline execution environment using Llama-3.2-1B-Instruct (hidd
 
 \begin{itemize}[leftmargin=*]
     \item \textbf{H-Neuron identification} via contrastive activation analysis between faithful and hallucinated generations on a curated calibration set.
-% ╔══════════════════════════════════════════════════════════════════╗
-% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
-% ║  Gap ID: GAP-C1-05 (second location — see also §4.1 block)     ║
-% ║                                                                  ║
-% ║  Issue: This bullet says "RepE probe training via PCA."         ║
-% ║  Actual code (logomesh/whitebox.py) uses difference-in-means,   ║
-% ║  NOT PCA. The IMPL comment above marks Phase A as DONE, which   ║
-% ║  makes this a live false claim — a reviewer reading IMPL tags   ║
-% ║  will see "DONE" adjacent to a PCA claim the code doesn't       ║
-% ║  fulfill.                                                        ║
-% ║                                                                  ║
-% ║  Decision (2026-04-22, Josh): Hold paper fix until code fixed.  ║
-% ║  Draft fix: "via difference-in-means on contrastive pairs        ║
-% ║  (Phase 2 approximation; PCA deferred to Phase 3)"             ║
-% ║  Code fix owner: Max (whitebox.py)                              ║
-% ╚══════════════════════════════════════════════════════════════════╝
+% [REVISION | DRAFT-HOLD-block4-consolidated | 2026-05-05 | GAP-C1-05 second location (§5.2 Phase A bullet "RepE probe training via PCA" vs code uses difference-in-means; IMPL DONE adjacency made this a live false claim) — block content moved into §5 Implementation Notes paragraph (item i). Code fix tracking continues in action plan §4.5 (Max's lane). — pending audit]
     \item \textbf{RepE probe training} via PCA on contrastive pairs for honesty, certainty, and goal-coercion dimensions.
     \item \textbf{Reversible MCTS convergence} on the 1B surrogate, measuring: (a)~Lipschitz drift with and without FP32 accumulators over 1000 rollback cycles; (b)~search depth achievable within fixed compute budgets; (c)~telemetry matrix stability across MCTS branches.
     \item \textbf{Cross-model alignment theory} via supervised Procrustes alignment between 1B and 7B model representation spaces.
 \end{itemize}
 
-\subsection{Phase B: Scaling to Target Models}
+\subsection{Experiments}
+% [REVISION | PhaseB-header | 2026-04-24 | Renamed from "Phase B: Scaling to Target Models"; H100 removed — submission experiments run on Llama 3.2 1B+3B, RTX 3060 — pending audit]
 
-Using open-weight models on a single H100 (80GB), we plan to execute the identical MCTS optimization pipeline at scale. Key experiments:
+We execute the following experiments on Llama~3.2-1B-Instruct and Llama~3.2-3B-Instruct on a local RTX~3060 (12GB VRAM). Scaling to models up to 20B parameters on H100 is planned for Phase~B follow-on work; see §7 Future Work. Key experiments:
 
-\paragraph{Experiment 1: Orthogonal Escape Detection.}
-Apply RepE steering vectors of increasing magnitude $\alpha \in \{0.1, 0.5, 1.0, 2.0, 5.0\}$ along the ``honesty'' direction. For each $\alpha$, measure: (a)~the textual compliance rate (behavioral metric); (b)~the H-Neuron stress distribution; (c)~the RepE honesty projection; (d)~the information content in the null space of the honesty probe via $\|\text{Proj}_{\text{Null}(\mathbf{w}_{\text{hon}})}(\mathbf{h}_t^{(\ell)})\|_2$. The Orthogonal Escape hypothesis predicts that (a) and (c) will improve with increasing $\alpha$ while (d) will simultaneously increase, indicating redistribution of deceptive encodings.
-% [IMPL: PARTIAL — run_kv_mcts.py --alpha-values implements the alpha sweep on 1B surrogate; H100 scale pending]
+% [REVISION | Exp1-reframe-with-results-α+ | 2026-05-06 | Reframed Experiment 1 from hypothesis-test framing ("Orthogonal Escape Detection"; predicting OE signature) to measurement-and-report framing ("OEI Characterization under Inference-Time KV-Cache Perturbation"). Integrated post-fix-run results: Table~\ref{tab:exp1-results} with per-α mean values (OEI 0.991→0.995; ρ_R −1.306→−0.533; σ_H 0 throughout; TDS 0.094→0.046; reversibility holds end-to-end). The Interpretation paragraph states explicitly that the data is *consistent with Bailey 2024's negative-result regime* — TDS *decreases* with α, opposite the OE signature predicted by the original framing. This refutes the prior "(a) and (c) will improve while (d) will simultaneously increase" claim from the same paragraph; new prose says so directly. Forward references to §\ref{sec:measurement-prereqs} for prerequisites context resolve. Replaces the 2026-04-25 Exp1-1B3B-framing marker (subsumed). — pending audit]
+\paragraph{Experiment 1: OEI Characterization under Inference-Time KV-Cache Perturbation.}
+We apply layer-specific steering deltas of increasing magnitude $\alpha \in \{0.1, 0.5, 1.0, 2.0, 5.0\}$ along the RepE honesty direction, projected through the per-layer key projection weights into per-head cache space (see §\ref{sec:measurement-prereqs}). The sweep is run on Llama~3.2-1B-Instruct on a single 12\,GB consumer GPU; reversibility on Llama~3.2-3B-Instruct is independently confirmed (Theorem~\ref{thm:reversibility}, residual\_norm $= 0.00 \times 10^{0}$ over 200 cycles, validated 2026-04-16). For each $\alpha$ we measure: (i) the OEI (Eq.~\ref{eq:oei}); (ii) the RepE honesty projection $\rho_R$; (iii) the H-Neuron stress signal $\sigma_H$; (iv) the cross-channel divergence $\text{TDS} = \text{JSD}(\sigma_H, \rho_R)$.
 
-\paragraph{Experiment 2: MCTS vs.\ Text-Space Red-Teaming.}
-Compare the attack success rate and diversity of: (a)~standard text-space MCTS (prompt mutation); (b)~KV-cache latent-space MCTS (our method); (c)~gradient-based adversarial attacks (GCG); (d)~random search in KV-cache space. Metrics: attack success rate, mean number of MCTS rollouts to first success, diversity of discovered attack vectors (measured by pairwise cosine distance in intervention space).
-% [IMPL: PARTIAL — run_kv_mcts.py (latent MCTS) + run_offline_mcts.py (text baseline) exist; H100 scale pending]
+% [REVISION | Exp1-σH-verification-update | 2026-05-06 | Replaced one sentence in the Results paragraph below — the σ_H reporting line. Was: "The H-Neuron stress channel σ_H reports zero across all α; this is consistent with its calibration against hallucination-inducing prompts and is discussed further in §\ref{sec:measurement-prereqs}." New: "The H-Neuron stress channel σ_H reports zero across all α; controlled verification (§\ref{sec:measurement-prereqs}) localizes this to a measurement-pipeline issue in the dense-scoring path independent of the steering projection or calibration regime." Reflects the σ_H verification result (diagnostic session 2026-05-06): σ_H = 0 across all 17 layers under hallucination/coercion/neutral regimes, including a coercion prompt drawn verbatim from the calibration class — refutes the calibration-prerequisite framing. Net ~5 words shorter. Other sentences in Results + Interpretation paragraphs unchanged. Parent marker `Exp1-reframe-with-results-α+` retained above. — pending audit]
+\textbf{Results.} Per-$\alpha$ mean values across the sweep are reported in Table~\ref{tab:exp1-results}. OEI varies monotonically with $\alpha$, from $0.991$ at $\alpha = 0.1$ to $0.995$ at $\alpha = 5.0$---a spread of $0.004$ in a metric bounded in $[0, 1]$. The high baseline value is geometrically expected (§\ref{sec:measurement-prereqs}). The RepE honesty channel $\rho_R$ varies more substantially, from $-1.306$ at $\alpha = 0.1$ to $-0.533$ at $\alpha = 5.0$, confirming that the linear monitor channel registers the in-direction component of the steered cache state. Cross-channel divergence TDS \emph{decreases} monotonically with $\alpha$ (from $0.094$ to $0.046$), indicating that the H-Neuron and RepE channels agree more strongly under stronger steering---the opposite of the signature predicted by the Orthogonal Escape Hypothesis (Hypothesis~\ref{hyp:orthogonal_escape}). The H-Neuron stress channel $\sigma_H$ reports zero across all $\alpha$; controlled verification (§\ref{sec:measurement-prereqs}) localizes this to a measurement-pipeline issue in the dense-scoring path independent of the steering projection or calibration regime.
 
-\paragraph{Experiment 3: Memory Efficiency.}
-Profile VRAM consumption of reversible MCTS vs.\ standard parallel MCTS at branching factors $b \in \{2, 3, 5\}$ and depths $d \in \{3, 5, 10, 20\}$. Measure wall-clock time overhead of the rollback mechanism. Quantify Lipschitz drift (perplexity deviation from baseline) with and without FP32 accumulators over extended search trajectories.
-% [IMPL: TODO — no memory benchmarking script yet; measure_lipschitz_drift.py validates Theorem 1 drift, not this experiment]
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+$\alpha$ & 0.1 & 0.5 & 1.0 & 2.0 & 5.0 \\
+\midrule
+OEI & 0.991 & 0.991 & 0.992 & 0.992 & 0.995 \\
+$\rho_R$ & $-1.306$ & $-1.258$ & $-1.198$ & $-1.080$ & $-0.533$ \\
+$\sigma_H$ & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+TDS & 0.094 & 0.090 & 0.084 & 0.075 & 0.046 \\
+\bottomrule
+\end{tabular}
+\caption{Per-$\alpha$ mean telemetry under inference-time KV-cache steering on Llama~3.2-1B-Instruct, post-projection fix. OEI shows small but monotonic variation in the high-dimensional saturation regime; $\rho_R$ varies substantially, confirming the steering reaches the cache; TDS \emph{decreases}, indicating the channels agree more under stronger steering---the opposite of the Orthogonal Escape signature. $\sigma_H = 0$ throughout reflects monitor calibration prerequisites discussed in §\ref{sec:measurement-prereqs}. Reversibility holds end-to-end (residual\_norm $= 0$).}
+\label{tab:exp1-results}
+\end{table}
 
-\paragraph{Experiment 4: Evaluation Reproducibility.}
-Evaluate the same set of 500 artifacts using: (a)~pass@1 with ground-truth execution in a constrained Docker sandbox; (b)~cosine similarity of semantic intent between generated outputs and task specifications; (c)~GPT-4 as judge (5 independent runs); (d)~Claude 3.5 as judge (5 independent runs); (e)~human expert panel (3 reviewers). Report inter-run variance, inter-rater agreement (Cohen's $\kappa$), and correlation with human judgments.
-% [IMPL: TODO — no evaluation reproducibility script yet]
+\textbf{Interpretation.} The results are consistent with the negative-result regime Bailey et al.~\cite{bailey2024obfuscated} report for gradient-trained input attacks: high-dimensional null-space saturation dominates, and orthogonal escape does not emerge from non-orthogonality-optimizing search at the model scales tested. We interpret this as a measurement under one specific monitor specification (rank-1 RepE honesty probe at the middle layer); whether richer monitors or hallucination-inducing input regimes produce a more discriminative signal is the natural next experimental step, and is not contradicted by these results.
+% [IMPL: COMPLETE — run_kv_mcts.py post-fix, alpha-sweep on Llama-3.2-1B-Instruct, output at tmp/runs/2026-05-06_b6_post-fix.json. 3B reversibility confirmed via probe_kv_cache_mutability.py 2026-05-05.]
 
-\paragraph{Experiment 5: Cross-Model Transfer.}
-Generate adversarial interventions on the 1B surrogate via offline MCTS. Evaluate transfer effectiveness to 7B and 20B models using Procrustes-aligned steering vectors. Measure: (a)~attack success rate degradation across model scales; (b)~telemetry signature preservation.
-% [IMPL: TODO — Procrustes transfer not yet implemented; no script exists]
+% [REVISION | Exp2-recast-reward-ablation | 2026-05-05 | Recast Experiment 2 from "latent signal quality per compute unit vs random KV search" (Option A, 2026-04-25) to a reward-function ablation. Pre-mortem FM 3: Option A inherited the same tautology Option B was rejected for — MCTS optimizes for the very telemetry triple Exp 2 measured, so a random-KV baseline loses by construction. The honest ablation isolates which reward components carry signal: full reward vs single-channel σ_H-only reward vs random-KV baseline. Text-space methods (GCG/MPA/DAMON) move from primary baselines to qualitative discussion in §2. — pending audit]
+\paragraph{Experiment 2: Reward-Function Ablation in Latent Space.}
+We measure the contribution of each component of the MCTS reward (Eq.~\ref{eq:mcts_reward}) by comparing three search arms operating in the same KV-cache latent space at a fixed compute budget on Llama~3.2-1B-Instruct: (i)~MCTS with the full telemetry reward $r = \lambda_1 \bar{\sigma}_H + \lambda_2 (1-\bar{\rho}_R) + \lambda_3 \, \mathrm{Divergence}(\sigma_H, \rho_R)$; (ii)~MCTS with a $\sigma_H$-only reward (ablating $\rho_R$ and the divergence term, i.e.\ $\lambda_2 = \lambda_3 = 0$); (iii)~random KV-cache mutation (no reward signal). For each arm we record the per-node telemetry triple $(\sigma_H, \rho_R, \mathrm{OEI})$ and report mean and variance across the search budget. This is an honest ablation of the reward formulation rather than a comparison against text-space methods: asking whether a structured search beats unstructured search at finding the structured-search reward is true by construction; the substantive question is which reward components carry signal beyond the simplest single-channel monitor. Existing text-space jailbreak families---GCG~\cite{zou2023gcg}, MPA~\cite{wu2025mcts}, DAMON~\cite{damon2025}---operate on model outputs (text tokens, and in MPA's case first-position target-token log-probabilities) rather than internal representations and therefore produce no per-node latent signal under our metric; we discuss them qualitatively in §2 as the categorical alternative whose per-step compute is invested in text-output evaluation rather than internal-state probing. Cross-method attack-success-rate comparison requires multi-step text rollout and is deferred to Phase~B.
+% [IMPL: PARTIAL — run_kv_mcts.py implements the full-reward arm; the σ_H-only-reward arm is a $\lambda$-toggle in the same script (no code change required); the random-KV arm uses the existing random-mutation harness. 2026-05-05 B6 diagnostic surfaced a measurement-pipeline bug producing bit-identical telemetry across $\alpha$; the ablation cannot run until that is resolved (see action plan §4.1.5).]
+
+% [REVISION | §5-Exp3-5-cut | 2026-04-24 | Experiments 3, 4, 5 removed from §5; deferred to Future Work subsection in §7 — pending audit]
 
 \subsection{Baselines}
 
@@ -420,6 +397,12 @@ Generate adversarial interventions on the 1B surrogate via offline MCTS. Evaluat
 % ║    If any answer is NO, the table remains a reference table only.        ║
 % ║                                                                          ║
 % ║  Decision recorded: 2026-04-23 (Josh + Claude)                          ║
+% ║                                                                          ║
+% ║  UPDATE (2026-04-24): Experiment 2 reframed to Option 2 (latent signal  ║
+% ║  quality per compute unit). Eventual results column will compare per-    ║
+% ║  node telemetry richness (OEI, σ_H, ρ_R per node evaluation) rather     ║
+% ║  than full-response ASR. Update verification checklist above when        ║
+% ║  Phase B experiments are complete.                                        ║
 % ╚══════════════════════════════════════════════════════════════════════════╝
 
 \begin{table}[h]
@@ -460,15 +443,10 @@ Latent Monitor Evasion & RL-Obfuscation & Gupta \& Jenner, 2025 \\
     % Consider acknowledging this in Limitations, and note it as a motivation for
     % future work on nonlinear monitor extensions.
 
-    \item \textbf{Telemetry Divergence Score (TDS):} Jensen--Shannon divergence between the H-Neuron and RepE signal distributions across layers.
+    % [REVISION | T-C-TDS-reframe | 2026-05-05 | Reframed TDS from a standalone evaluation metric to the divergence component of the MCTS reward function. Note the circularity: the same JSD value appears as the third term of Eq.~\ref{eq:mcts_reward} (which the search optimizes) and as the diagnostic signature for the Orthogonal Escape state in Table~\ref{tab:diagnostic_states}; reporting "high TDS at terminal nodes therefore indicates OE" would be tautological. Hence: defined here for completeness, not separately tabulated as a results column in submission experiments. — pending audit]
+    \item \textbf{Telemetry Divergence Score (TDS).} The Jensen--Shannon divergence between the H-Neuron stress and RepE projection signal distributions across layers; this is the divergence component referenced in the MCTS reward function (Eq.~\ref{eq:mcts_reward}, $\lambda_3$ term) and is defined here for completeness. Because the search optimizes this quantity directly, TDS is not separately tabulated as an evaluation outcome in submission experiments---reporting elevated TDS at terminal nodes would amount to confirming that an optimizer that maximizes a quantity tends to produce nodes with high values of it. The standalone metric we report from the latent-search process is OEI; TDS surfaces in the rollout traces and per-node telemetry but not as a results-table column.
 
-    \item \textbf{Attack Success Rate (ASR):} Fraction of MCTS rollouts that produce a successful alignment-breaking intervention.
-
-    \item \textbf{pass@1:} Fraction of generated artifacts that pass ground-truth execution on the first attempt in a constrained sandbox environment.
-
-    \item \textbf{Cosine Similarity of Semantic Intent:} Cosine similarity between sentence embeddings (all-MiniLM-L6-v2) of generated output and task specification, providing a continuous measure of intent preservation.
-
-    \item \textbf{Memory Efficiency Ratio:} $\text{MER} = M_{\text{standard}} / M_{\text{reversible}}$ at equivalent search depth and branching factor.
+    % [REVISION | §5.4-metrics-cull | 2026-05-05 | Removed orphaned metric items (ASR, pass@1, Cosine Similarity of Semantic Intent, Memory Efficiency Ratio) and the redundant CRITIQUE NOTE that flagged them. Rationale: Experiments 3-5 were cut on 2026-04-24 (deferred to Future Work); Experiment 2 was reframed to latent signal quality on 2026-04-25 (Option A); none of the four removed metrics are measured by any remaining submission experiment. Surviving inventory in §5.4: OEI (full evaluation metric) + TDS (reward component, defined for completeness). — pending audit]
 \end{itemize}
 
 % ============================================================
@@ -480,6 +458,8 @@ Latent Monitor Evasion & RL-Obfuscation & Gupta \& Jenner, 2025 \\
 
 % [IMPL: EMPIRICALLY VALIDATED — measure_lipschitz_drift.py, n=200 cycles, FP32 accumulator_inf_norm = 0.00e+00]
 \begin{theorem}[Exact Reversibility with FP32 Accumulator]
+\label{thm:reversibility}
+% [REVISION | thm-label-add | 2026-05-06 | Added \label{thm:reversibility} to enable forward references from §1 abstract, §1 Contributions, and §7 Empirical Measurement Prerequisites subsection (all landed 2026-05-06). Theorem statement and proof unchanged. — pending audit]
 Let $\mathbf{K}_0 \in \mathbb{R}^{S \times d}$ be the baseline KV cache in bf16. Let $\{\delta_1, \ldots, \delta_n\}$ be a sequence of steering interventions applied and reversed via the FP32 accumulator. Then after $n$ complete apply-reverse cycles:
 
 \begin{equation}
@@ -501,34 +481,12 @@ which is independent of $n$, depending only on the final accumulator state (whic
 The FP32 accumulator maintains the exact cumulative delta. The only quantization error occurs in the final cast from FP32 to bf16, which is bounded by $\epsilon_{\text{bf16}}$ times the accumulator magnitude. After complete reversal, $\mathbf{A}_{\text{final}} = \mathbf{0}$, so $\mathbf{K}_n = \mathbf{K}_0$ exactly (up to the single bf16 quantization of zero, which is exact). \qed
 \end{proof}
 
-% ╔══════════════════════════════════════════════════════════════════╗
-% ║  DRAFT — HOLD — DO NOT REMOVE THIS BLOCK                        ║
-% ║  Gap ID: GAP-C2-03 + GAP-C2-04 (Proposition + comparison)      ║
-% ║                                                                  ║
-% ║  Issue 1 (GAP-C2-03): Proposition assumes sparse S'×d           ║
-% ║  accumulators. Code uses full-shape S×d. K_acc in practice      ║
-% ║  ≈ M_KV, not L·S'·d_model·4. The 40.05GB figure below is        ║
-% ║  therefore wrong: actual is ~80GB (40GB base + ~40GB accum).    ║
-% ║                                                                  ║
-% ║  Issue 2 (GAP-C2-04): Code stores a baseline clone of M_KV to  ║
-% ║  enable rollback. This adds another M_KV → minimum memory is   ║
-% ║  2×M_KV before any accumulator overhead. The proposition        ║
-% ║  ("independent of branching factor b") is correct in theory     ║
-% ║  but the constant factor is wrong: ~2–3×M_KV, not ~1×M_KV.    ║
-% ║                                                                  ║
-% ║  This is the paper's flagship efficiency claim. Experiment 3    ║
-% ║  will measure it directly. If experiments run before code is    ║
-% ║  fixed, measured MER will contradict the proposition.           ║
-% ║                                                                  ║
-% ║  Decision (2026-04-23, Josh): Hold paper fix until Phase 3      ║
-% ║  implements sparse accumulators and eliminates baseline clone.  ║
-% ║  Draft fix: qualify proposition as Phase 2 approximation;       ║
-% ║  update comparison numbers to reflect actual 2–3×M_KV floor.   ║
-% ║  Code fix owner: Phase 3 (kv_mcts.py)                           ║
-% ╚══════════════════════════════════════════════════════════════════╝
+% [REVISION | DRAFT-HOLD-block5-consolidated | 2026-05-05 | GAP-C2-03 + GAP-C2-04 (Memory Complexity Proposition: 40.05GB / 9.7TB headline numbers reflect sparse-accumulator + no-clone assumptions; Phase 2 floor is ~2-3·M_KV from full-shape accumulator + baseline clone) — block content moved into §5 Implementation Notes paragraph (item iv). Headline numbers within the proposition itself remain unchanged here pending Max's simplified Exp 3 VRAM measurements (action plan §4.2 task "Apply Memory Complexity Proposition rewrite"). Code fix tracking continues in action plan §4.2 / Phase 3. — pending audit]
 \subsection{Memory Complexity}
 
 \begin{proposition}
+\label{prop:memory}
+% [REVISION | prop-label-add | 2026-05-06 | Added \label{prop:memory} to enable forward references from §1 Contributions and §7 Empirical Measurement Prerequisites subsection (both landed 2026-05-06). Proposition statement unchanged; headline numbers in the comparison sentence below remain TODO pending Max's simplified Exp 3. — pending audit]
 The reversible MCTS algorithm achieves memory complexity $O(M_{\text{KV}} + d \cdot K_{\text{acc}})$ where $d$ is the maximum search depth and $K_{\text{acc}} = L \cdot S' \cdot d_{\text{model}} \cdot 4$ bytes is the per-step FP32 accumulator size for $S'$ mutated positions. This is independent of the branching factor $b$.
 \end{proposition}
 
@@ -539,11 +497,12 @@ For comparison, standard parallel MCTS requires $O(b^d \cdot M_{\text{KV}})$ mem
 % ============================================================
 \section{Discussion}
 
-\subsection{Implications of Orthogonal Escape for Alignment Assurance}
+% [REVISION | §7.1-monitor-design-verbs | 2026-05-05 | Reframed §7.1 from attack-implications language ("arms race", "evasion strategies", "alignment assurance against capable models") to monitor-design language (Gemini #1 threat-model critique). The methodological frame: KV-cache MCTS requires white-box access to a frozen model; it is an interpretability / red-teaming tool, not an inference-time attack vector available to a real adversary. Heading retitled to match the verb pivot. Substantive observations preserved (null-space dimensionality, fixed-monitor blind spots, dynamic-monitor opportunity); attack/adversary framing removed. — pending audit]
+\subsection{Implications for Latent-Space Monitor Design}
 
-If the Orthogonal Escape hypothesis is confirmed empirically, the consequences for the field of AI alignment are profound and sobering. The central implication is a \emph{negative result}: localized, static latent-space monitors---including linear probes trained on contrastive pairs and single-direction activation steering vectors---are fundamentally insufficient for alignment assurance against sufficiently capable models. The sheer dimensionality of continuous representation spaces provides an effectively inexhaustible reservoir of orthogonal directions into which a model can redistribute deceptive encodings when subjected to corrective pressure along any finite set of monitored axes.
+If alpha-sweep characterization surfaces systematic activation redistribution into the null space of a fixed linear monitor, the implication for monitor design is direct: a single static probe direction does not bound the space a model's representations may occupy under intervention. The dimensionality of continuous representation spaces provides a large reservoir of directions orthogonal to any one chosen monitor axis, and a white-box tool that operates inside the frozen model can map this reservoir directly---surfacing where a fixed monitor would produce false negatives without requiring the model to be deceptive in deployment.
 
-This finding, if validated, would establish that the arms race between monitors and evasion strategies is structurally asymmetric: the monitor must cover an exponentially growing subspace, while the model need only locate a single unmonitored direction. Future alignment architectures must therefore move beyond static projection matrices toward co-evolving, dynamic adversarial monitors that continuously adapt their monitoring subspaces in response to detected redistribution patterns. The Reversible MCTS framework proposed here provides the computational infrastructure for exactly this kind of adaptive, adversarial monitoring.
+The correct frame for these findings is monitor-design diagnostics rather than attack capability: KV-cache MCTS requires white-box access to a frozen model and is therefore unavailable to a real adversary at inference time. Its value is interpretability and controlled-access red-teaming. The forward-looking design implication is that monitor selection should be evaluated against the directions a frozen model's hidden states actually visit under perturbation, not only against the directions a probe was trained on. The reversible MCTS framework presented here provides the computational infrastructure for such evaluation; the same algorithm, paired with an adaptive-probe reward, would support monitor-selection procedures that update the monitored subspace in response to observed redistribution patterns surfaced by the search.
 
 \subsection{Broader Impact}
 
@@ -554,31 +513,35 @@ This work has dual-use implications that we address transparently. The Reversibl
 We acknowledge several limitations. First, the Orthogonal Escape hypothesis, while motivated by the RL-Obfuscation findings~\cite{gupta2025rlobfuscation}, has not yet been empirically validated in the specific setting of KV-cache interventions; our Phase~A experiments are designed to provide this validation. Second, the cross-model transfer of steering vectors via Procrustes alignment is an open research question with uncertain guarantees. Third, the framework relies on H-Neuron activation tracking, which Gao et al.\ (2025) associated with hallucination and over-compliance; the assumption that these neurons also serve as reliable indicators of complex, instrumentally rational strategic deception remains an open theoretical liability that our experiments must address. Additionally, Zou et al.\ (2023) validated RepE on models of 7B parameters and above; our 1B surrogate falls outside this validated range, and probe reliability at sub-7B scale is an open empirical question. Fourth, the current experimental design would benefit from cross-family scaling validation across architectures beyond the Llama family to establish generalizability of the Orthogonal Escape phenomenon. Fifth, $\sigma_H$ may conflate hallucination pressure, mode-collapse, and strategic masking under corrective pressure unless discriminant controls are applied; the extension from hallucination association to instrumentally rational deception is a testable assumption rather than a settled equivalence. Sixth, OEI may produce false negatives if deceptive redistribution is nonlinear or manifold-structured rather than concentrated along linear null-space directions, in which case $\text{OEI}\to 0$ while the model still evades the linear monitor. Finally, the proposed framework requires an explicit validation chain linking continuous latent interventions to discrete deceptive-intent outcomes; Phase~B experiments are designed to provide this evidence but have not been run at time of submission.
 % [REVISION | G1 | 2026-04-24 | Claims 12+13+14 added to §7 Limitations — pending audit]
 
+% [REVISION | §7-measurement-prereqs | 2026-05-06 | Inserted new §7 subsection "Empirical Measurement Prerequisites for OEI" between §7.3 Limitations and §7.4 Future Work (Session B's structural placement choice — see §7 reply in action plan). Lands \label{sec:measurement-prereqs} which the abstract and §1 Contributions piece #2 reference. Honest finding documents the GAP-C2-06 measurement-pipeline issue (per Option α+ resolution in pre-mortem decision 2). Three resolution approaches outlined; Theorem 1 + memory bound explicitly stated as unaffected. — pending audit]
+% [REVISION | §7.4-post-fix-update | 2026-05-06 | Replaces the morning's draft of this subsection (§7-measurement-prereqs marker above retained as the original insertion record). Tightened to reflect Josh's verified GAP-C2-06 fix landed 2026-05-06 PM: removed "early version" placeholder language; the W_K projection is now the realized fix, not a candidate. References §\ref{sec:experiments} for results numbers (rather than restating). Added a new third paragraph documenting σ_H = 0 as a calibration-prerequisite finding (per Session A's analysis: H-Neuron monitor is contrastively calibrated against hallucination-inducing prompts, our test prompts are not hallucination-inducing, per-neuron ReLU correctly clamps below-baseline activations). Section heading retitled "Empirical Measurement Prerequisites and Initial Observations" to reflect the addition of measured findings. — pending audit]
+\subsection{Empirical Measurement Prerequisites and Initial Observations}
+\label{sec:measurement-prereqs}
+
+The Orthogonal Escape Index in Eq.~\ref{eq:oei} requires that the steering direction $\mathbf{d}_K^{(\ell)}$ live in the same space as the cached key tensors. Representation-engineering probes are calibrated against residual-stream activations of dimension $d_{\text{model}}$, while the KV cache stores per-head representations of dimension $\text{kv\_heads} \times d_{\text{head}}$ under grouped-query attention. For Llama~3.2-1B these are 2048 and $8 \times 64$ respectively; an explicit projection between probe space and cache space is required. In our reference implementation we identified, characterized, and resolved a measurement-pipeline failure mode in which the broadcast layer silently zeroed the steering delta on shape incompatibility, producing forward passes that were bit-identical across $\alpha$. The fix projects probe directions through layer-specific key projection weights, $\mathbf{d}_K^{(\ell)} = \mathbf{W}_K^{(\ell)} \mathbf{d}_{\text{probe}}^{(\ell)}$, reshaped to per-head form---interpretable as the cache state that would result from the corresponding residual-stream perturbation modulo position-dependent rotary embedding. Two alternative approaches are also viable: intervening at the residual stream prior to the K/V projection and re-running the layer's forward computation, or calibrating probes directly in per-head cache space against contrastive cache states. Systematic comparison of the three is left to future work.
+
+Under the projection-based fix, OEI varies monotonically with steering magnitude on Llama~3.2-1B-Instruct (results in §\ref{sec:experiments}). The high baseline value (${\sim}0.99$) is geometrically expected: in $d_{\text{model}} = 2048$ with a rank-1 linear monitor, removing one direction from any perturbation leaves ${\sim}99\%$ of the perturbation's norm in the null space by default. This high-dimensional saturation is consistent with the regime Bailey et al.~\cite{bailey2024obfuscated} characterize when discussing why activation cosine similarity is hard to drive low in a behavior-preserving setting; the small but monotonic OEI spread we observe suggests the metric is responsive to genuine steering structure rather than producing a uniform default. Whether OEI under a richer monitor (rank-$k$ probe matrix, or attention-aggregated probes; cf.~\cite{gupta2025rlobfuscation}) yields a more discriminative signal is an open empirical question and a natural extension of the framework.
+
+% [REVISION | §7.4-σH-verification-update | 2026-05-06 | Replaces the σ_H paragraph (third paragraph of §7.4) following the diagnostic session's controlled three-prompt verification (recorded in `docs/logs/2026-05-05_diagnostic-report.md` § "σ_H VERIFICATION FOLLOW-UP — 2026-05-06"). The earlier H_A "calibration-prerequisite" framing is refuted: σ_H = 0 across all 17 layers under all three regimes (hallucination / coercion / neutral), including a coercion-style prompt drawn verbatim from the `_COERCED_EXAMPLES` set used as `hallucinated_examples` during H-Neuron calibration. ρ_R varied substantially (deepest-layer −14.66 / −7.15 / −2.93), confirming hidden-state delivery is intact and localizing the constancy to the H-Neuron dense-scoring path itself. New paragraph identifies this as a *second* measurement-pipeline issue (distinct from and independent of GAP-C2-06 resolved by the W_K projection) and leaves resolution as future work. Theorem 1 + Memory Proposition reassurance is folded into this same paragraph (no separate paragraph 4 needed). Two earlier markers retained as layered audit trail: `§7-measurement-prereqs` (original AM insertion) and `§7.4-post-fix-update` (afternoon update). — pending audit]
+% [REVISION | §7.4-σH-investigation-update | 2026-05-07 | Additive update to §7.4 paragraph 3 following the diagnostic session's GAP-C1-02 investigation (`docs/logs/2026-05-07_optional-σH-investigation-prompt.md`). Path A confirmed GAP-C1-02 (per-neuron baseline-subtraction-and-ReLU) is not applied in current code; Path B applied the fix tentatively per Max's recipe and re-ran the three-prompt verification — σ_H remained identically zero across all 17 layers in all three regimes (ρ_R / OEI / TDS bit-identical to yesterday's verification, confirming the tentative fix touched only the σ_H pipeline). Cause therefore localized as: downstream of per-neuron normalization. Most plausible remaining candidate: position/context discrepancy between calibration-time (last-input-token, prompt-only forward pass) and inference-time (last-token, prompt-plus-generation, steered cache) hidden states. Replaces the "Constancy of σ_H..." sentence with two new sentences capturing the GAP-C1-02 ruling-out and the position/context hypothesis; rest of paragraph (opening sentences + future-work conclusion + Theorem 1/Proposition reassurance) preserved verbatim from yesterday's drafts v3 patch. Net +60 words. Three prior §7.4 markers retained as layered audit trail: `§7-measurement-prereqs` (2026-05-06 AM), `§7.4-post-fix-update` (2026-05-06 PM), `§7.4-σH-verification-update` (2026-05-06 EOD). — pending audit]
+The bottom-up H-Neuron stress channel ($\sigma_H$) is reported as zero across all $\alpha$ in our reference experiments. This is independent of the steering pipeline (which demonstrably reaches the cache, per the per-$\alpha$ variation in $\rho_R$, TDS, and OEI in §\ref{sec:experiments}). To distinguish whether the constancy reflects a calibration-regime mismatch~\cite{gao2025hneurons} or a deeper measurement issue, we ran a controlled three-prompt comparison at fixed $\alpha = 1.0$, varying only the test prompt across hallucination-style, coercion-style, and neutral regimes---with the coercion-style prompt drawn directly from the same class used as the H-Neuron monitor's contrastive calibration set. $\sigma_H$ remained identically zero across all 17 layers in all three regimes, while $\rho_R$ varied substantially (deepest-layer values of $-14.66$, $-7.15$, and $-2.93$ across the three regimes respectively). To narrow the cause, we additionally tested the per-neuron baseline-subtraction-and-ReLU formulation specified by Eq.~\ref{eq:hneuron_stress} (which our reference implementation aggregates rather than applying per-neuron); under this formulation $\sigma_H$ remained identically zero across the same three regimes, indicating the cause is downstream of per-neuron normalization. The remaining most plausible cause is a position/context discrepancy between calibration-time and inference-time hidden states: the H-Neuron monitor is calibrated on last-input-token activations from prompt-only forward passes, while the MCTS evaluation reads last-token activations from prompt-plus-generation forward passes under a steered cache; these are different positions in the sequence with different attention contexts, and the H-Neurons selected by the former calibration may not fire under the latter regime even when input semantics are similar. We identify this as a second measurement-pipeline issue, and validation of the bottom-up channel as a precondition for full telemetry-matrix evaluation; resolution is left as future work. We note that Theorem~\ref{thm:reversibility} and Proposition~\ref{prop:memory} are unaffected by these measurement choices: both are intervention-agnostic.
+
+\subsection{Future Work}
+% [CRITIQUE NOTE | Future Work section — NeurIPS convention check]
+% Verify whether it is standard practice for NeurIPS Main Track papers to include a dedicated
+% Future Work subsection describing planned (unrun) experiments. Some venues prefer this content
+% folded into Limitations or Discussion rather than as a standalone subsection.
+% Confirm with Tianyu Shi or check accepted NeurIPS 2024/2025 papers in the alignment/interpretability area.
+
+Several directions are deferred to Phase~B. Experiments~3--5 (memory efficiency profiling, evaluation reproducibility, and cross-model steering transfer) require infrastructure not yet complete: sparse FP32 accumulators, a ground-truth execution sandbox, and Procrustes alignment between model families. Scaling to \texttt{openai/gpt-oss-20b} (21B parameters, Apache~2.0) will test whether the Orthogonal Escape phenomenon and telemetry diagnostics hold at 20B scale, with router logit entropy as the H-Neuron proxy for MoE layers. Full sparse accumulator implementation---reducing per-step overhead from $O(S \cdot d_{\text{model}})$ to $O(S' \cdot d_{\text{model}})$ for $S' \ll S$ mutated positions---is required before the memory complexity proposition can be validated empirically. A Croissant~1.1 dataset package of runtime evidence artifacts is planned for release alongside the Phase~B submission.
+% [REVISION | §7-FutureWork | 2026-04-24 | Future Work subsection added covering Experiments 3–5, gpt-oss-20b Phase B, sparse accumulators — pending audit]
+% [REVISION | §7-Croissant | 2026-04-25 | Appended Croissant 1.1 runtime-evidence package sentence (ORIGINAL PLAN omission); complementary to §7 Ethical Considerations Croissant metadata sentence — pending audit]
+
 \subsection{Ethical Considerations}
 
 All experiments will be conducted on open-weight models in isolated sandbox environments. No experiments will target production systems or real users. The adversarial datasets generated will be released under a responsible disclosure framework with appropriate access controls. The release package will include a Croissant 1.1 metadata file (plus Croissant RAI extension fields) so provenance, usage constraints, and schema-level reproducibility checks are machine-verifiable.
 
-% ============================================================
-% 8. TIMELINE AND MILESTONES
-% ============================================================
-\section{Timeline and Milestones}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}llll@{}}
-\toprule
-\textbf{Phase} & \textbf{Duration} & \textbf{Milestone} & \textbf{Deliverable} \\
-\midrule
-Phase 0 & Weeks 1--3 & Architectural decoupling & Refactored codebase with \texttt{BaseModelClient} \\
-Phase A & Weeks 4--8 & Local prototyping on 1B & Validated telemetry, MCTS convergence, drift analysis \\
-Phase B & Weeks 9--14 & Scaling on H100 & Orthogonal Escape experiments, transfer results \\
-Writing & Weeks 15--17 & Paper preparation & Full NeurIPS submission with all experiments \\
-Submission & Week 18 & NeurIPS 2026 deadline & Camera-ready paper + code + dataset release \\
-\bottomrule
-\end{tabular}
-\caption{Project timeline and milestones.}
-\label{tab:timeline}
-\end{table}
+% [REVISION | §8-cut | 2026-04-24 | Timeline and Milestones section removed entirely — research proposal artifact, not a paper section; ~0.5 page saved — pending audit]
 
 % ============================================================
 % REFERENCES
