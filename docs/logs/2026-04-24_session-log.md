@@ -333,3 +333,73 @@ To find all revision markers: `grep -n "REVISION" docs/NeurIPS/04.18.2026-NeurIP
 Searched the full TeX for `deroy`, `Deroy`, and all `\cite{}` occurrences in alignment faking sections. Deroy does not appear anywhere in the file — no body text citation, no bibliography entry. The brief's G4 task ("wherever Deroy is the sole citation, add `\cite{greenblatt2024alignment}`") has no application site.
 
 All alignment faking claims in the paper are already anchored to the correct citations: `\cite{greenblatt2024alignment}` (Anthropic, 2024), `\cite{hubinger2024sleeper}` (Sleeper Agents), and `\cite{gupta2025rlobfuscation}` (RL-Obfuscation). Brief and sequential summary updated to reflect no-op status.
+
+---
+
+## Session Continuation — New Session (April 24, second post-compact session)
+
+### Files Read at Session Start
+
+Read all three primary files in full before beginning any work:
+- `docs/logs/2026-04-24_session-log.md` — full record confirmed through G4
+- `docs/logs/2026-04-24_owner-status-brief.md` — full record (683 lines); all 23 inline notes from prior session confirmed in place
+- `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex` — full read (686 lines)
+
+---
+
+### G5 — Forward Pointer Verification (Confirmed No-Op)
+
+`\label{hyp:orthogonal_escape}` confirmed present at line 136, inside the `\begin{hypothesis}` environment in §3. The `\ref{hyp:orthogonal_escape}` on line 99 (§2.2) resolves correctly. No action required.
+
+---
+
+### Flags Raised from Full TeX Read
+
+Two issues found during the full read that were not in the task list.
+
+**Flag 1 — Style file option (line 8):**
+`\usepackage[eandd]{neurips_2026}` — the `eandd` option targets the Evaluations & Datasets track. Since the paper has pivoted to Main Track, this must be changed before submission. The correct Main Track option needs to be confirmed from the NeurIPS 2026 template zip (`neurips_2026.sty`). Not currently in the brief or task list.
+
+**Flag 2 — Contribution 2 broken reference (line 81):**
+The current text reads: "Our framework is designed to enable deep MCTS exploration on a single 80GB GPU for models up to 20B parameters, a capability we verify empirically in Experiment~3."
+
+When Experiment 3 is cut to Future Work, the clause "a capability we verify empirically in Experiment~3" becomes a broken promise — the paper claims empirical verification that no longer exists in the submission scope. The fix requires rewriting this sentence: either remove the empirical claim entirely, or reframe it to reference Theorem 1 (which validates zero drift at 0.00e+00 over 200 cycles) while deferring memory efficiency profiling to Phase B.
+
+**Entanglement with DRAFT-HOLD blocks:** This flag is not independent of the DRAFT-HOLD blocks at ~lines 291 and 504 (GAP-C2-03 + GAP-C2-04). Those blocks note that the memory proposition as written claims ~50MB accumulator overhead, but the code uses full-shape `S×d` accumulators (~40GB in practice) and stores a baseline clone adding another `M_KV`. Experiment 3 would have produced measurements that directly contradict the proposition. The Contribution 2 sentence fix and the DRAFT-HOLD block resolution must be coordinated: the rewritten Contribution 2 wording must not promise memory efficiency numbers that the corrected proposition will not support.
+
+**Brief check result:** The brief's §A2 (line 170) notes "Claim 6 → deferred/future-tense; 20B scale validation is Phase B only" — this partially addresses the issue. However, it does not identify the specific sentence in Contribution 2 that references Experiment 3, does not name the broken reference as a distinct fix item, and does not document the entanglement with the DRAFT-HOLD blocks at lines 291 and 504. These findings are not currently captured in the brief.
+
+---
+
+### §8 Timeline and Milestones — Cut
+
+**File:** `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
+**Location:** Lines 561–581 (comment block + `\section{}` + table)
+**Status:** Removed entirely; flagged `[REVISION | §8-cut | 2026-04-24]` for audit
+
+No `\ref{tab:timeline}` anywhere in the paper — label was only defined, never referenced. Cut is clean with no dangling references. Saves ~0.5 page of content toward the 9-page limit.
+
+---
+
+### §5 Experiments 3–5 Cut + §7 Future Work Added
+
+**File:** `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`
+**Status:** Applied; flagged `[REVISION | §5-Exp3-5-cut | 2026-04-24]` and `[REVISION | §7-FutureWork | 2026-04-24]` for audit
+
+**Edit 1 — §5 cut:** Removed the three `\paragraph{Experiment 3/4/5}` blocks and their `% [IMPL: TODO]` comments. Replaced with a single revision marker pointing to §7 Future Work.
+
+**Edit 2 — §7 Future Work added:** New `\subsection{Future Work}` inserted before `\subsection{Ethical Considerations}`. Covers: Experiments 3–5 (sparse accumulators, execution sandbox, Procrustes alignment), gpt-oss-20b 20B-scale Phase B validation (router logit entropy as H-Neuron proxy), and sparse accumulator implementation required before memory complexity proposition can be empirically validated.
+
+**CRITIQUE NOTE added:** Flags for confirmation with Tianyu Shi (or by checking accepted NeurIPS 2024/2025 papers) whether a dedicated Future Work subsection is standard practice for NeurIPS Main Track, or whether this content should be folded into Limitations/Discussion.
+
+---
+
+### Pre-Experiment 2 Rewrite — Adjacent Fixes
+
+Three edits applied before rewriting Experiment 2, to resolve ripple effects identified during context read.
+
+**Fix 3 — Phase B subsection header:** Renamed `\subsection{Phase B: Scaling to Target Models}` → `\subsection{Experiments}`. Opening sentence rewritten from "open-weight models on a single H100 (80GB)" to Llama~3.2-1B-Instruct and 3B-Instruct on RTX~3060 (12GB VRAM). Forward pointer added to §7 Future Work for H100/20B scaling. Flagged `[REVISION | PhaseB-header | 2026-04-24]`.
+
+**Fix 2 — Table 2 EDITOR NOTE:** Added an UPDATE block inside the existing box comment noting that Experiment 2 has been reframed to Option 2 (latent signal quality per compute unit) and that the eventual results column will compare per-node telemetry richness (OEI, σ_H, ρ_R) rather than full-response ASR.
+
+**Item 1 flag — Orphaned Evaluation Metrics:** Added CRITIQUE NOTE before the ASR bullet in §5.4 identifying four metrics now orphaned by the experiment cuts: ASR (Experiment 2 reframed), pass@1, Cosine Similarity of Semantic Intent, and Memory Efficiency Ratio (all tied to Experiments 3–5, now cut). Decision deferred: cull vs. qualify as Phase B metrics. Gut preference noted as cull.
