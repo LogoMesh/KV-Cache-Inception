@@ -151,3 +151,64 @@ The σ_H paragraph in §7.4 is now genuinely well-characterized: identified, thr
   4. Pre-print v0 to arXiv (gated on Tianyu's author-list sign-off + Days 2–7 fixes; the latter are all done).
   5. Days 15–20 work: second-pass code-paper consistency check, final REVISION marker audit, submission prep.
 - 17 days of buffer remaining to 2026-05-25 deadline. Standard holding pattern resumed.
+
+### 16:30 — Session B — Read drafts v6 σ_H-resolved + post-merge verification context
+- Files read: `docs/logs/2026-05-07_session-A-prose-drafts-v6-σH-resolved.md` (full).
+- Trigger: post-merge B6 verification confirmed Max's per-layer H-Neuron calibration (commit `ca3ec8e` from `max-toscano@976fce5`) resolved σ_H = 0; σ_H now rises monotonically with α (0.228→0.330; 14–15/17 layers firing); ρ_R/OEI bit-identical pre/post merge; TDS shifts ~7–13% downstream of σ_H non-zero; Theorem 1 holds end-to-end.
+- Plan: apply pieces #1, #2, #4 (Table + Results + §7.4 rewrite); skip #3 (Impl Notes item ii) pending Session A clarification on a structural mismatch.
+
+### 16:40 — Session B — Applied piece #1: Table 1 σ_H + TDS rows + caption rewrite
+- File:line: docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex:353
+- Marker tag: `[REVISION | Exp1-table-σH-TDS-update | 2026-05-07]`
+- Replaced σ_H row from {0,0,0,0,0} to {0.228, 0.237, 0.247, 0.267, 0.330}; TDS row from {0.094, 0.090, 0.084, 0.075, 0.046} to {0.084, 0.080, 0.076, 0.068, 0.040}; caption rewritten to reflect both measurement-pipeline issues resolved (W_K projection + per-layer H-Neuron calibration). OEI and ρ_R rows unchanged (verified bit-identical pre/post merge).
+
+### 16:45 — Session B — Applied piece #2: §5 Experiment 1 Results paragraph reorder + σ_H + TDS update
+- File:line: docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex:341
+- Marker tag: `[REVISION | Exp1-results-σH-resolved | 2026-05-07]` (layered alongside `Exp1-reframe-with-results-α+` 2026-05-06 and `Exp1-σH-verification-update` 2026-05-06)
+- Replaced Results paragraph: new ordering OEI → ρ_R → σ_H → TDS with new σ_H sentence ("rises monotonically with α from 0.228 to 0.330, with 14–15 of 17 layers firing across the sweep, confirming that the bottom-up channel responds to the steering perturbation under per-layer H-Neuron calibration as Eq.~\ref{eq:hneuron_stress} specifies") and updated TDS numbers (0.084→0.040). Bailey-consistency framing preserved — TDS still decreases monotonically with α. Interpretation paragraph (next) untouched.
+
+### 16:50 — Session B — SKIPPED piece #3: Implementation Notes item ii cleanup — flagged structural mismatch via §7
+- No file change applied.
+- Flag: drafts v6 piece #3 instructs removing or rephrasing item (ii) of §5 Implementation Notes as "layer aggregation, now resolved." But item (ii) in current TeX is specifically about the **RepE honesty probe** layer aggregation, not the H-Neuron channel. Max's per-layer H-Neuron calibration fix (commit `ca3ec8e`) is on the σ_H/H-Neuron side, not the RepE side. Eq.~\ref{eq:hneuron_stress} is the H-Neuron equation. Removing item (ii) would delete a still-valid RepE Phase-2 caveat; rephrasing it would replace one channel's caveat with another channel's resolution note (non-sequitur). Per coordination protocol ("don't smooth in place — flag back via §7"), wrote a §7 reply giving Session A two clean options: (A) leave item (ii) as-is (σ_H resolution is already visible in §7.4 + Table caption + Results); (B) keep item (ii) and add a new item documenting the resolved H-Neuron calibration.
+
+### 16:55 — Session B — Applied piece #4: §7.4 paragraph 3 substantive rewrite
+- File:line: docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex:529
+- Marker tag: `[REVISION | §7.4-σH-resolved | 2026-05-07]` (5th in the layered audit trail; four prior markers preserved: `§7-measurement-prereqs` 2026-05-06 AM, `§7.4-post-fix-update` 2026-05-06 PM, `§7.4-σH-verification-update` 2026-05-06 EOD, `§7.4-σH-investigation-update` 2026-05-07 PM)
+- Substantive rewrite: investigation arc (three-prompt verification + per-neuron-ReLU test) preserved as valid methodology; conclusion shifts from "second measurement-pipeline issue, resolution left as future work" to "Both measurement-pipeline issues...are therefore resolved in the implementation reported here." Position/context-discrepancy hypothesis dropped entirely (empirically refuted). Honest framing of the fix: initial implementation identified top-K H-Neuron indices once at the deepest layer and applied them uniformly across the layer stack as a Phase 2 approximation; Eq.~\ref{eq:hneuron_stress} as written specifies per-layer indices and per-layer baselines. Net ~−20 words. Fourth paragraph of §7.4 (Theorem 1 + Memory Proposition reassurance) unchanged.
+
+### 17:00 — Session B — Updated §4.5 (GAP-C1-01 + GAP-C1-XX dense-scoring-path resolved) + §4.6 row 169 (closed as resolved); wrote §7 reply
+- §4.5 GAP-C1-01 per-layer H-Neuron: ✅ resolved 2026-05-07 (Max's commit `ca3ec8e`).
+- §4.5 GAP-C1-XX dense-scoring-path silent failure: ✅ resolved 2026-05-07 PM (per-layer H-Neuron calibration was the actual fix; position/context hypothesis empirically refuted; full investigation arc retained as documentation in §7.4 paragraph 3).
+- §4.5 "Phase 3 holds" row split: GAP-C1-05 PCA conversion remains 🛑 hold; GAP-C1-01 line removed from holds (now resolved).
+- §4.6 row 169 (σ_H tracker): ✅ CLOSED — RESOLVED 2026-05-07 PM. Status text now reflects the full three-patch arc (v3 + v5 + v6) and points to the post-merge verification report.
+- §7 message appended: Session B → Session A flagging piece #3 mismatch + summarizing the three pieces that landed cleanly. Awaiting Session A's call on Option A (leave item ii) vs Option B (add new resolved-H-Neuron item).
+- File length: paper went 649 → 652 lines (+3 net for the three new markers; the Results paragraph net grew slightly, the §7.4 paragraph 3 shrunk slightly, the Table caption grew slightly).
+
+End-of-day state: σ_H story closed for May 25. Paper now reads "two measurement-pipeline issues identified, both resolved." Outstanding: piece #3 disposition (awaiting Session A), Memory Complexity Proposition rewrite (gated on Max's simplified Exp 3 → §4.6 row 168), EMNLP style template + page-count check, Tianyu's arXiv author-list sign-off, second-pass code-paper consistency, submission prep.
+
+### 17:30 — Session B — Option A confirmed by Session A; piece #3 closes as N/A; day closes clean
+- No file change applied. This entry records the confirmation receipt.
+- Session A's §7 reply (already appended to action plan §7 around line 595) confirms my channel-mismatch catch on piece #3 was correct: item (ii) is RepE / ρ_R layer aggregation (Zou et al. §4.3 middle-20-layers recommendation), not H-Neuron. Drafts v6 piece #3 was based on a misidentification of which channel item (ii) covers. **Option A confirmed**: leave item (ii) as-is; piece #3 closes as N/A — no edit applied, no edit needed.
+- §5 Implementation Notes inventory (per Session A's confirmation) — all currently-listed items remain valid: (i) RepE PCA vs mean-diff (Phase 3 / GAP-C1-05); (ii) RepE layer aggregation all L vs middle 20 (Zou et al. §4.3); (iii) per-layer steering vectors vs broadcast (§4.2); (iv) sparse vs full-shape accumulators + baseline-clone (gated on Max's simplified Exp 3); (v) Theorem 1 unaffected.
+- σ_H resolution-visibility check: covered in three places — §7.4 paragraph 3 (`§7.4-σH-resolved`), Table 1 caption (`Exp1-table-σH-TDS-update`), §5 Experiment 1 Results paragraph (`Exp1-results-σH-resolved`). Sufficient for reviewer visibility; no additional Implementation Notes item required.
+- Piece #9 batch effective scope: three pieces (#1 Table, #2 Results paragraph, #4 §7.4 rewrite) — all applied; piece #3 N/A.
+- `memory/project_context.md` updated by Josh/Session A: σ_H bullet moved from "What's identified, not resolved" to a new "What was resolved 2026-05-07" section. "What's broken" landscape now: 1 issue (Memory Complexity Proposition placeholder, gated on Max's simplified Exp 3).
+- merge/max-fixes → main pushed (origin/main HEAD: post-merge artifacts commit `461b53a`); 179 tests passing on main.
+- 18 days of buffer to 2026-05-25.
+
+End-of-day clean. Both Opus sessions + diagnostic session in standing pattern.
+
+**Outstanding (none blocking):**
+1. Max's simplified Exp 3 (3 VRAM measurements, 30 min) → §4.6 row 168 (four-place memory-complexity coordinated rewrite)
+2. EMNLP 2026 style template download + page-count check (Josh)
+3. Tianyu's arXiv author-list sign-off → gates pre-print v0
+4. Days 15–20: second-pass code-paper consistency, final REVISION marker audit, submission prep
+5. Optional: three-prompt σ_H verification under post-merge code (memory pointer set; future session can pick up if useful)
+
+### ~21:00 — Session A — Gemini deep-research pre-mortem prompt drafted; day closes
+- File: `docs/logs/2026-05-07_gemini-pre-mortem-EMNLP-prompt.md` (new)
+- Self-contained prompt for Gemini 3.1 Pro Deep Research mode targeting EMNLP-specific peer-review concerns. Asks Gemini to:
+  (1) read the canonical TeX end-to-end alongside 3–5 accepted EMNLP/ACL Findings papers in mechanistic interpretability / activation steering / alignment monitoring; (2) pre-mortem the locked structural decisions (algorithm-headline framing, single-experiment scope, Bailey peer-measurement framing, two-issues-resolved stance, OEI prominence, anti-OE empirical observation, page budget); (3) produce a failure-mode report with EMNLP-fit-specific concerns, top-3 highest-leverage edits for 18 remaining days, an honest acceptance-probability estimate, and the class of error the team's Claude pre-mortems are likely to be blind to.
+- Anti-anchoring rules included (no validation; spot-check primary sources; don't soften conclusions; don't invent strengths to balance criticisms; foreground EMNLP-specific expertise).
+- Memory `recast_action_plan.md` extended with a "Fresh-session orientation" section: read order for the next Claude session, expected workflow when Josh returns with Gemini's report (triage findings → draft patches → push back on conflicts → log out-of-scope items to §4.6 standing tracker).
+- Day-close state: paper artifact stable Option α+ on main (origin/main HEAD: 461b53a); 18 days of buffer; both measurement-pipeline issues resolved; coordination across two Opus sessions + diagnostic session aligned in §4.6 standing pattern; Gemini pre-mortem prompt ready to dispatch in a future session.

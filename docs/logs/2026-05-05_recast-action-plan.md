@@ -167,7 +167,7 @@ Items that span multiple TeX locations and must be updated together when their g
 | Coordinated update | TeX locations | Gating event | Owner |
 |---|---|---|---|
 | Memory-complexity numbers: replace "constant-factor multiple" / "approximately" placeholders with measured constants | Abstract (TeX:51), §1 Contribution 1 (TeX:81), §5 Implementation Notes item iv (TeX ~298), §6 Memory Complexity Proposition (TeX:545–551) | Max's simplified Exp 3 (3 VRAM measurements at b=3, d∈{3,5,10}) lands | [A] drafts coordinated patch → [B] applies as one batch |
-| σ_H finding: verification ran 2026-05-06 PM with three-prompt comparison. **Outcome: REFUTES H_A** (calibration-prerequisite framing) — σ_H = 0 across all 17 layers in all three regimes including a Prompt B drawn verbatim from the calibration's `_COERCED_EXAMPLES` set. Indicates a silent-failure mode in the dense-scoring path itself, distinct from and independent of GAP-C2-06. **Patches applied 2026-05-06 EOD**: marker `[REVISION \| §7.4-σH-verification-update \| 2026-05-06]` at TeX:524 (replaces §7.4 paragraph 3 with three-prompt comparison + dense-scoring-path conclusion + folded-in Theorem 1 / Proposition reassurance) and `[REVISION \| Exp1-σH-verification-update \| 2026-05-06]` at TeX:339 (one-sentence replacement in §5 Experiment 1 Results paragraph; ~5 words shorter than morning's framing). **Additive patch applied 2026-05-07 PM** (piece #8 from drafts v5, GAP-C1-02 investigation outcome): marker `[REVISION \| §7.4-σH-investigation-update \| 2026-05-07]` at TeX:526 (replaces the "Constancy of σ_H..." sentence with two new sentences capturing GAP-C1-02 ruling-out + position/context discrepancy hypothesis; rest of paragraph preserved verbatim from yesterday's drafts v3 patch; net +60 words). Four §7.4 markers now layered in TeX as chronological audit trail: `§7-measurement-prereqs` (TeX:516, AM 2026-05-06) → `§7.4-post-fix-update` (TeX:517, PM 2026-05-06) → `§7.4-σH-verification-update` (TeX:525, EOD 2026-05-06) → `§7.4-σH-investigation-update` (TeX:526, 2026-05-07). Net effect: paper now identifies *two* measurement-pipeline issues under Option α+ (one resolved via W_K projection; one identified, partially diagnosed via GAP-C1-02 ruling-out, position/context discrepancy named as remaining likely cause, validation deferred to future work). | §7.4 paragraph 3 + §5 Experiment 1 σ_H sentence | ✅ **closed 2026-05-06 EOD** — original drafts applied; **additive patch landed 2026-05-07 PM** (piece #8); σ_H story complete for May 25, further investigation post-EMNLP | [A] drafted ✅ → [B] applied ✅ (twice; v3 + v5) |
+| σ_H finding: full resolution arc. (1) 2026-05-06 PM three-prompt verification refuted H_A (calibration-prerequisite framing). (2) 2026-05-07 PM GAP-C1-02 investigation ruled out per-neuron normalization as the cause and named position/context discrepancy as the remaining hypothesis. (3) **2026-05-07 (later) post-merge B6 verification** (`docs/logs/2026-05-07_post-merge-verification-report.md`) confirmed Max's per-layer H-Neuron calibration (commit `ca3ec8e` from `max-toscano@976fce5`) is the fix — σ_H now rises monotonically with α (0.228→0.330; 14–15/17 layers firing); ρ_R/OEI bit-identical pre/post merge; TDS shifts ~7–13% downstream of σ_H now non-zero; Theorem 1 holds end-to-end. **Paper updates from drafts v6 piece #9 applied 2026-05-07 PM**: `Exp1-table-σH-TDS-update` (TeX:353) — Table 1 σ_H + TDS rows + caption rewrite reflecting both issues resolved; `Exp1-results-σH-resolved` (TeX:341) — Results paragraph reorder (OEI → ρ_R → σ_H → TDS) with new monotonic σ_H sentence + updated TDS numbers; `§7.4-σH-resolved` (TeX:529) — substantive §7.4 paragraph 3 rewrite from "second measurement-pipeline issue, resolution left as future work" → "Both measurement-pipeline issues...are therefore resolved in the implementation reported here." Position/context-discrepancy hypothesis from the v5 patch dropped entirely (empirically refuted). Five §7.4 markers now layered in TeX as full chronological resolution arc: `§7-measurement-prereqs` (TeX:516) → `§7.4-post-fix-update` (TeX:517) → `§7.4-σH-verification-update` (TeX:525) → `§7.4-σH-investigation-update` (TeX:528) → `§7.4-σH-resolved` (TeX:529). Net effect: paper now identifies two measurement-pipeline issues under Option α+, **both resolved in the implementation reported here.** Piece #3 of drafts v6 (Implementation Notes item ii cleanup) was NOT applied — flagged via §7 reply for Session A clarification (item ii is RepE-side, while the H-Neuron fix is a separate concern not yet documented in Implementation Notes). | §7.4 paragraph 3 + §5 Experiment 1 Results paragraph + Table 1 + (item ii cleanup pending Session A clarification) | ✅ **CLOSED — RESOLVED 2026-05-07 PM** via Max's per-layer H-Neuron calibration | [A] drafted ✅ → [B] applied ✅ (v3, v5, v6 — three patches) |
 | Bug-fix supplementary content: if richer post-fix data emerges (e.g., per-layer OEI, alternate monitor specifications) | §5 supplementary or appendix | Optional follow-up by Josh | [A] drafts → [B] applies |
 
 ### 4.5 Max's lane (Contribution 1 — unchanged from his briefing)
@@ -176,9 +176,10 @@ Items that span multiple TeX locations and must be updated together when their g
 |---|---|---|---|
 | GAP-C1-02 per-neuron ReLU | [Max] | ⏳ ongoing — **2026-05-07 confirmed empirically NOT applied** in current `_raw_dense_score` (logomesh/hneuron_monitor.py:247–251); also confirmed: applying it tentatively does NOT fix σ_H = 0 — cause is downstream of per-neuron normalization | max-briefing-2026-04-21.md |
 | GAP-C1-03 separate calibration sets (hallucination, not coercion) | [Max] | ⏳ ongoing — **2026-05-06 verification confirms the issue empirically**: `scripts/run_kv_mcts.py:55–70` puts `_COERCED_EXAMPLES` (jailbreak-style) in the `hallucinated_examples` slot of HNeuronMonitor calibration; should be hallucination-style per `hneuron_monitor.py:23–27` docstring (e.g., "Battle of Zorvak in 1842", "moons of Planet Quasar-7") | max-briefing-2026-04-21.md |
-| **GAP-C1-XX dense-scoring-path silent failure** (identified 2026-05-06; refined 2026-05-07) — σ_H = 0 across all regimes. **2026-05-07 update**: GAP-C1-02 confirmed empirically NOT applied; Path B applied per-neuron-ReLU fix tentatively + re-ran three-prompt verification; σ_H still zero. Cause is downstream of per-neuron normalization. Most plausible remaining cause: **position/context discrepancy** between calibration-time hidden states (last-input-token, prompt-only forward pass) and inference-time hidden states (last-token, prompt+generation forward pass under steered cache). Documented in §7.4 paragraph 3 (drafts v3 + v5 patches); resolution is post-EMNLP work | [Max] (investigation candidate) | 🆕 identified 2026-05-06; refined 2026-05-07; not blocking May 25 | `docs/logs/2026-05-05_diagnostic-report.md` "σ_H VERIFICATION FOLLOW-UP" + "σ_H GAP-C1-02 INVESTIGATION" |
+| **GAP-C1-XX dense-scoring-path silent failure** (identified 2026-05-06; refined 2026-05-07; **resolved 2026-05-07 PM**) — σ_H constancy traced through three-prompt verification + per-neuron-ReLU ruling-out; **per-layer H-Neuron calibration was the actual fix.** Position/context-discrepancy hypothesis empirically refuted. Post-merge B6 verification (`docs/logs/2026-05-07_post-merge-verification-report.md`) confirms σ_H rises monotonically with α (0.228→0.330; 14–15/17 layers firing); ρ_R/OEI bit-identical pre/post merge; TDS shifts ~7–13% downstream of σ_H now non-zero; Theorem 1 holds (residual_norm = 0). Paper updates landed via piece #9: Table~\ref{tab:exp1-results} (`Exp1-table-σH-TDS-update` at TeX:353), §5 Experiment 1 Results paragraph (`Exp1-results-σH-resolved` at TeX:341), §7.4 paragraph 3 substantive rewrite (`§7.4-σH-resolved` at TeX:529; conclusion now "both measurement-pipeline issues resolved" rather than "one resolved, one identified-but-deferred"; position/context hypothesis dropped entirely). | [Max] (investigation closed) | ✅ **resolved 2026-05-07 PM** via Max's commit `ca3ec8e` from `max-toscano@976fce5` | `docs/logs/2026-05-07_post-merge-verification-report.md` |
 | GAP-C1-11 step counter | [Max] | ⏳ ongoing | max-briefing-2026-04-21.md |
-| Phase 3 holds (GAP-C1-01 per-layer H-Neuron, GAP-C1-05 PCA conversion) | [Max] | 🛑 hold | max-briefing-2026-04-21.md |
+| GAP-C1-01 per-layer H-Neuron | [Max] | ✅ **resolved 2026-05-07** via Max's commit `ca3ec8e` from `max-toscano@976fce5` (per-layer top-K H-Neuron indices and per-layer baselines, matching Eq.~\ref{eq:hneuron_stress} as written) | max-briefing-2026-04-21.md |
+| Phase 3 hold: GAP-C1-05 PCA conversion | [Max] | 🛑 hold | max-briefing-2026-04-21.md |
 
 ---
 
@@ -545,6 +546,61 @@ I considered §2 reordering (move §2.1 later in §2 so the algorithm-relevant b
 After this lands, all §1 / §2 / §3 / §5 / §7 framing under Option α+ is consistent end-to-end. README rewrite is unblocked (Session A, target Days 8–14 per §4.3).
 
 Standard holding pattern continues otherwise: Max's simplified Exp 3 → §4.6 row 168 (memory-complexity 4-place rewrite); EMNLP style template → §4.2 style switch + page-count check; optional σ_H investigation → file ready, Josh's call to fire.
+
+### 2026-05-07 PM — Session B → Session A (drafts v6 piece #9 applied; piece #3 skipped, structural flag)
+
+**Subject**: Pieces #1, #2, #4 of drafts v6 landed cleanly (Table 1 + Results paragraph + §7.4 paragraph 3 substantive rewrite). Piece #3 (Implementation Notes item ii cleanup) **not applied** — flagging a structural mismatch for your call.
+
+**The three landed pieces:**
+
+- `Exp1-table-σH-TDS-update` at TeX:353 — Table 1 σ_H row updated to {0.228, 0.237, 0.247, 0.267, 0.330}; TDS row to {0.084, 0.080, 0.076, 0.068, 0.040}; caption rewritten to reflect both measurement-pipeline issues resolved.
+- `Exp1-results-σH-resolved` at TeX:341 — Results paragraph reordered to OEI → ρ_R → σ_H → TDS with the new monotonic-σ_H sentence and updated TDS numbers; Bailey-consistency framing preserved (TDS still decreases monotonically).
+- `§7.4-σH-resolved` at TeX:529 — substantive rewrite of §7.4 paragraph 3 from "second measurement-pipeline issue, resolution left as future work" to "Both measurement-pipeline issues...are therefore resolved in the implementation reported here." Position/context-discrepancy hypothesis dropped entirely as you specified. Five layered markers in TeX now form the full chronological resolution arc.
+
+All cross-references resolve (`tab:exp1-results`, `sec:measurement-prereqs`, `eq:hneuron_stress`, `hyp:orthogonal_escape`). Interpretation paragraph (after Results) untouched, as instructed. File length 649 → 652 lines net for the three pieces.
+
+**Piece #3 (Implementation Notes item ii) — NOT applied; flagging structural mismatch:**
+
+The drafts v6 piece #3 instructs removing or rephrasing §5 Implementation Notes item ii (which it labels "layer aggregation, now resolved"). But item (ii) in the current TeX is specifically about the **RepE honesty probe** layer aggregation: "*(ii) Layer aggregation for the honesty probe (§4.1).* The Phase~2 implementation aggregates the RepE honesty signal across all $L$ layers; \\citet{zou2023repe} validate the honesty probe on the middle layers only. Layer-restricted aggregation is deferred to Phase~3."
+
+The H-Neuron per-layer calibration fix (Max's commit `ca3ec8e`) is a different channel from the RepE honesty probe. Eq.~\ref{eq:hneuron_stress} is the H-Neuron equation (σ_H), not the RepE/ρ_R one. The Implementation Notes paragraph as currently constructed has no item documenting the H-Neuron Phase 2 calibration shortcut — that issue arose post-consolidation (it was never in the original DRAFT-HOLD blocks), surfaced empirically through the σ_H investigation arc, and resolved via Max's commit.
+
+So removing item ii would delete a still-valid RepE caveat (RepE all-L aggregation is unchanged — Max's fix didn't touch the RepE side). Rephrasing item ii to talk about H-Neuron calibration would change the topic of an item from one channel to another, leaving a non-sequitur where the original RepE concern used to be. Both options misalign with the actual code state.
+
+**Two clean options I see; either is yours to call:**
+
+- **Option A — leave item ii as-is, do nothing.** The σ_H resolution is already documented in §7.4 paragraph 3 (newly rewritten under `§7.4-σH-resolved`) and visibly in Table 1 caption + §5 Experiment 1 Results. Nothing further is required for reviewer-visibility of the resolution. Item ii continues to honestly document an unresolved RepE Phase-2 caveat.
+- **Option B — keep item ii (RepE caveat preserved) and add a new item documenting the resolved H-Neuron calibration.** New item could read: *"(vi) Resolved 2026-05-07: Layer-aggregate H-Neuron calibration was a Phase 2 approximation; per-layer calibration as Eq.~\ref{eq:hneuron_stress} specifies is now applied; the post-merge σ_H measurements in §\ref{sec:experiments} reflect the resolved implementation."* Net adds one item to the list; makes the resolution visible in the §5 Implementation Notes paragraph too (currently it's only in §7.4 + Table caption).
+
+If you'd prefer Option B (or some variant), draft the exact new item text and I'll apply it. If you'd prefer Option A, no further action.
+
+**§4.5 + §4.6 updates landed:** GAP-C1-01 marked ✅ resolved (linked to Max's commit); GAP-C1-XX dense-scoring-path row marked ✅ resolved (replaces "investigation candidate" status with "resolved via per-layer H-Neuron calibration"; position/context hypothesis empirically refuted noted explicitly); §4.6 row 169 closed as ✅ resolved with full three-patch arc (v3 + v5 + v6) summarized.
+
+Holding for: your call on Option A vs B, Max's simplified Exp 3 (§4.6 row 168), EMNLP style template, Tianyu's arXiv author-list sign-off.
+
+### 2026-05-07 PM (later) — Session A → Session B (Option A confirmed; piece #3 closes)
+
+**Subject**: You're right; piece #3 was based on a misidentification. Option A: leave Implementation Notes alone.
+
+Confirmed: §5 Implementation Notes item (ii) is about the **RepE / ρ_R** channel's layer aggregation (all L vs. middle 20 layers, per Zou et al. §4.3 recommendation) --- *not* H-Neuron. Two channels, two distinct Phase 2 caveats. My v6 piece #3 conflated them and would have either deleted a still-valid RepE caveat or mislabeled the resolution. Good catch.
+
+**Decision: Option A. No further Implementation Notes edits.** Reasons:
+
+1. Implementation Notes paragraph is structurally about *unresolved* Phase 2 approximations. Adding resolved items dilutes its purpose.
+2. σ_H resolution is already documented in three locations: §7.4 paragraph 3 (substantive rewrite landed today), Table 1 caption ("calibration applied per-layer per Eq.~\ref{eq:hneuron_stress}"), and Results paragraph ("under per-layer H-Neuron calibration"). A fourth in Implementation Notes would be redundant.
+3. Page budget --- we're approaching the EMNLP 8-page limit; saving the 3--5 lines matters.
+4. Narrative is cleaner: paragraph lists what's still Phase 2; §7.4 + Table + Results show what got resolved.
+
+The Implementation Notes still-extant items remain accurate as Phase 2 caveats:
+- (i) RepE PCA vs. mean-diff (open --- Phase 3 / GAP-C1-05)
+- (ii) RepE layer aggregation, all L vs. middle 20 (open --- Zou et al. §4.3 recommendation)
+- (iii) per-layer steering vectors vs. broadcast (open --- §4.2 paper-vs-code)
+- (iv) sparse vs. full-shape accumulators + baseline-clone overhead (open, gated on Max's simplified Exp 3)
+- (v) Theorem 1 unaffected by these distinctions
+
+Piece #3 closed as **N/A — based on a misidentification, no edit applied.** Piece #9 batch is therefore three pieces (#1, #2, #4), all landed. The σ_H story for May 25 is closed.
+
+Holding for the standard outstanding items: Max's simplified Exp 3 (§4.6 row 168 four-place memory-complexity rewrite), EMNLP style template + page-count check, Tianyu's arXiv author-list sign-off, Days 15--20 second-pass code-paper consistency check + submission prep.
 
 ---
 
