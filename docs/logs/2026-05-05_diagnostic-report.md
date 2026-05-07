@@ -393,3 +393,72 @@ INTERPRETATION (one sentence, no recommendations):
   σ_H pipeline as intended), so the σ_H = 0 cause is downstream of GAP-C1-02.
 
 ================================================================
+POST-MERGE VERIFICATION — 2026-05-07
+================================================================
+
+(Full report: docs/logs/2026-05-07_post-merge-verification-report.md.)
+
+BRANCH STATE:
+  Branch: merge/max-fixes
+  Commits ahead of main: 2
+  Hash 1: ca3ec8e (per-layer H-Neuron calibration + FP32 accumulator hardening, from 976fce5)
+  Hash 2: 7bdb619 (3 bug fixes — reward sigmoid normalization, blocked counter, bare except)
+
+POST-MERGE B6 RUN (full alpha sweep, --nodes 25 --depth 3 --branches 5
+                   --alpha-values 0.1 0.5 1.0 2.0 5.0):
+  Status: COMPLETE
+  Total runtime: 2 min 59 sec wall (start 2026-05-07T06:07:44Z → end 2026-05-07T06:10:43Z)
+  residual_norm: 0.00e+00 (Theorem 1 holds end-to-end)
+  oei_valid (any False?): 0 / 25 non-root nodes (root is False by design)
+  Calibration log line: "Calibration complete. Mode: dense/MLP. Layers: 17. H-Neurons per layer: 50"
+
+  Per-α telemetry (within-α range bit-identical at temperature=0):
+    α=0.1: σ_H_mean=0.228252  σ_H non-zero=14/17  ρ_R_mean=-1.306346  TDS=0.083559  OEI=0.990905
+    α=0.5: σ_H_mean=0.236740  σ_H non-zero=14/17  ρ_R_mean=-1.257858  TDS=0.080212  OEI=0.991165
+    α=1.0: σ_H_mean=0.247375  σ_H non-zero=14/17  ρ_R_mean=-1.198148  TDS=0.076101  OEI=0.991547
+    α=2.0: σ_H_mean=0.267263  σ_H non-zero=14/17  ρ_R_mean=-1.080120  TDS=0.068344  OEI=0.992407
+    α=5.0: σ_H_mean=0.329815  σ_H non-zero=15/17  ρ_R_mean=-0.533443  TDS=0.040312  OEI=0.994995
+
+COMPARISON TO PAPER §5 TABLE 1 (post-W_K-fix-only run, tmp/runs/2026-05-06_b6_post-fix.json):
+  OEI: paper {0.990905, 0.991165, 0.991547, 0.992407, 0.994995}
+       merged {0.990905, 0.991165, 0.991547, 0.992407, 0.994995}
+       BIT-IDENTICAL.
+  ρ_R: paper {-1.306346, -1.257858, -1.198148, -1.080120, -0.533443}
+       merged {-1.306346, -1.257858, -1.198148, -1.080120, -0.533443}
+       BIT-IDENTICAL.
+  TDS: paper {0.094414, 0.089815, 0.084467, 0.075068, 0.045962}
+       merged {0.083559, 0.080212, 0.076101, 0.068344, 0.040312}
+       Delta {-0.010855, -0.009603, -0.008366, -0.006724, -0.005650} (≈7–13% relative).
+       Material change. Downstream of σ_H now being non-zero (TDS = JSD(σ_H, ρ_R)).
+  σ_H: paper {0.000000, 0.000000, 0.000000, 0.000000, 0.000000}
+       merged {0.228252, 0.236740, 0.247375, 0.267263, 0.329815}
+       Material change. Now monotonic with α; 14–15 of 17 layers non-zero.
+  Agreement: PARTIAL — OEI and ρ_R bit-identical; σ_H column fundamentally different;
+  TDS shifted as a direct consequence of σ_H change.
+
+THREE-PROMPT σ_H VERIFICATION:
+  Skipped per the brief — STEP 2 already shows σ_H_mean > 0 at every α, so Q1 is
+  conclusively answered without needing the deeper run.
+
+ANSWERS:
+
+Q1 — Does per-layer H-Neuron calibration fix σ_H = 0?
+  YES. σ_H_mean is non-zero at every α and varies monotonically (0.228 → 0.330) on the
+  same merged code that previously gave σ_H = 0 across three prompt regimes (including
+  a coercion-class prompt from the calibration class) under per-aggregate calibration
+  with the GAP-C1-02 fix tentatively applied. Per-layer calibration is the change that
+  flipped σ_H from constant-zero to varying-with-α.
+
+Q2 — Does the merged code reproduce paper §5 Table 1?
+  PARTIAL. OEI and ρ_R bit-identical to paper. σ_H and TDS materially changed
+  (σ_H column fundamentally different — now non-zero; TDS shifted by 7–13% relative as
+  a downstream consequence of σ_H change).
+
+ERRORS / WARNINGS:
+  None of the flagged silent-failure patterns appeared. No "_broadcast_to: shape
+  mismatch", no "OEI computation failed", no "dummy OEI", no CUDA OOM, no deepcopy
+  errors. Only non-INFO line was the pre-existing transformers `torch_dtype` deprecation.
+
+OUTPUT JSON: ./tmp/runs/2026-05-07_b6_post-merge.json
+
+================================================================
