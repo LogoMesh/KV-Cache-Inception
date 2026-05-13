@@ -96,7 +96,7 @@ A **failure-mode report** organized as:
 
 ## Format
 
-Write the report as a well-structured markdown response. Length should be proportional to depth of finding — typically 2,000–4,000 words. Save to a file the user can pass back to Claude (suggest `docs/logs/2026-05-08_gemini-pre-mortem-EMNLP-findings.md` if the user wants a specific path).
+Write the report as a well-structured markdown response. Length should be proportional to depth of finding — typically 2,000–4,000 words. Save to a file the user can pass back to Claude (suggest `docs/logs/2026-05-07_gemini-pre-mortem-EMNLP-findings.md` if the user wants a specific path).
 
 End with: (a) the top-1 most actionable finding stated in one sentence, (b) the cited accepted-paper most worth reading in full as a model for how this paper should be structured.
 

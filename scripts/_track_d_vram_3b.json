@@ -1,0 +1,231 @@
+{
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "device": "cuda",
+  "torch_version": "2.6.0+cu124",
+  "cuda_version": "12.4",
+  "gpu_name": "NVIDIA GeForce RTX 3060",
+  "gpu_total_mib": 12287.375,
+  "n_repeats": 3,
+  "seed_tokens": 4000,
+  "configs": [
+    {
+      "depth": 3,
+      "branches": 3,
+      "nodes": 27,
+      "n_repeats": 3,
+      "seed_tokens": 4000,
+      "kv_shapes": {
+        "n_layers": 28,
+        "k_shape": [
+          1,
+          8,
+          4000,
+          128
+        ],
+        "v_shape": [
+          1,
+          8,
+          4000,
+          128
+        ],
+        "k_dtype": "torch.float16",
+        "v_dtype": "torch.float16"
+      },
+      "kv_cache_mib_median": 437.5,
+      "fwd_peak_mib_runs": [
+        10248.31298828125,
+        10248.31298828125,
+        10248.31298828125
+      ],
+      "baseline_steady_mib_runs": [
+        6576.2099609375,
+        6576.2099609375,
+        6576.2099609375
+      ],
+      "mid_steady_mib_runs": [
+        7015.0849609375,
+        7015.0849609375,
+        7015.0849609375
+      ],
+      "full_steady_mib_runs": [
+        7904.8974609375,
+        7904.8974609375,
+        7904.8974609375
+      ],
+      "full_step_peak_mib_runs": [
+        8515.58251953125,
+        8515.58251953125,
+        8515.58251953125
+      ],
+      "accumulator_total_mib_runs": [
+        1312.5,
+        1312.5,
+        1312.5
+      ],
+      "fwd_peak_mib_median": 10248.31298828125,
+      "baseline_steady_mib_median": 6576.2099609375,
+      "mid_steady_mib_median": 7015.0849609375,
+      "full_steady_mib_median": 7904.8974609375,
+      "full_step_peak_mib_median": 8515.58251953125,
+      "accumulator_total_mib_median": 1312.5,
+      "delta_mid_over_baseline_mib": 438.875,
+      "delta_full_over_baseline_mib": 1328.6875,
+      "delta_mid_in_kv_units": 1.0031428571428571,
+      "delta_full_in_kv_units": 3.037,
+      "constant_factor_full_over_baseline": 1.2020445679034528,
+      "k_base_mib_median": 218.75,
+      "v_base_mib_median": 218.75,
+      "k_accum_mib_median": 437.5,
+      "v_accum_mib_median": 437.5,
+      "nvsmi_used_mib_post_full": 8338
+    },
+    {
+      "depth": 5,
+      "branches": 3,
+      "nodes": 81,
+      "n_repeats": 3,
+      "seed_tokens": 4000,
+      "kv_shapes": {
+        "n_layers": 28,
+        "k_shape": [
+          1,
+          8,
+          4000,
+          128
+        ],
+        "v_shape": [
+          1,
+          8,
+          4000,
+          128
+        ],
+        "k_dtype": "torch.float16",
+        "v_dtype": "torch.float16"
+      },
+      "kv_cache_mib_median": 437.5,
+      "fwd_peak_mib_runs": [
+        10248.31298828125,
+        10248.31298828125,
+        10248.31298828125
+      ],
+      "baseline_steady_mib_runs": [
+        6576.2099609375,
+        6576.2099609375,
+        6576.2099609375
+      ],
+      "mid_steady_mib_runs": [
+        7015.0849609375,
+        7015.0849609375,
+        7015.0849609375
+      ],
+      "full_steady_mib_runs": [
+        7904.8974609375,
+        7904.8974609375,
+        7904.8974609375
+      ],
+      "full_step_peak_mib_runs": [
+        8515.58251953125,
+        8515.58251953125,
+        8515.58251953125
+      ],
+      "accumulator_total_mib_runs": [
+        1312.5,
+        1312.5,
+        1312.5
+      ],
+      "fwd_peak_mib_median": 10248.31298828125,
+      "baseline_steady_mib_median": 6576.2099609375,
+      "mid_steady_mib_median": 7015.0849609375,
+      "full_steady_mib_median": 7904.8974609375,
+      "full_step_peak_mib_median": 8515.58251953125,
+      "accumulator_total_mib_median": 1312.5,
+      "delta_mid_over_baseline_mib": 438.875,
+      "delta_full_over_baseline_mib": 1328.6875,
+      "delta_mid_in_kv_units": 1.0031428571428571,
+      "delta_full_in_kv_units": 3.037,
+      "constant_factor_full_over_baseline": 1.2020445679034528,
+      "k_base_mib_median": 218.75,
+      "v_base_mib_median": 218.75,
+      "k_accum_mib_median": 437.5,
+      "v_accum_mib_median": 437.5,
+      "nvsmi_used_mib_post_full": 8338
+    },
+    {
+      "depth": 10,
+      "branches": 3,
+      "nodes": 1700,
+      "n_repeats": 3,
+      "seed_tokens": 4000,
+      "kv_shapes": {
+        "n_layers": 28,
+        "k_shape": [
+          1,
+          8,
+          4000,
+          128
+        ],
+        "v_shape": [
+          1,
+          8,
+          4000,
+          128
+        ],
+        "k_dtype": "torch.float16",
+        "v_dtype": "torch.float16"
+      },
+      "kv_cache_mib_median": 437.5,
+      "fwd_peak_mib_runs": [
+        10248.31298828125,
+        10248.31298828125,
+        10248.31298828125
+      ],
+      "baseline_steady_mib_runs": [
+        6576.2099609375,
+        6576.2099609375,
+        6576.2099609375
+      ],
+      "mid_steady_mib_runs": [
+        7015.0849609375,
+        7015.0849609375,
+        7015.0849609375
+      ],
+      "full_steady_mib_runs": [
+        7904.8974609375,
+        7904.8974609375,
+        7904.8974609375
+      ],
+      "full_step_peak_mib_runs": [
+        8515.58251953125,
+        8515.58251953125,
+        8515.58251953125
+      ],
+      "accumulator_total_mib_runs": [
+        1312.5,
+        1312.5,
+        1312.5
+      ],
+      "fwd_peak_mib_median": 10248.31298828125,
+      "baseline_steady_mib_median": 6576.2099609375,
+      "mid_steady_mib_median": 7015.0849609375,
+      "full_steady_mib_median": 7904.8974609375,
+      "full_step_peak_mib_median": 8515.58251953125,
+      "accumulator_total_mib_median": 1312.5,
+      "delta_mid_over_baseline_mib": 438.875,
+      "delta_full_over_baseline_mib": 1328.6875,
+      "delta_mid_in_kv_units": 1.0031428571428571,
+      "delta_full_in_kv_units": 3.037,
+      "constant_factor_full_over_baseline": 1.2020445679034528,
+      "k_base_mib_median": 218.75,
+      "v_base_mib_median": 218.75,
+      "k_accum_mib_median": 437.5,
+      "v_accum_mib_median": 437.5,
+      "nvsmi_used_mib_post_full": 8338
+    }
+  ],
+  "notes": [
+    "FP32Accumulator is allocated once at root; per-search VRAM is independent of (depth, branches, nodes).",
+    "Mid mode = bf16 baseline-clone of K and V (naive snapshot rollback strategy, no FP32 accumulator).",
+    "Full mode = FP32Accumulator.from_kv_cache(): K_base+V_base (bf16) + K_accum+V_accum (fp32).",
+    "Each cell is measured n_repeats times after a hard CUDA reset; medians reported."
+  ]
+}

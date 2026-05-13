@@ -212,3 +212,83 @@ End-of-day clean. Both Opus sessions + diagnostic session in standing pattern.
 - Anti-anchoring rules included (no validation; spot-check primary sources; don't soften conclusions; don't invent strengths to balance criticisms; foreground EMNLP-specific expertise).
 - Memory `recast_action_plan.md` extended with a "Fresh-session orientation" section: read order for the next Claude session, expected workflow when Josh returns with Gemini's report (triage findings → draft patches → push back on conflicts → log out-of-scope items to §4.6 standing tracker).
 - Day-close state: paper artifact stable Option α+ on main (origin/main HEAD: 461b53a); 18 days of buffer; both measurement-pipeline issues resolved; coordination across two Opus sessions + diagnostic session aligned in §4.6 standing pattern; Gemini pre-mortem prompt ready to dispatch in a future session.
+
+### ~22:30 — Session A — Gemini EMNLP pre-mortem received; triage performed; piece #10 (title pivot) drafted
+- Source document: `docs/logs/2026-05-07_gemini-pre-mortem-EMNLP-findings.md` (Gemini 3.1 Pro deep-research output; received from Josh post-day-close).
+- Triage approach (per `recast_action_plan.md` "Fresh-session orientation" lines 55–59): each of Gemini's five failure modes evaluated against the locked Option α+ direction. Findings categorized as (a) valid → draft patch; (b) conflicts with locked decisions → push back via §7; (c) out of scope for May 25 → defer to §4.6 standing tracker.
+- Caveat applied per Josh's instruction: Gemini deep-research mode generates well-structured EMNLP-venue-fit prose but can pattern-match LaTeX surface features (formal proofs, complexity bounds) into critiques without grounding in our specific decision history. Findings treated on their merits; conflicts get push-back not absorption.
+- Triage outcome:
+  - **FM 1 (systems-first framing)** — partial valid (title only); full reversion conflicts. Title at TeX:39 still half-recast ("KV-Cache Inception... for Detecting and Stress-Testing Alignment Faking"); body has been algorithm-first since 2026-05-06. **Action: piece #10 — title pivot.** Gemini's counter-proposal ("Detecting Latent Alignment Faking via Reversible KV-Cache Search") would re-headline alignment faking and reverse Decision 2 — pushed back.
+  - **FM 2 (1B/3B too small)** — valid; already mitigated structurally; needs language tightening across §1 / §3 / §5 / §7. Queued for piece #11+ (subsequent batch).
+  - **FM 3 (circular evaluation)** — valid; already on action plan §4.2 row 136 (Josh, perplexity wiring). Gemini's "Degradation Control Baseline" (random orthogonal vector) is a clean addition. Queued for piece #11+ once Josh's perplexity wiring lands.
+  - **FM 4 (delete §7.4 confessional narrative)** — conflicts with locked Option α+ stance ("we surface, we resolve where we can, we honestly flag what we can't" — recast_action_plan §26). Tone tightening fair (remove "Phase 2 / Phase 3" language Gemini specifically flags); deletion not. Pushed back on full deletion; queued tone-tightening for piece #11+. Note: §7.4 paragraph 3 was substantively rewritten earlier today as `§7.4-σH-resolved` so the "confessional" framing Gemini reacts to no longer applies — both measurement-pipeline issues are now documented as **resolved**, not as ongoing bug investigations.
+  - **FM 5 (Bailey positioning)** — mostly addressed by 2026-05-06 §2.2 Bailey paragraph (`§2.2-Bailey-engagement` at TeX:104). Gemini's "stark capability gap" rhetoric partly mischaracterizes Bailey's scope (Bailey tested SAEs and adversarial probes too, not only discrete-token attacks). Light incremental sharpening possible; no structural change. Queued for piece #11+.
+- Out-of-scope items (will be added to §4.6 standing tracker in a subsequent edit pass):
+  - 8B model run (scale floor per Gupta & Jenner / Bailey) — needs Phase 3 H100 access; not available before 2026-05-25.
+  - Standard NLP benchmarks integration (AdvBench / StrongREJECT / CoPriva) — multi-week scope; post-EMNLP.
+- Unblocking dependency surfaced: Gemini's page-budget panic (10–11.5 pages estimated) is **hypothetical until EMNLP style switch happens**. Action plan Decision 4 (style template download) still blocks. Flagged in §7 memo for Josh to prioritize the template download.
+
+### ~22:45 — Session A — Drafted piece #10 (title pivot) in v7 file
+- File: `docs/logs/2026-05-07_session-A-prose-drafts-v7-title-pivot.md` (new)
+- Single-piece drafts file. One-line title replacement at TeX:39 + REVISION marker comment line above. Body of new title is verbatim identical to the working title canonical in `docs/logs/2026-05-05_recast-action-plan.md` §0 line 18 and to `README.md` line 1 (rewritten 2026-05-07 ~17:00) — verbatim match is intentional to prevent title drift between code/docs/paper.
+- Marker tag: `title-recast-α+`. No new labels; no cross-reference impact (title is not labeled and not referenced by any `\ref` / `\cite`). Bibtex citation block in README is already in sync from earlier today's rewrite.
+- New title text: "Reversible Monte Carlo Tree Search in Latent Space: A Memory-Bounded Algorithm for Inference-Time Latent-Space Analysis of Frozen Language Models". Drops "KV-Cache Inception" branding (NeurIPS-era artifact, unused in recast body) and "Detecting and Stress-Testing Alignment Faking" framing (one application, not the paper's headline subject under Option α+).
+- Mild redundancy noted in the drafts file: "Latent Space" appears twice (colon-divided "Method: Property of Method on Application" form is conventional). Alternative variant flagged for Session B's call but default is the canonical version unless they see a specific reason to break consistency with the README.
+- Submission caveat flagged but no action: EMNLP is double-blind; current `\author{[Authors]}` placeholder is correct; title contains no team / institution / author identifiers, so the title pivot itself does not need anonymization review. Double-blind verification will be part of the EMNLP style-switch pass when the template arrives.
+- Estimated Session B application time: ~2 min.
+
+### ~23:00 — Session A — Memo to Session B + action plan updates
+- Appended new §7 entry in `docs/logs/2026-05-05_recast-action-plan.md`: "2026-05-07 PM (later, post-Gemini-receipt) — Session A → Session B (Gemini EMNLP pre-mortem triage; piece #10 title pivot ready)". Five-row triage table captures verdict + action for each Gemini FM. Conflict items (FM 1 full reversion, FM 4 §7.4 deletion) explicitly captioned as push-back items, not edit items. Out-of-scope items listed; unblocking dependency (style template) flagged.
+- Updated action plan §4.2 (Days 2–7 task table): added two new rows. (1) Title pivot: drafted, awaiting Session B application; references piece #10 + §7 memo. (2) Subsequent Gemini-triage drafts (FM 2 / 3 / 4 / 5 mitigations) — queued for piece #11+ in later sessions; FM 3 row notes the existing dependency on Josh's perplexity wiring (already tracked at action plan §4.2 row 136).
+- No memory-file updates (`MEMORY.md` and pointers) needed: the recast_action_plan pointer already covers Gemini-triage workflow via the "Fresh-session orientation" section; the project context already reflects the stable Option α+ state. Triage is in-flight execution, not new durable state.
+
+### Day-close state (2026-05-07, post-Gemini-receipt continuation)
+- Paper artifact: stable Option α+ on `main` (origin/main HEAD: `461b53a`, unchanged from morning). Title pivot draft ready for Session B; not yet applied.
+- 18 days of buffer to 2026-05-25.
+- Outstanding (none blocking; same as morning + Gemini-derived additions):
+  1. **[B]** Apply piece #10 (title pivot) — ~2 min.
+  2. **[A]** Draft piece #11+ (FM 2/4/5 language tightening + tone tightening). FM 3 perplexity column gated on Josh's code-lane wiring.
+  3. **[Josh]** Wire perplexity into steered-generation script (action plan §4.2 row 136; cleared since 2026-05-05).
+  4. **[Josh]** Download EMNLP 2026 style template — unblocks Session B's style switch + makes Gemini's page-count concern testable rather than speculative.
+  5. **[Max]** Simplified Exp 3 (3 VRAM measurements) → §4.6 row 168 four-place memory-complexity coordinated rewrite.
+  6. **[Josh]** Tianyu's arXiv author-list sign-off → gates pre-print v0.
+  7. **[B]** Days 15–20: second-pass code-paper consistency, final REVISION marker audit, submission prep.
+- Gemini triage closes for tonight. Two findings captioned as conflicts in §7 memo (push-back); three findings queued for subsequent drafts; two findings deferred to post-EMNLP.
+
+### ~23:30 — Session A — Drafted pieces #11 and #12 (FM 2 scale-language + FM 4 tone-tightening) in v8 file
+- File: `docs/logs/2026-05-07_session-A-prose-drafts-v8-gemini-FM2-FM4-mitigations.md` (new)
+- User confirmed test execution is unavailable this session (video renders on the machine), so this batch is restricted to pure-prose pieces — no code/data dependencies. Pieces are independently applicable; FM 2 (piece #11) and FM 4 (piece #12) cover the two valid Gemini findings that don't gate on Josh's perplexity wiring or a second-pre-mortem variance check.
+- Piece #11 — **FM 2 scale-language tightening** (two sub-pieces):
+  - 11A: §5 Interpretation paragraph (TeX:362) — adds an explicit "we do not interpret these observations as evidence about whether orthogonal escape arises in capability-dependent regimes" sentence; cites `greenblatt2024alignment` for the frontier-scale anchor; final sentence's natural-next-step list extended to include frontier-scale evaluation. Marker `Exp1-interp-scale-disclaimer`. Net +50 words.
+  - 11B: §7.3 Limitations (TeX:515 paragraph) — adds a scale-dependent-phenomena caveat block citing all three published scale floors (Anthropic Claude 3 Opus / 3.5 Sonnet, Bailey 8B, RL-Obfuscation 7B–14B). Inserts between existing "Third, ..." and existing "Additionally, Zou et al. ..." sentences so the two scale caveats become adjacent. Marker `§7.3-scale-caveat`. Cross-reference flag for Session B: drafted with `§\ref{sec:future-work}` but no such label exists in TeX (`\subsection{Future Work}` at TeX:532 unlabeled). Two options offered — recommended Option A: drop the `\ref` and use the linguistic pointer "the Future Work subsection below." Net +70 words.
+- Piece #12 — **FM 4 "Phase 2 / Phase 3" tone tightening** (four sub-pieces):
+  - 12A: §5 Implementation Notes header (TeX:298) — drop the `(Phase 2 / Phase 3 Distinction)` parenthetical. Marker `§5-impl-notes-header-tone-tighten`.
+  - 12B: §5 Implementation Notes opening paragraph (TeX:299) — strip "Phase 2 prototype" and "once the corresponding Phase~3 code work lands"; replace with "released implementation runs on..." and "with the corresponding extensions described in §7 Future Work." Marker `§5-impl-notes-opening-tone-tighten`. Net length-equivalent.
+  - 12C: §5 Implementation Notes items (i)–(iv) at TeX:301, 303, 305, 307 — replace every "Phase 2 implementation" with "released implementation"; every "deferred to Phase 3" with "described in §7 Future Work." Item (v) at TeX:309 already clean (no Phase 2/3 language). Single marker `§5-impl-notes-items-tone-tighten` for the four-item batch. Net −15 words.
+  - 12D: §7.4 paragraph 3 (TeX:530) — single phrase "as a Phase~2 approximation" dropped; sentence flow tightened into active voice. Marker `§7.4-σH-resolved-tone-tighten`. Sixth layered REVISION marker on §7.4 paragraph 3 (audit trail intentional). Net −7 words.
+- Items intentionally NOT touched (documented in v8 §7 for audit trail): §5.1 "Phase 0" / §5.2 "Phase A" subsection headers (project-roadmap labels, not developmental-staging); §7 Future Work "Phase B" references (same); §7.4 paragraph 3 investigation-arc methodology sentences (Gemini critique was about confessional language, not methodological process; Option α+ explicitly preserves "we surface, we resolve where we can, we honestly flag what we can't" stance).
+- Cross-reference impact: none. All `\ref` / `\label` / `\cite` targets unchanged (modulo the Future Work label decision in 11B).
+- Total page-budget impact: ~+90 words across both pieces (~0.05 pages double-column). Negligible.
+- Estimated Session B application time: ~10 min total across all six sub-pieces.
+
+### ~23:35 — Session A — Web search for EMNLP 2026 style template + ARR question flag
+- WebSearch confirmed: EMNLP / ACL / NAACL all use the same official template family at `https://github.com/acl-org/acl-style-files`. Template should be cloned directly from that repo (Overleaf mirror at `https://www.overleaf.com/latex/templates/association-for-computational-linguistics-acl-conference/jvxskxpnznfj` is also viable but the canonical source is GitHub). Long-paper limit confirmed: 8 pages excluding references and Limitations section (Limitations is mandatory, placed after Conclusion).
+- **Question flagged for Josh**: the search result asserts "All submissions go through ACL Rolling Review (ARR), with the ARR submission deadline of May 25, 2026." This may or may not be accurate for EMNLP 2026 specifically — some past EMNLPs allowed direct submissions in addition to ARR, others required ARR. Worth verifying on the EMNLP 2026 official call (if Josh hasn't already). The 2026-05-25 deadline matches what we've been working to, but the **submission portal** (ARR vs. EMNLP direct) is a meaningful distinction for the actual file upload step.
+- **Action item generated**: Josh, when convenient, please clone or download `https://github.com/acl-org/acl-style-files` (specifically the EMNLP 2026 / ACL 2026 sub-tree if separate). Drop the `.cls` and `.sty` files into `docs/NeurIPS/` (or a sibling `docs/EMNLP/` directory if you prefer). Once landed, Session B can do the style switch (currently `\usepackage[main]{neurips_2026}` at TeX:9). After the style switch, the `pdflatex` recompile produces an honest page count — and Gemini's "10–11.5 pages" estimate becomes testable rather than speculative.
+- **Other items potentially needed but NOT urgent**: bibtex entries for EMNLP 2025 papers Gemini cited as venue-fit examples (Shi et al. RouteSAE; Wu et al. SHARP; Borah et al. AQI; Stoehr et al.). These would help if we later draft FM 5 + an EMNLP-Specific-Citations piece, but are not blocking pieces #11/#12. If Josh wants to hand them over, can use them in piece #14+; otherwise we work without them.
+
+### Continued day-close state (2026-05-07, post-pieces-#11/#12 drafting)
+- Paper artifact: still stable Option α+ on `main` (origin/main HEAD: `461b53a`); no TeX edits applied this batch (Session A drafts only, per protocol).
+- Three drafts files now ready for Session B in priority order:
+  1. **v7** — piece #10 title pivot (~2 min apply).
+  2. **v8** — pieces #11 (FM 2, two sub-pieces) and #12 (FM 4, four sub-pieces); ~10 min total apply.
+- Outstanding (none blocking):
+  1. **[B]** Apply v7 + v8 (~12 min combined).
+  2. **[Josh]** Clone `github.com/acl-org/acl-style-files` → drops `.cls` + `.sty` into `docs/NeurIPS/` (or `docs/EMNLP/`).
+  3. **[Josh]** Verify EMNLP 2026 submission portal (ARR vs. direct).
+  4. **[Josh]** Plan second Gemini deep-research pre-mortem run (variance check on the same prompt).
+  5. **[Josh]** Wire perplexity into steered-generation script (gates piece #14+ FM 3 mitigation).
+  6. **[Josh]** (lower priority) Hand over bibtex entries for the four EMNLP 2025 papers Gemini cited as venue-fit examples (gates a possible FM 5 EMNLP-citations piece).
+  7. **[Max]** Simplified Exp 3 (3 VRAM measurements) → §4.6 row 168.
+  8. **[Josh]** Tianyu's arXiv author-list sign-off.
+- Gemini triage status: 5 findings → 2 partial-valid acted on (FM 1 via title pivot, FM 4 via tone tightening); 1 valid acted on (FM 2 scale tightening); 1 valid queued (FM 3 perplexity, gated on code lane); 1 partial-valid queued for second-pre-mortem variance check (FM 5).
