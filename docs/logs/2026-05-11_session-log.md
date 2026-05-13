@@ -779,6 +779,16 @@ Day 3 cumulative wall ~7.5 hours strategic work.
 
 ---
 
+> **Day 4 (2026-05-12 onward) work is recorded in [`2026-05-12_session-log.md`](2026-05-12_session-log.md).** Day-3 absolute-final above is the rollover anchor. Content originally appended to this file (Day-4 entry — §5 Exp 1 recast draft + Day-4 Session B application + Day-4 extension) was extracted to `2026-05-12_session-log.md` on 2026-05-13 for future-session orientability per Josh's directive.
+
+---
+
+## Day 4 entries (extracted; preserved here for reference only — primary location is 2026-05-12_session-log.md)
+
+The content below is a duplicate of the Day-4 entries now living in `2026-05-12_session-log.md`. It is kept here unchanged so that any session that lands at this file (e.g., via the prior "Read FIRST after compact" instruction) can still find the Day-4 record without a second hop. New Day-4 (or later) entries should be appended to `2026-05-12_session-log.md`, not this file.
+
+---
+
 ## Day 4 entry — §5 Experiment 1 recast draft (Session A)
 
 **Date:** 2026-05-12 (Day 4 of plan v2)

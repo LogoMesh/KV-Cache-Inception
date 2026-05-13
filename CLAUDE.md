@@ -218,7 +218,7 @@ pip install pre-commit && pre-commit install
 # General
 uv sync                                            # install/update deps
 
-# Phase 2 runners — model must match paper (Llama-3.2-1B-Instruct, hidden dim 2048, 22 layers)
+# Phase 2 runners — model must match paper (Llama-3.2-1B-Instruct, hidden dim 2048, 16 layers)
 uv run python scripts/run_kv_mcts.py \
     --model meta-llama/Llama-3.2-1B-Instruct \
     --nodes 50 --depth 5 --branches 3
