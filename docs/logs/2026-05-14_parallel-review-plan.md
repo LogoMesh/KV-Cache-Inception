@@ -481,8 +481,55 @@ section/sentence; don't hedge.
     Or is it a "we did this work, here it is" submission that lacks the
     field-context motivation reviewers want?
 
+  Pass K. Speculation vs page-budget tradeoff (added Day-8-evening
+    2026-05-15 per Josh directive after the §6 honest-framing refinement
+    surfaced a content-vs-page-cost question).
+    Read the paper looking specifically for claims, numbers, or
+    extrapolations that are NOT directly measured by Tracks A/C/D/F/G.
+    For each, evaluate page-budget cost vs reviewer-value: would a
+    reviewer in the Interpretability track find this content essential,
+    or would they accept its absence in exchange for tighter delivery of
+    the empirical content?
+
+    Specifically scrutinize:
+      (a) §6 20B-scale numbers (M_KV ≈ 162 GB, ~60× reduction, ~493 GB
+          reversible) — these are PROJECTIONS from 1B/3B measurements +
+          architectural derivation of M_KV at 20B, not directly measured.
+          Includes a footnote (added 2026-05-15) naming the projection
+          scope. Page-budget cost: ~1 line for footnote anchor + ~3 lines
+          for footnote body in ACL two-column.
+      (b) §7.5 Future Work anti-Goodhart reward designs list (multi-
+          channel ensembles, external PRM judges, self-consistency, etc.)
+          — Phase B research program; not measured. Page-budget cost
+          ~3-5 lines.
+      (c) §A.5 supplementary URL placeholder
+          `anonymous.4open.science/r/kv-mcts-dimensional-escape-XXXX` —
+          cosmetic line. Page-budget cost ~1 line.
+      (d) Cross-scale Δ values in Cartography prose (e.g., Δ ≈ 0.67 for
+          C2 ARC-Easy) — these ARE measured (raw -0.667 / round-then-
+          subtract -0.67). NOT speculative; KEEP.
+
+    For each scrutinized item, output a single calibrated recommendation:
+    KEEP / TRIM (reduce to footnote or shorter prose) / CUT (move to
+    supplementary or Phase-3 camera-ready expansion), with estimated
+    page-budget delta.
+
+    Context for the decision: the body is currently over the 8-page ACL
+    review budget (post-§A: ~9-10 body pages in two-column rendering;
+    Day-9 cuts pre-planned: §6 Memory Complexity proof → \appendix,
+    condense §5.4 Baselines, possibly compress §4.2.2). Speculative
+    content must earn its line cost or be cut.
+
+    Decision criterion: A reviewer in the Interpretability track values
+    mechanism-diagnosis and probing-infrastructure framing. Speculative
+    scaling claims may dilute the mechanism story while consuming body
+    pages that could otherwise carry the negative-result evidence and
+    the Latent Cartography characterization. The Day-12 cuts (or
+    non-cuts) recommended here should be informed by this trade-off
+    explicitly.
+
 REPORT FORMAT:
-  - 10 passes (A-J), one section each. For each: the finding, the
+  - 11 passes (A-K; K added 2026-05-15 post-§6-honest-framing-refinement), one section each. For each: the finding, the
     severity per the rubric, the recommended patch.
   - Final ranking: list all findings sorted by severity. The "fix-first"
     item is the topmost SEVERE; the "fix-best-effort" items are the
