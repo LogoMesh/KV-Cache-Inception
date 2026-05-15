@@ -1,14 +1,13 @@
 \documentclass{article}
 
-% --- NeurIPS 2026 Style (Main Track, double-blind) ---
-% neurips_2026.sty is sourced from the official template ZIP:
-%   https://media.neurips.cc/Conferences/NeurIPS2026/Formatting_Instructions_For_NeurIPS_2026.zip
-% The .sty file is checked into docs/NeurIPS/ alongside this file.
-% For camera-ready, change to: \usepackage[main, final]{neurips_2026}
-% [REVISION | natbib-numbers-mode-D+ | 2026-05-12 | Explicit pre-load of natbib in numbers mode to resolve fatal "Bibliography not compatible with author-year citations" error from neurips_2026.sty's default natbib config. The bibliography (line 575+) uses bare `\bibitem{key}` entries (numeric format); neurips_2026.sty loads natbib in author-year mode which collides with the bibitem format and aborts PDF generation. Pre-loading natbib with the `numbers,sort&compress` options forces numeric citation mode before neurips_2026.sty's deferred natbib load runs. REMOVE THIS LINE at Day 8 ACL style switch (acl.sty + acl_natbib.bst provides its own numeric-mode natbib config). — pending audit]
+% --- ACL Style (Review version, double-blind) ---
+% acl.sty + acl_natbib.bst sourced from https://github.com/acl-org/acl-style-files
+% Files checked into docs/NeurIPS/ alongside this file (J4, done 2026-05-11).
+% For camera-ready (post-acceptance), change [review] to [] (empty options).
+% [REVISION | natbib-numbers-mode-cont-D+ | 2026-05-15 | Day-8 ACL-switch diagnosis: acl.sty (like neurips_2026.sty) loads natbib in author-year mode by default, which is incompatible with the manual `\bibitem{key}` bibliography format used in this paper. The Day-4 numeric-mode pre-load workaround is therefore NOT a NeurIPS-specific quirk — it's a manual-bibitem-vs-natbib-default issue that persists under acl.sty. Pre-loading natbib with `[numbers,sort&compress]` before `\usepackage{acl}` forces numeric mode at load time. The Day-4 marker (natbib-numbers-mode-D+) is retired; this line continues the same workaround under the new style. Day-5 cosmetic `\citet{zou2023repe}` prose rewrites at TeX lines 292+294 (`19f9eb5`) stay in place — they render identically under numeric-mode natbib. — pending audit]
 \usepackage[numbers,sort&compress]{natbib}
-% [REVISION | track-main | 2026-04-25 | Switched track option from `eandd` (Evaluations and Datasets) to `main` (Main Track) per locked decision in memory/next_session_prompt.md "Decisions Locked" table; verified `main` is a valid \DeclareOption in neurips_2026.sty:49 — pending audit]
-\usepackage[main]{neurips_2026}
+% [REVISION | acl-style-switch-D+ | 2026-05-15 | Plan-v2 §2 Day-8 task: swap NeurIPS 2026 style for ACL review-version style. Replaces preamble REVISION marker `track-main` (2026-04-25, NeurIPS track option, moot post-style-switch) and the neurips_2026 preamble comment block. ACL `\usepackage[review]{acl}` provides the standard ARR-submission review format (line-numbered, double-blind). Note: contrary to my initial Day-8 assumption, ACL's natbib config does NOT obviate the Day-4 numeric-mode pre-load — that workaround remains required for manual-bibitem compatibility (see natbib-numbers-mode-cont-D+ marker above). Day-9 residue item 1 (Day-8 ACL conditional check that `acl_natbib` re-resolves `\citet{}` under author-year mode) is moot: we stay on numeric mode under acl.sty just as we did under neurips_2026.sty, so `\citet{}` still renders as a bare numeric `[N]` and the Day-5 prose rewrites at lines 292+294 remain load-bearing. — pending audit]
+\usepackage[review]{acl}
 
 % --- Packages ---
 \usepackage{amsmath, amssymb, amsthm}
@@ -16,7 +15,8 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{enumitem}
-\usepackage{microtype}
+% [REVISION | microtype-expansion-disable-D+ | 2026-05-15 | Day-8 ACL-switch diagnosis: microtype's default `expansion` feature requires scalable fonts (Type 1 / PostScript / OpenType). Under acl.sty (review mode) the default Computer Modern bitmap fonts are loaded before microtype can hook them, triggering `pdfTeX error (font expansion): auto expansion is only possible with scalable fonts.` Disabling expansion via package option keeps the rest of microtype (protrusion + final-period kerning) which work with bitmap fonts. Under neurips_2026.sty this was a non-issue because that style loaded scalable PostScript fonts internally. — pending audit]
+\usepackage[expansion=false]{microtype}
 \usepackage{xcolor}
 
 % --- Review-edit markup (remove wrapper before final submission) ---
@@ -515,16 +515,16 @@ which is independent of $n$, depending only on the final accumulator state (whic
 The FP32 accumulator maintains the exact cumulative delta. The only quantization error occurs in the final cast from FP32 to bf16, which is bounded by $\epsilon_{\text{bf16}}$ times the accumulator magnitude. After complete reversal, $\mathbf{A}_{\text{final}} = \mathbf{0}$, so $\mathbf{K}_n = \mathbf{K}_0$ exactly (up to the single bf16 quantization of zero, which is exact). \qed
 \end{proof}
 
-% [REVISION | DRAFT-HOLD-block5-consolidated | 2026-05-05 | GAP-C2-03 + GAP-C2-04 (Memory Complexity Proposition: 40.05GB / 9.7TB headline numbers reflect sparse-accumulator + no-clone assumptions; Phase 2 floor is ~2-3·M_KV from full-shape accumulator + baseline clone) — block content moved into §5 Implementation Notes paragraph (item iv). Headline numbers within the proposition itself remain unchanged here pending Max's simplified Exp 3 VRAM measurements (action plan §4.2 task "Apply Memory Complexity Proposition rewrite"). Code fix tracking continues in action plan §4.2 / Phase 3. — pending audit]
+% [REVISION | §6-worked-numbers-trackD-D+ | 2026-05-15 | Plan-v2 §2 Day-8 task: replace α+-vintage placeholder numbers (40.05 GB / 9.7 TB at M_KV=40 GB) in the §6 Memory Complexity worked example with Track D's measured constants ($M_{\text{KV}} \approx 162$ GB at 20B scale; $\sim 3.04 \cdot M_{\text{KV}}$ measured steady-state delta independent of branching factor; ${\sim}60\times$ reduction vs naive parallel-cache MCTS at $(b,d)=(3,5)$). Track D primary source: `docs/logs/2026-05-09_track-D-vram-report.md`. Subsumes the 2026-05-05 `DRAFT-HOLD-block5-consolidated` marker (the "pending Max's simplified Exp 3 VRAM measurements" gate it documented is now closed by Track D's three-cell three-repeat sweep at 1B + 3B scales, with the 20B figure being a derived projection — see §A.4 Track D protocol). The proposition statement and label remain unchanged; only the comparison sentence below it is rewritten. The 2026-05-06 `prop-label-add` marker preserved (it documents the label, not the numbers). — pending audit]
 \subsection{Memory Complexity}
 
 \begin{proposition}
 \label{prop:memory}
-% [REVISION | prop-label-add | 2026-05-06 | Added \label{prop:memory} to enable forward references from §1 Contributions and §7 Empirical Measurement Prerequisites subsection (both landed 2026-05-06). Proposition statement unchanged; headline numbers in the comparison sentence below remain TODO pending Max's simplified Exp 3. — pending audit]
+% [REVISION | prop-label-add | 2026-05-06 | Added \label{prop:memory} to enable forward references from §1 Contributions and §7 Empirical Measurement Prerequisites subsection (both landed 2026-05-06). Proposition statement unchanged. — pending audit]
 The reversible MCTS algorithm achieves memory complexity $O(M_{\text{KV}} + d \cdot K_{\text{acc}})$ where $d$ is the maximum search depth and $K_{\text{acc}} = L \cdot S' \cdot d_{\text{model}} \cdot 4$ bytes is the per-step FP32 accumulator size for $S'$ mutated positions. This is independent of the branching factor $b$.
 \end{proposition}
 
-For comparison, standard parallel MCTS requires $O(b^d \cdot M_{\text{KV}})$ memory. With $b = 3$, $d = 5$, and $M_{\text{KV}} = 40\text{GB}$, standard MCTS requires ${\sim}9.7$TB, while reversible MCTS requires ${\sim}40.05$GB.
+For comparison, standard parallel MCTS requires $O(b^d \cdot M_{\text{KV}})$ memory. At the 20B scale where Track~D measured $M_{\text{KV}} \approx 162$~GB per cache snapshot, standard parallel MCTS with $b = 3$, $d = 5$ would require approximately $39$~TB ($3^5 \cdot 162$~GB), while reversible MCTS requires approximately $3.04 \cdot M_{\text{KV}} \approx 493$~GB (using Track~D's measured constant-factor steady-state delta) --- a ${\sim}60\times$ reduction in working-set memory at $(b, d) = (3, 5)$, independent of the branching factor $b$ by construction (Proposition~\ref{prop:memory}).
 
 % ============================================================
 % 7. DISCUSSION
