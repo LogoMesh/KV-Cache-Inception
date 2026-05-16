@@ -683,6 +683,36 @@ section/sentence; don't hedge.
     C1 to lead with the probe framing rather than the algorithmic
     achievements.
 
+    [Pass N STRENGTHENED 2026-05-15 EOD post-Day-10 drop-C2 application:]
+    The original Pass N was authored 2026-05-15 AM when body had three
+    contributions including C2 (telemetry matrix as monitoring substrate).
+    Day-10 drop-C2 surgery removed §1.1 C2; body now has two contributions
+    (C1 algorithm + memory bound + theorem; C2 Dimensional-Escape-
+    demonstration, formerly C3). The third bullet above (C1 → former-C3
+    narrative tension) is now sharper, not softer, because there is no
+    intermediate "monitoring substrate" contribution between the
+    algorithm and the negative-result findings. Specifically scrutinize:
+      (a) A reviewer who reads only the §1.1 Contributions list (two
+          items, no intermediate softening): does the second item read
+          as a complementary diagnostic finding from the first item,
+          or as a withdrawal of the first item's headline claim (the
+          algorithm has a use case the paper itself shows fails)?
+      (b) Trace where in the paper the "diagnostic probe rather than
+          reasoning-improvement tool" reframe first appears, and trace
+          where in the paper C1's algorithm-headline packaging (FP32
+          accumulator, Theorem 1, Proposition 1 memory bound, 60×
+          reduction) first appears. In which order does a sequential
+          reviewer encounter these two framings? Does the order matter
+          for the reviewer's first-impression mental model?
+      (c) For a reviewer who reaches the §5 Experiment 1 null result
+          having formed the "method paper" prior from C1: is the §4.2
+          MCTS Node Reward paragraph ("the algorithmic framework is
+          reward-agnostic") + §7.1 reward-design implication paragraph
+          ("our Experiment 1 result establishes the null-control")
+          sufficient to redirect their reading to "algorithm whose
+          primary use case fails is itself the diagnostic contribution"?
+          Or does the redirection feel post-hoc?
+
     Severity: MAJOR if reviewer-rejection-likely due to narrative
     confusion; MODERATE if hedge-needed.
 
@@ -716,17 +746,153 @@ section/sentence; don't hedge.
     Severity: MINOR-MODERATE; aggregate findings drive the page-
     budget post-Day-10-trim residue list.
 
+  Pass P. Page-budget format-compliance hard limit (added Day-10 EOD
+    2026-05-15 post-cut-application per Josh directive: the cut plan
+    §8(c) outcome materialized rather than the §8(a) optimistic estimate;
+    confirm independently whether this is desk-rejection-likely).
+    Read the post-Day-10-application TeX (`docs/NeurIPS/04.18.2026-
+    NeurIPS-Research-Proposal-2.tex`). Per the compiled .aux table-of-
+    contents, body content (§1 through §7.6 Ethical Considerations)
+    ends partway through page 10; §A Reproducibility starts on page 10.
+    Body length is approximately 9 pages. The ACL/ARR review-version
+    hard limit is 8 pages of body content (Limitations + Ethics count
+    toward the 8 pages per [acl_formatting.md:17](../NeurIPS/acl_formatting.md:17)).
+    Per [acl_formatting.md:27](../NeurIPS/acl_formatting.md:27):
+    "Papers that do not conform to these requirements may be rejected
+    without review."
+
+    Specifically scrutinize:
+      (a) The body is approximately 1 page over the 8-page hard limit.
+          Is the ACL ARR format-compliance check performed automatically
+          (by a programmatic page-count check at submission, with no
+          human-mediated cover-letter recourse), or is it performed by
+          a programme chair who would evaluate a cover-letter
+          justification on the merits? Cite primary sources (ARR FAQ,
+          conference policy pages) for the answer.
+      (b) Identify the exact body content that, if cut to bring body
+          to 8 pages, would do least framing damage. Candidates a
+          reviewer might suggest: (i) move §5 Table~1 (Exp 1 results)
+          or Table~2 (Exp 2 best-path α distribution) or Figure~1
+          (cross-scale mean-step α) to appendix; (ii) further trim §5
+          Experiment 2 findings paragraphs (i), (ii), (iii); (iii)
+          further trim §7.5 Future Work; (iv) merge §3 with §4 or
+          §6 with §4. Rank these by (framing-impact / page-savings)
+          ratio.
+      (c) Compare the risk profile of two paths: (1) submit at 9pp
+          body with a cover-letter justification; (2) defer the
+          submission to the ARR June 2026 cycle (EMNLP commit deadline
+          2026-08-02 still permits this routing). For each path, list
+          the specific risks and the events that would trigger each.
+
+    For each finding, severity: SEVERE if desk-rejection-likely;
+    MAJOR if review-likely-but-format-pressured; MODERATE if cover-
+    letter mitigation is reasonably persuasive.
+
+  Pass Q. Body §4 Proposed Method depth (added Day-10 EOD 2026-05-15
+    per Josh directive: the post-drop-C2 + post-§4.2-MOVE state leaves
+    body §4 at approximately 1 page; assess whether this is reviewer-
+    adequate without appendix consultation).
+    Read body §4 Proposed Method in the current state. After Day-10
+    drop-C2 surgery (§4.1 telemetry matrix moved to appendix) and Cut
+    #7 algorithm-detail MOVE (§4.2 Step 1/2/3 prose + eq:forward_mutation
+    + eq:reverse_rollback + Memory Complexity paragraph moved to
+    Appendix~\ref{sec:appendix-algorithm}), body §4 contains: the
+    subsection title \"Reversible MCTS in KV-Cache Space,\" one
+    introductory paragraph (notation + in-place-mutation framing +
+    Proposition~\ref{prop:memory} pointer), the FP32 Accumulator
+    paragraph with Eq.~\ref{eq:fp32_accumulator}, and the MCTS Node
+    Reward paragraph. Approximately one page total.
+
+    Specifically scrutinize:
+      (a) Read body §4 as a reviewer who explicitly does not read
+          appendices (a non-trivial subset of EMNLP reviewers per
+          anecdotal reports). What is the reviewer's mental model of
+          the algorithm after reading body §4 alone? Does it suffice
+          to evaluate Contribution~1's reversibility claim
+          (Theorem~\ref{thm:reversibility}) and memory-bound claim
+          (Proposition~\ref{prop:memory})? List the specific algorithmic
+          details (Step 1 forward mutation form; Step 3 reverse rollback
+          form; FP32-accumulator-restoration mechanism semantics) that
+          a reviewer needs to verify the theorem claim, and indicate
+          which of those live in body vs appendix.
+      (b) Compare body §4's depth against EMNLP/ACL Interpretability-
+          track method-section depth norms from the 26-paper sample
+          (see `docs/logs/gemini research reports/Analyzing
+          Interpretability Track Submissions.md`). Is body §4
+          comparable, thinner, or richer than the track norm?
+          Specifically: do successful Interpretability-track papers
+          carry full algorithm descriptions in body, or do they
+          routinely defer to appendix? Cite specific precedent papers.
+      (c) If body §4 is judged thinner than track norm, identify the
+          minimal content from Appendix~\ref{sec:appendix-algorithm}
+          that should be re-folded into body, and estimate the page-
+          cost of that re-folding. If body §4 is judged comparable or
+          richer, no action is needed.
+
+    For each finding, severity: MODERATE if reviewer-likely revision-
+    request; MAJOR if reviewer-likely-rejection due to algorithm being
+    inadequately specified in body.
+
+  Pass R. Empirical surface adequacy (added Day-10 EOD 2026-05-15 per
+    Josh directive: assess whether 1 model family + 2 negative-result
+    experiments + zero positive results is reviewer-adequate for an
+    EMNLP-class submission, or whether reviewers will read the
+    empirical surface as thin/one-sided).
+    Read §5 Experimental Design in the current state. Empirical scope:
+    one model family (Llama~3.2 at 1B and 3B parameter scales); two
+    experiments (Experiment~1: entropy-MCTS negative control on
+    ARC-Easy, $n=200$ paired items per scale; Experiment~2: Latent
+    Cartography across four prompt classes at $n=100$ per class per
+    scale, totalling 8 cells); zero positive results among reported
+    experiments. The headline statistical claim is paired McNemar
+    $p = 1.0$ at both 1B and 3B with $1$--$3$ discordant items per scale.
+
+    Specifically scrutinize:
+      (a) For an EMNLP/ACL Interpretability-track submission, is one
+          model family + two experiments at the lower end, typical, or
+          upper end of empirical-scope expectations? Cite specific
+          precedent papers from the 26-paper sample. Specifically:
+          how many model families and how many experiments did the
+          top-quartile-accepted Interpretability-track papers carry?
+      (b) Track F's paired McNemar $p = 1.0$ with $1$--$3$ discordant
+          items: from a reviewer-prior perspective, does this read as
+          \"well-evidenced negative result\" or as \"underpowered
+          study\"? What additional evidence would a reviewer want to
+          feel confident the null result reflects mechanism rather than
+          noise? Consider: more discordant items via larger $n$;
+          different reward-objective variants showing same null;
+          per-stratum (e.g., per-question-difficulty) analysis; ablation
+          showing search-machinery-itself works (R-vs-G comparison).
+      (c) The paper reports no positive result anywhere — no anti-
+          Goodhart reward variant tested, no auxiliary positive finding
+          from the MCTS framework. Is the absence of a positive result:
+          (i) a critical gap (paper-level rejection trigger); (ii) an
+          acceptable scoping choice given the Dimensional-Escape-as-
+          negative-finding framing; (iii) acceptable contingent on
+          §7.5 Future Work clearly articulating the research program
+          that would deliver a positive finding? Pick one.
+      (d) Identify the strongest \"you should have run experiment X\"
+          critique a reviewer would write. Estimate the effort to run
+          X within the Day-12/Day-13/Day-14 patch window. If effort
+          exceeds the window, identify the Limitations-section sentence
+          that pre-empts the critique most credibly.
+
+    For each finding, severity: MAJOR if reviewer-likely-rejection
+    trigger; MODERATE if reviewer-likely-revision-request.
+
 REPORT FORMAT:
-  - 15 passes (A-O; L/M/N/O added 2026-05-15 post-Day-9-page-budget-
+  - 19 passes (A-S; L/M/N/O added 2026-05-15 post-Day-9-page-budget-
     cut-plan audit per Josh directive on peer-review-lens audit
-    discipline), one section each. For each: the finding, the
+    discipline; N strengthened + P/Q/R added Day-10 EOD 2026-05-15
+    post-cut-application per Josh directive on honest-outside-view
+    assessment), one section each. For each: the finding, the
     severity per the rubric, the recommended patch.
   - Final ranking: list all findings sorted by severity. The "fix-first"
     item is the topmost SEVERE; the "fix-best-effort" items are the
     MINORS.
 
-Length target: 4500-6500 words (expanded from 3000-4500 to absorb
-Passes L-O). The most comprehensive of the 5 axes;
+Length target: 5500-8000 words (expanded from 4500-6500 to absorb
+Passes P-R + strengthened Pass N). The most comprehensive of the 5 axes;
 this is the reviewer-impersonation pass that should catch what the
 narrower axes miss.
 ```
