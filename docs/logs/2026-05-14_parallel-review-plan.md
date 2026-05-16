@@ -195,6 +195,22 @@ overclaims, hedging gaps, and stronger alternative framings:
       not, is the unification an empirical claim or a theoretical
       conjecture? Should §3 hedge or §7 expand?
 
+      [Q3 STRENGTHENED 2026-05-15 per Day-9 page-budget cut plan §7
+      peer-review observation:] §1 Contribution 3 says "Empirical
+      demonstration of Dimensional Escape" (singular). The body
+      evidences only H2 (Track F + Track G are reward-driven); H1
+      is conjectured via Bailey 2024 analogy, which is a DIFFERENT
+      experimental regime (gradient-trained input-space attacks vs
+      our inference-time KV-cache mutation). If you find the
+      unification claim insufficiently supported, recommend
+      specifically: (a) rewrite Contribution 3 to "Empirical
+      demonstration of reward-driven Dimensional Escape; structural-
+      equivalence argument for monitor-driven case" OR (b) hedge
+      §3.2 closing paragraph (line 172) to remove the "single
+      pathology" framing and present H1/H2 as parallel cases. Do
+      not accept the unification as currently stated without primary-
+      source defense.
+
   Q4. The "geometric" framing: is the failure mechanism actually
       geometric, or is it a softer claim (correlation in cache space
       doesn't transfer to correlation in answer space)? "Geometric" has
@@ -206,6 +222,26 @@ overclaims, hedging gaps, and stronger alternative framings:
       Dimensional Escape genuinely distinct from Goodhart's Law, or is
       it a relabeling? If distinct, what is the precise distinction?
       (Reviewers will ask this.)
+
+      [Q5 STRENGTHENED 2026-05-15 per Day-9 page-budget cut plan §7
+      peer-review observation:] If you cannot articulate the precise
+      distinction in one sentence, recommend either:
+        (a) Retire "Dimensional Escape" as a coined term and re-anchor
+            on "Goodhart's Law in high-dimensional latent spaces" —
+            saves coined-term defense overhead, leans on a well-known
+            concept that reviewers already accept.
+        (b) Sharpen §3.2 Definition def:dim_escape to make the
+            distinction operational. Candidate sharpening: "Dimensional
+            Escape predicts that optimization resolves the proxy
+            through a SPECIFIC GEOMETRIC ROUTE (null space of the
+            scoring projection), not merely that the proxy is over-
+            optimized. Goodhart's Law is silent on the geometric
+            route."
+      The paper's value-add of introducing a new term must be
+      defensible; the alternative is reviewer pushback on "another
+      relabeling of a known concept." Do not accept current Definition
+      def:dim_escape as adequate without primary-source-defended
+      distinction or recommendation (a)/(b).
 
   Q6. Most-overclaim sentence in §3 + §7: pick the single sentence that
       a hostile reviewer would most likely circle as "overclaim — the
@@ -528,14 +564,169 @@ section/sentence; don't hedge.
     non-cuts) recommended here should be informed by this trade-off
     explicitly.
 
+  Pass L. Cross-section numerical-consistency check (added Day-9
+    2026-05-15 per Josh directive after page-budget cut-plan audit
+    surfaced an M_KV inconsistency a peer reviewer would flag).
+    Grep the paper for every numeric or quantitative claim. For each
+    physical quantity that appears in multiple sections, verify the
+    numerical values agree (or are reconciled via footnote/sub-
+    section). Failure mode: reader encounters conflicting numbers for
+    the same quantity before reaching the reconciliation.
+
+    Specifically scrutinize:
+      (a) M_KV at 20B: §4.2.1 line 242 says "$\approx 40$ GB";
+          §5 Implementation Notes line 299 says "approximately $80$ GB
+          before any accumulator overhead"; §6.2 line 528 says
+          "$\approx 162$ GB per cache snapshot". §5 Impl Notes
+          item (iv) reconciles these (different sequence-length
+          assumptions + clone overhead) but a reviewer reading the
+          body sequentially encounters three different numbers before
+          reaching the reconciliation paragraph. Is the differentiation
+          clear at each site, or only at §5? If the cut plan moves
+          §5 Impl Notes to §A (likely Day-10 application), the
+          reconciliation must be preserved via footnote at §6.2 line
+          528 or §4.2.1 line 242 — verify post-Day-10.
+      (b) Memory bound constant: abstract says "$3.04$--$3.06\times$";
+          §1 Contribution 1 says "$3.06\times M_{KV}$ on Llama 3.2-1B
+          and $3.04\times M_{KV}$ on Llama 3.2-3B"; §A.4 Track D says
+          "$3.04$--$3.06 \cdot M_{KV}$"; §6.2 worked example says
+          "$3.04 \cdot M_{KV} \approx 493$ GB" (single value).
+          Are these consistent? Is the cell-by-cell $(d, b, n)$
+          independence claim primary-source verified (Track D report
+          §2)?
+      (c) Cartography Δ values across scales: §5 Exp 2 finding (i)
+          reports "$\Delta \approx 0.67$" for C2 and "$\Delta \approx
+          0.55$" for C3; Track G report has raw measured -0.667 and
+          -0.547. Round-then-subtract vs subtract-then-round
+          distinction: does the audit-trail note (recast_action_plan
+          line 42) need to be in the paper, or only in supplementary?
+      (d) The "$\sim$60$\times$ reduction" figure appears in the
+          abstract, §1 Contribution 1, §6.2, and §7.5 Infrastructure
+          paragraph. Verify each instance refers to the same
+          $(b, d) = (3, 5)$ regime and at the same 20B scale.
+
+    For each finding, severity: MODERATE (revision request) unless a
+    number is wrong (SEVERE) or a reader cannot reconcile without
+    advanced primary-source access (MAJOR).
+
+  Pass M. Abstract-to-body claim escalation check (added Day-9
+    2026-05-15 per Josh directive after audit surfaced asymmetric
+    hedging between abstract and §6.2 on the 20B projection).
+    Read the abstract sentence-by-sentence. For each numeric or
+    methodological claim, verify the body anchor uses the same or
+    stronger hedge. Failure mode: abstract reads more confident than
+    body anchor; reviewer doing the standard "scan abstract first,
+    verify against §-N later" workflow catches the mismatch.
+
+    Specifically scrutinize:
+      (a) Abstract: "$\sim$60$\times$ reduction at $(b, d) = (3, 5)$
+          relative to naive parallel-cache MCTS on 20B-parameter
+          configurations" vs §6.2 body (post-Day-8-evening hedge):
+          "is therefore a projection from smaller-scale measurements
+          rather than a direct 20B observation." Asymmetric hedging
+          confirmed. Recommendation should be: harmonize abstract to
+          match body hedge (insert "projected" qualifier in abstract)
+          OR de-emphasize the 60× claim in the abstract.
+      (b) Abstract: "Artifacts are released with a Croissant 1.1
+          metadata package" — verify the supplementary URL is live
+          at submission time (Day-14 G-anon-B gate). If
+          `anonymous.4open.science/r/kv-mcts-dimensional-escape-XXXX`
+          is still placeholder-XXXX at submission, the abstract is
+          overstating release status (claim is in past/present tense,
+          implementation is future-tense).
+      (c) Abstract: "validated to machine precision over 200 apply--
+          revert cycles on Llama 3.2-1B and Llama 3.2-3B" — §6.1
+          Theorem 1 + §7.3 Limitation 6 echo this. Verify match.
+      (d) Abstract: "Dimensional Escape... satisfying the proxy
+          metric without satisfying the semantic objective" — strong
+          unification claim. Body §3.2 + §5 Exp 1 evidence H2
+          (reward-driven) only; H1 (monitor-driven) is conjectured
+          via Bailey 2024 analogy. Does the abstract's framing
+          implicitly claim both, while body evidences only one?
+          Cross-reference with Axis 2 Q3 (strengthened).
+
+    For each finding, severity: MODERATE unless reviewer-rejection-
+    likely (then MAJOR).
+
+  Pass N. Contributions coherence stress test (added Day-9 2026-05-15
+    per Josh directive after audit surfaced a peer-reviewer-likely
+    narrative-tension reading of §1 Contributions list).
+    Read §1 Contributions list sequentially. After each contribution,
+    ask: does the next contribution build on, complement, or undercut
+    the prior? Specifically:
+
+      - C1 (algorithm + FP32 accumulator + memory bound + theorem)
+        → C2 (telemetry matrix as monitoring substrate): is C2
+        framed as "the algorithm's monitoring substrate" — coherent
+        — or as a standalone secondary contribution?
+      - C2 (telemetry matrix) → C3 (Dimensional Escape demonstration):
+        does §5 Exp 1 use the telemetry matrix (σ_H, ρ_R) to
+        evidence the prior-amplification mechanism, or does it use
+        only entropy + accuracy? If the latter, C2 is not actually
+        used in evidence of C3 — which weakens the "infrastructure
+        used for the demonstration" arc.
+      - C1 (algorithm presented as method) → C3 (the algorithm's
+        primary-use-case reward function fails): does this read as
+        coherent ("we built infrastructure + used it to demonstrate
+        a negative result") or as tension ("we built an algorithm
+        whose obvious use case doesn't work")? A hostile reviewer
+        may read C1 as a method paper, then expect §5 to demonstrate
+        the method working, then encounter §5 Exp 1's null result
+        as confusing rather than diagnostic.
+
+    The paper's abstract closing sentence reframes the algorithm as
+    "a high-precision diagnostic probe of frozen-model representational
+    geometry rather than a reasoning-improvement tool." Does the §1
+    Contributions list's packaging (FP32 accumulator, memory bound,
+    60× reduction) meet this reframe, or does it lean toward
+    method-paper packaging? If the latter, recommend reorganizing
+    C1 to lead with the probe framing rather than the algorithmic
+    achievements.
+
+    Severity: MAJOR if reviewer-rejection-likely due to narrative
+    confusion; MODERATE if hedge-needed.
+
+  Pass O. Operational-scaffolding triage (added Day-9 2026-05-15 per
+    Josh directive after audit surfaced four sections that read as
+    project-management or development-history rather than scientific
+    content).
+    Read the paper looking for sections, paragraphs, or sentences
+    that describe HOW WE DID THE WORK rather than WHAT WE FOUND.
+    Common patterns:
+      - "Phase 0/A/B" sub-headings (development milestones; §5.1, §5.2)
+      - "Implementation Notes" listing how the code differs from
+        paper math (§5 Implementation Notes paragraph)
+      - "Measurement Prerequisites" sections describing the bug-fix
+        history of getting a metric to work (§7.4)
+      - Sentences referencing internal artifacts (e.g., "Track F
+        report") without primary-source-fidelity hedge
+      - Per-IMPL comments like `[IMPL: DONE — ...]` that bleed into
+        rendered content
+
+    For each finding, recommend: KEEP (the operational detail is
+    methodologically important), TRIM (compress to one sentence),
+    MOVE (to §A), DELETE (camera-ready material).
+
+    Context: the Day-9 page-budget cut plan already recommends
+    moving most of these (§5.1+§5.2 DELETE, §5 Impl Notes MOVE, §7.4
+    MOVE) for Day-10 application. Pass O's job is to (a) verify the
+    Day-10 application caught everything, AND (b) catch any
+    additional operational scaffolding the cut plan missed.
+
+    Severity: MINOR-MODERATE; aggregate findings drive the page-
+    budget post-Day-10-trim residue list.
+
 REPORT FORMAT:
-  - 11 passes (A-K; K added 2026-05-15 post-§6-honest-framing-refinement), one section each. For each: the finding, the
+  - 15 passes (A-O; L/M/N/O added 2026-05-15 post-Day-9-page-budget-
+    cut-plan audit per Josh directive on peer-review-lens audit
+    discipline), one section each. For each: the finding, the
     severity per the rubric, the recommended patch.
   - Final ranking: list all findings sorted by severity. The "fix-first"
     item is the topmost SEVERE; the "fix-best-effort" items are the
     MINORS.
 
-Length target: 3000-4500 words. The most comprehensive of the 5 axes;
+Length target: 4500-6500 words (expanded from 3000-4500 to absorb
+Passes L-O). The most comprehensive of the 5 axes;
 this is the reviewer-impersonation pass that should catch what the
 narrower axes miss.
 ```
