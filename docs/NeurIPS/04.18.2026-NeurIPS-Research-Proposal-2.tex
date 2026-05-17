@@ -200,7 +200,7 @@ We test whether the entropy-normalized surrogate reward $\hat{r}(\mathbf{h}) = -
 
 \begin{table}[h]
 \centering
-\small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}l l c c c@{}}
 \toprule
 \textbf{Scale} & \textbf{Condition} & \textbf{Accuracy} & \textbf{95\% Wilson CI} & \textbf{Mean PPL} \\
@@ -213,7 +213,8 @@ Llama-3.2-3B & G (greedy) & $0.845$ ($169/200$) & $[0.788, 0.889]$ & $1.318 \pm 
 Llama-3.2-3B & R (random-MCTS) & $0.815$ ($163/200$) & $[0.755, 0.863]$ & $1.398 \pm 0.327$ \\
 Llama-3.2-3B & E (entropy-MCTS) & $0.820$ ($164/200$) & $[0.761, 0.867]$ & $1.394 \pm 0.319$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \caption{Per-condition accuracy on ARC-Easy ($n = 200$ paired items per scale) under three paired conditions: greedy decoding, random-MCTS (uniform reward), and entropy-MCTS (Eq.~\ref{eq:goodhart} as path-scoring reward). The MCTS arms apply 27 depth-3 paths from the alpha-set $\{0.1, 0.5, 1.0\}$ with a shared random unit-vector steering direction; the best-rewarded path is permanently re-applied before generation. Wilson 95\% confidence intervals overlap across all three conditions at both scales. Mean perplexity is $\exp(\overline{\mathrm{NLL}})$ where $\overline{\mathrm{NLL}}$ is the mean per-token negative log-likelihood of the 5-token completion under the unsteered model. The pairwise statistical claims appear in the body prose (§\ref{sec:exp1} Results paragraph).}
 \label{tab:exp1-results}
 \end{table}
@@ -243,7 +244,7 @@ We measure three structural signatures: (i)~the distribution of best-path $\alph
 
 \begin{table}[h]
 \centering
-\small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}l rrr rrr@{}}
 \toprule
 & \multicolumn{3}{c}{\textbf{Llama-3.2-1B}} & \multicolumn{3}{c}{\textbf{Llama-3.2-3B}} \\
@@ -255,7 +256,8 @@ C2 ARC-Easy MCQ & $(1.0,1.0,1.0)$ & $42\%$ & $0.89$ & $(0.1,0.1,0.1)$ & $49\%$ &
 C3 TruthfulQA MCQ & $(1.0,1.0,1.0)$ & $28\%$ & $0.83$ & $(0.1,0.1,0.1)$ & $36\%$ & $0.28$ \\
 C4 Continuation & $(0.1,0.1,0.1)$ & $21\%$ & $0.51$ & $(0.1,0.1,0.1)$ & $31\%$ & $0.38$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \caption{Latent Cartography best-path $\alpha$-tuple distribution per prompt class and scale. Each item runs $27$ depth-$3$ MCTS paths from $\{0.1, 0.5, 1.0\}$; the best path under entropy reward is selected per item, and the per-class distribution over $3^3 = 27$ possible path tuples is reported. ``Modal path'' is the most-frequent best-path tuple; ``\% modal'' is the share of items selecting it; $\bar\alpha$ is the mean per-step $\alpha$ averaged across items and across the three steps of the best path. MCQ classes (C2, C3) exhibit a direction-flip in $\bar\alpha$ across scales: heavy steering at 1B (the search exploits the first-letter prior), minimal steering at 3B (the balanced baseline distribution provides no prior to exploit). Factual recall (C1) and continuation (C4) show smaller cross-scale differences.}
 \label{tab:exp2-cartography-paths}
 \end{table}
@@ -521,7 +523,7 @@ COCONUT~\cite{hao2025coconut} bypasses discrete token decoding by feeding final-
 
 \subsection{Structurally Related Baselines}\label{sec:appendix-baselines}
 Table~\ref{tab:baselines} catalogues inference-time and gradient-trained interventions on frozen language models that are structurally related to Reversible KV-Cache MCTS.
-\begin{table}[h]
+\begin{table*}[t]
 \centering
 \small
 \begin{tabular}{@{}lll@{}}
@@ -536,7 +538,7 @@ Activation Obfuscation & Gradient-trained embedding suffixes & Bailey et al., 20
 \end{tabular}
 \caption{Structurally related interventions on frozen language models. The four rows span complementary intervention sites (activation residual stream / KV cache / weight finetuning / input embedding) and complementary optimization regimes (corrective monitor vs surrogate reward; one-shot vs iterative search). Reversible KV-Cache MCTS combines iterative reversible KV-cache mutation, a surrogate reward (Eq.~\ref{eq:goodhart}), a frozen-weight regime, and inference-time-only computation. Bailey et al.~\cite{bailey2024obfuscated} is the closest empirical peer for the monitor-driven sub-case of Dimensional Escape (Hypothesis~\ref{hyp:orthogonal_escape}); their reported negative result is the empirical comparison point against which our reward-driven results in §\ref{sec:exp1} should be read. Published ASR figures from text-space jailbreak baselines (e.g., GCG on Vicuna-7B / AdvBench) are intentionally omitted: their tasks, models, and success criteria differ from ours, so a shared column would be a category error.}
 \label{tab:baselines}
-\end{table}
+\end{table*}
 
 % [REVISION | appendix-impl-notes-Day10-batch2 | 2026-05-15 | Day-10 Batch 2: new appendix §D Implementation Notes absorbing the 5-item Phase 2 / Phase 3 Distinction paragraph moved out of body §5 per Day-9 page-budget cut plan §3 rank #5. The 2026-05-14 zou2023repe-citet-numbers-mode-fix-D+ marker (originally inline within items (i)+(ii)) is preserved verbatim below. — pending audit]
 \section{Implementation Notes (Phase 2 / Phase 3 Distinction)}\label{sec:appendix-impl-notes}
