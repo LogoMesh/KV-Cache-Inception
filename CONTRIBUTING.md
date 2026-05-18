@@ -60,7 +60,7 @@ Relevant issues in Linear: "Complete Croissant schema", "Dataset submission pack
 Your primary deliverable is the related-work and competitive-landscape section of the paper.
 
 Start here:
-- `docs/NeurIPS/04.02.2026-NeurIPS-Research-Proposal.tex` — read §2 (Related Work) and Table 3 (Baselines) first; these define the exact landscape you're mapping
+- `docs/paper/kv-mcts-dimensional-escape.tex` — read §2 (Related Work) and Table 3 (Baselines) first; these define the exact landscape you're mapping
 - `docs/reviews/phase-a-gaps-2026-04-11.md` — internal gap analysis baseline
 
 **Eight baselines from the paper you must cover (Table 3, §5):**

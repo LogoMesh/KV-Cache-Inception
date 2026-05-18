@@ -11,8 +11,8 @@ tmp/
 .idea/
 
 # LaTeX build artifacts (preserve figures/*.pdf)
-docs/NeurIPS/*.aux
-docs/NeurIPS/*.log
-docs/NeurIPS/*.out
-docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.pdf
+docs/paper/*.aux
+docs/paper/*.log
+docs/paper/*.out
+docs/paper/kv-mcts-dimensional-escape.pdf
 

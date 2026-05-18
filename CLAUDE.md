@@ -1,7 +1,7 @@
 # LogoMesh — Research Session Guide
 
 > **Read this file at the start of every session.**
-> Then check `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex` for the current paper state
+> Then check `docs/paper/kv-mcts-dimensional-escape.tex` for the current paper state
 > and `docs/reviews/phase-a-gaps-2026-04-11.md` for the verified gap analysis.
 
 ---
@@ -69,7 +69,7 @@ tests/
   test_phase2_modules.py       — TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke
 
 docs/
-  NeurIPS/                  — paper drafts (canonical: 04.18.2026-NeurIPS-Research-Proposal-2.tex)
+  paper/                    — paper drafts (canonical: kv-mcts-dimensional-escape.tex)
   reviews/                  — gap analysis + transition audit
   logs/                     — session logs
   dataset/                  — Croissant schema stub (Phase 4)
@@ -142,7 +142,7 @@ Before modifying any `logomesh/` module:
 4. **Flag any divergence** between paper and code explicitly. Do not silently approximate.
 
 Reference files:
-- `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex` (canonical paper)
+- `docs/paper/kv-mcts-dimensional-escape.tex` (canonical paper)
 - `docs/contribution-1-telemetry-matrix.md` (C1 gaps)
 - `docs/contribution-2-reversible-mcts.md` (C2 gaps)
 - `docs/contribution-3-orthogonal-escape.md` (C3 gaps)

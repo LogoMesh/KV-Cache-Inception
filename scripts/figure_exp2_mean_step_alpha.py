@@ -13,7 +13,7 @@ error surfaces here (in addition to the two already filed against v10-exp2 from
 Action 1), stop and run a full Track G report audit pass against the raw JSONs
 before proceeding with any further use of Track G report numbers.
 
-Output: docs/NeurIPS/figures/exp2-mean-step-alpha.pdf (vector-format figure for
+Output: docs/paper/figures/exp2-mean-step-alpha.pdf (vector-format figure for
 the ACL submission).
 
 Reproduction:
@@ -29,7 +29,7 @@ import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
-FIGURES = REPO_ROOT / "docs" / "NeurIPS" / "figures"
+FIGURES = REPO_ROOT / "docs" / "paper" / "figures"
 
 SOURCES = {
     "1B": SCRIPTS / "_track_g_mcts_results_meta-llama_Llama-3.2-1B-Instruct.json",

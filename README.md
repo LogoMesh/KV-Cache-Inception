@@ -4,10 +4,10 @@
 
 *Submission target: **EMNLP 2026 Findings** (deadline 2026-05-25)*
 
-**Canonical paper draft:** [`docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`](docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex)
+**Canonical paper draft:** [`docs/paper/kv-mcts-dimensional-escape.tex`](docs/paper/kv-mcts-dimensional-escape.tex)
 **Read-only Overleaf view:** *https://www.overleaf.com/read/gcfjswwqwkhq#1ac1ec*
 
-> **Naming note**: the paper file path retains its original `NeurIPS/...` directory and filename for repo-history continuity; the submission target was pivoted from NeurIPS 2026 (D&B then Main Track) to EMNLP 2026 Findings on 2026-04-25 after a venue-pivot briefing. The paper is being recast around the algorithmic/systems contribution under "Option α+" — see the documentation pointers section below.
+> **Venue note**: submission target was pivoted from NeurIPS 2026 (D&B then Main Track) to EMNLP 2026 Findings via ARR May 2026 on 2026-04-25 after a venue-pivot briefing.
 
 ---
 
@@ -91,7 +91,7 @@ tests/
   test_phase2_modules.py        — TelemetryMatrix, OEI, TDS, FP32Accumulator, MCTS smoke
 
 docs/
-  NeurIPS/                      — paper drafts (canonical: 04.18.2026-NeurIPS-Research-Proposal-2.tex)
+  paper/                        — paper drafts (canonical: kv-mcts-dimensional-escape.tex)
   reviews/                      — citation audit + DRAFT-HOLD index
   logs/                         — session logs, pre-mortem findings, action plans
   dataset/                      — Croissant 1.1 schema artifacts
@@ -166,7 +166,7 @@ For new sessions or new collaborators, read in this order:
 2. **`docs/logs/2026-05-03_premortem-findings.md`** — six failure modes + addendum. Strategic context for the paper recast.
 3. **Daily session logs** — `docs/logs/2026-05-05_session-log.md` through `2026-05-07_session-log.md`. Append-only narrative records.
 4. **Diagnostic report** — `docs/logs/2026-05-05_diagnostic-report.md`. B6 + 3B probe + bug-localization + σ_H verification + GAP-C1-02 investigation.
-5. **Canonical TeX** — `docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex`. 18 REVISION markers from 2026-05-06 + 2026-05-07 capture the full Option α+ recast.
+5. **Canonical TeX** — `docs/paper/kv-mcts-dimensional-escape.tex`. 18 REVISION markers from 2026-05-06 + 2026-05-07 capture the full Option α+ recast.
 
 ---
 

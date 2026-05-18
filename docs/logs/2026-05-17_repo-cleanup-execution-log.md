@@ -195,7 +195,7 @@ When slug URL arrives:
 
 **a)** Grep canonical TeX for the XXXX placeholder:
 ```
-grep -n "kv-mcts-dimensional-escape-XXXX" docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex
+grep -n "kv-mcts-dimensional-escape-XXXX" docs/paper/kv-mcts-dimensional-escape.tex
 ```
 Expected at ~line 521 (per Phase 0 discovery) but verify literal hit before editing — grep-first beats memory-string-then-fail.
 
@@ -218,9 +218,9 @@ This second commit on the anon repo is acceptable — both commits are by `Anony
 ### Step 7 — Smoke-compile
 
 ```
-$ cd docs/NeurIPS/
-$ pdflatex -interaction=nonstopmode 04.18.2026-NeurIPS-Research-Proposal-2.tex
-$ pdflatex -interaction=nonstopmode 04.18.2026-NeurIPS-Research-Proposal-2.tex
+$ cd docs/paper/
+$ pdflatex -interaction=nonstopmode kv-mcts-dimensional-escape.tex
+$ pdflatex -interaction=nonstopmode kv-mcts-dimensional-escape.tex
 ```
 
 Gate criteria (per memory Day-14-PM final state):
@@ -245,7 +245,7 @@ $ git commit -m "docs: surgical pre-submission cleanup (Phase 4 of Session 3)"
 
 **Commit B — §A.5 URL slug fill:**
 ```
-$ git add docs/NeurIPS/04.18.2026-NeurIPS-Research-Proposal-2.tex \
+$ git add docs/paper/kv-mcts-dimensional-escape.tex \
           docs/dataset/croissant.json \
           docs/dataset/MANIFEST.txt
 $ git commit -m "docs: fill §A.5 supplementary URL slug (Phase 4 of Session 3)"
@@ -265,7 +265,7 @@ $ git commit -m "docs: fill §A.5 supplementary URL slug (Phase 4 of Session 3)"
 
 3. **Capture the slug URL** from Josh — this is the one input Step 6 needs.
 
-4. **Smoke-compile prerequisite verification.** Confirm `pdflatex` is on PATH and `acl.sty` etc. are in `docs/NeurIPS/`. (acl.sty was downloaded Day 3 J4; should be present.)
+4. **Smoke-compile prerequisite verification.** Confirm `pdflatex` is on PATH and `acl.sty` etc. are in `docs/paper/`. (acl.sty was downloaded Day 3 J4; should be present.)
 
 5. **Submission packaging order on 2026-05-24:**
    1. Resume this Phase 4.2 session → Step 6 → Step 7 → Step 8
@@ -343,5 +343,46 @@ Strip-down adds ~5-10 min to the resume session (smoke-compile must re-check tha
 ## Phase 4.2 verdict at 2026-05-17 EOD (revised post-strip-down)
 
 **Steps 1-4 complete + strip-down round complete + Commit B pending land on live worktree.** Substantive anonymity perimeter materially tightened beyond the original Phase 4.1 plan: package name `logomesh` no longer appears in the anon bundle (replaced with neutral `kvmcts`); paper TeX rendered text uses the neutral name; α+ vintage keywords + Phase A/B internal-phasing terminology scrubbed. 2026-05-24 resume now just adds the §A.5 URL slug fill + smoke-compile + force-push amended staging commit. Estimated wall: 35-55 min.
+
+---
+
+## Phase 4.2 addendum-2 — Paper TeX + folder rename (2026-05-17 EOD)
+
+After the strip-down round, Josh requested renaming the canonical paper TeX file to "something more appropriate" since the existing filename (`04.18.2026-NeurIPS-Research-Proposal-2.tex`) was stale on three axes: wrong venue (NeurIPS → EMNLP via ARR), wrong type ("Research-Proposal" → full paper), and meaningless versioning suffix (`-2`). The parent folder `docs/NeurIPS/` was similarly stale.
+
+### Renames
+
+- Folder: `docs/NeurIPS/` → `docs/paper/` (via `git mv` to preserve history)
+- File:   `docs/paper/04.18.2026-NeurIPS-Research-Proposal-2.tex` → `docs/paper/kv-mcts-dimensional-escape.tex` (via `git mv`)
+
+Naming rationale: `kv-mcts-dimensional-escape` matches the anonymous.4open.science slug placeholder in §A.5 (`kv-mcts-dimensional-escape-XXXX`); descriptive of paper topic + algorithm; durable across venue.
+
+### Cascading active-reference updates
+
+| File | Hits | Edit |
+|---|---|---|
+| `.gitignore` | 4 | All `docs/NeurIPS/` → `docs/paper/`; `04.18...pdf` → `kv-mcts-dimensional-escape.pdf` |
+| `CLAUDE.md` | 3 | All canonical paper path references |
+| `README.md` | 3 + 1 | All canonical paper path references; stale "Naming note" about path-retention rationale DELETED (rationale no longer applies) |
+| `docs/CLAUDE_CONTEXT_BRIEF.md` | 2 | Both canonical paper path references |
+| `CONTRIBUTING.md` | 1 | Stale `04.02.2026-NeurIPS-Research-Proposal.tex` pointer (older paper vintage, never updated) → `kv-mcts-dimensional-escape.tex` |
+| `scripts/figure_exp2_mean_step_alpha.py` | 2 | Line 16 docstring + line 32 hardcoded `FIGURES` write path |
+
+### Left untouched (historical / archival)
+
+- ~50 session log files in `docs/logs/*` (time-frozen records; references in those logs are correct in their time-context)
+- `docs/archive/*` (3 files; archived)
+- `docs/team-brief-2026-04-11.md`, `docs/reviews/citation-audit-matrix.md`, `docs/paper/paper-revision-claims-audit.md` (snapshot docs; low priority)
+- %-comment hits inside the renamed `kv-mcts-dimensional-escape.tex` itself at lines 229, 493, 522 (don't render to PDF; per paper-TeX hard rule scope)
+
+### Verification
+
+- `git status` shows clean rename (`R` entries for folder + file moves; all active-reference files modified with intended swaps; no stray)
+- pytest: 179/179 green (no Python-import paths affected; figure script's path constant is a write-target, never executed at test time)
+- The §A.5 URL placeholder slug `kv-mcts-dimensional-escape-XXXX` in the paper now matches the file naming — small consistency boost when reviewers grep filenames against URLs.
+
+### Wall time
+
+Rename + cascade + log update: ~12 min. Commit lands as Commit C on the live worktree.
 
 ARR deadline 2026-05-25; T-8 days from this session's authoring date. Resume target T-1 (2026-05-24) preserves a full buffer day before submission.
