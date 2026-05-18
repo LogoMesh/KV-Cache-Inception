@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "logomesh"
 version = "0.1.0"
-description = "KV-Cache Inception — Reversible MCTS for Alignment Faking Detection"
+description = "KV-Cache Inception — Reversible MCTS for Probing Dimensional Escape in Frozen Language Models"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -1,7 +1,7 @@
 """
 LogoMesh — KV-Cache Inception Research Framework
 
-Modular architecture for reversible MCTS in latent space and alignment faking detection.
+Modular architecture for reversible MCTS in latent space and Dimensional Escape characterization.
 Components:
   - BaseModelClient:           abstract LLM backend (local HF models, OpenAI API)
   - LocalLlamaOracle:          HuggingFace transformers wrapper with hidden-state telemetry
