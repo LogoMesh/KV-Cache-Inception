@@ -5,7 +5,6 @@
 *Submission target: **EMNLP 2026 Findings** (deadline 2026-05-25)*
 
 **Canonical paper draft:** [`docs/paper/kv-mcts-dimensional-escape.tex`](docs/paper/kv-mcts-dimensional-escape.tex)
-**Read-only Overleaf view:** *https://www.overleaf.com/read/gcfjswwqwkhq#1ac1ec*
 
 > **Venue note**: submission target was pivoted from NeurIPS 2026 (D&B then Main Track) to EMNLP 2026 Findings via ARR May 2026 on 2026-04-25 after a venue-pivot briefing.
 
@@ -92,9 +91,9 @@ tests/
 
 docs/
   paper/                        — paper drafts (canonical: kv-mcts-dimensional-escape.tex)
-  reviews/                      — citation audit + DRAFT-HOLD index
-  logs/                         — session logs, pre-mortem findings, action plans
-  dataset/                      — Croissant 1.1 schema artifacts
+  dataset/                      — Croissant 1.1 metadata package + raw experimental data
+  logs/                         — session logs, pre-mortems, action plans (dev-history; see note below)
+  archive/                      — pre-pivot docs, gap analyses, prior team briefings
 ```
 
 > **Note on `docs/logs/`**: this directory contains ~120 development-process records (session logs, pre-mortems, draft prose, audit reports, prompts). They preserve the project's decision history but are **not required reading** for understanding or reproducing the paper. New collaborators should start with the paper TeX, `CLAUDE.md`, this README, and the per-track reports under `docs/paper/` and the published reports referenced from the canonical TeX's Appendix~A.
