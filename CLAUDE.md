@@ -2,7 +2,7 @@
 
 > **Read this file at the start of every session.**
 > Then check `docs/paper/kv-mcts-dimensional-escape.tex` for the current paper state
-> and `docs/reviews/phase-a-gaps-2026-04-11.md` for the verified gap analysis.
+> and `docs/archive/phase-a-gaps-2026-04-11.md` for the verified gap analysis.
 
 ---
 
@@ -143,9 +143,9 @@ Before modifying any `logomesh/` module:
 
 Reference files:
 - `docs/paper/kv-mcts-dimensional-escape.tex` (canonical paper)
-- `docs/contribution-1-telemetry-matrix.md` (C1 gaps)
-- `docs/contribution-2-reversible-mcts.md` (C2 gaps)
-- `docs/contribution-3-orthogonal-escape.md` (C3 gaps)
+- `docs/archive/contribution-1-telemetry-matrix.md` (C1 gaps)
+- `docs/archive/contribution-2-reversible-mcts.md` (C2 gaps)
+- `docs/archive/contribution-3-orthogonal-escape.md` (C3 gaps)
 
 ---
 
@@ -175,9 +175,9 @@ where the expected output is hand-calculated from the paper equation.
 These are the source of truth — do not duplicate gap data here.
 
 Before modifying any `logomesh/` module, read the relevant gap analysis:
-- Contribution 1 (T_t, sigma_H, rho_R): `docs/contribution-1-telemetry-matrix.md`
-- Contribution 2 (MCTS, FP32, memory): `docs/contribution-2-reversible-mcts.md`
-- Contribution 3 (OEI, TDS, NullSpace): `docs/contribution-3-orthogonal-escape.md`
+- Contribution 1 (T_t, sigma_H, rho_R): `docs/archive/contribution-1-telemetry-matrix.md`
+- Contribution 2 (MCTS, FP32, memory): `docs/archive/contribution-2-reversible-mcts.md`
+- Contribution 3 (OEI, TDS, NullSpace): `docs/archive/contribution-3-orthogonal-escape.md`
 
 When a gap is resolved, update the contribution doc to mark it done and note the gap ID
 in the session log.
