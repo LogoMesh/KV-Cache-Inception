@@ -1,3 +1,0 @@
-[submodule "external/croissant"]
-	path = external/croissant
-	url = https://github.com/mlcommons/croissant.git
