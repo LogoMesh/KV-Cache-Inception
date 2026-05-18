@@ -288,6 +288,58 @@ The paper's "3.04--3.06×" range correctly spans the 3B (≈3.04) and 1B (≈3.0
 
 **Hallucination red flag:** if your re-run shows the three configs producing different multipliers at the same scale (say 3.0, 4.5, 8.0), the depth/branching-independence claim is wrong.
 
+#### How the 3.04× was actually measured
+
+The driver is `scripts/measure_kv_mcts_vram.py`. Read the docstring at lines 1-32 for the canonical methodology statement; below is a paraphrase of what it does.
+
+**Setup:** Load Llama-3.2-{1B,3B}-Instruct on a single GPU, run one forward pass on a 4000-token seed prompt to populate the KV cache, then allocate three different "memory states" in isolation and record each one's steady-state peak.
+
+**Three modes per (depth, branches, nodes) config:**
+
+| Mode | What's resident in VRAM |
+|---|---|
+| `baseline` | model weights + the KV cache from the warm-up forward pass (no MCTS structures) |
+| `mid` | baseline + bf16 clones of K and V (naive "snapshot-before-perturb, subtract-after" rollback approach) |
+| `full` | baseline + `FP32Accumulator.from_kv_cache(...)` — what Reversible KV-Cache MCTS actually holds per active search |
+
+**Measurement primitive:** `torch.cuda.memory_allocated()` for the steady-state value, cross-checked against `nvidia-smi --query-gpu=memory.used` at the largest config to confirm PyTorch's allocator view matches the OS view. Three repeats per cell, median taken.
+
+**Concrete numbers (1B, depth=3 config, from `data/raw/_track_d_vram.json` → `configs[0]`):**
+
+```
+kv_cache_mib_median         = 125.0 MiB     (the KV cache itself)
+baseline_steady_mib_median  = 2,495 MiB     (model + KV)
+full_steady_mib_median      = 2,878 MiB     (model + KV + FP32 accumulator)
+delta_full_over_baseline    = 2,878 − 2,495 = 383 MiB
+delta_full_in_kv_units      = 383 / 125 = 3.064
+```
+
+So **3.04× M_KV** is literally `(peak memory with FP32 accumulator − baseline memory) / (KV cache size)`. The 1B value rounds to 3.06; 3B rounds to 3.04 (mild difference because some constant model-side overhead is amortized differently at the 3B size).
+
+**Why the multiplier is 3-ish, structurally:** the FP32 accumulator stores 4 tensors alongside the bf16 KV cache (verified in `k_base_mib_median`, `v_base_mib_median`, `k_accum_mib_median`, `v_accum_mib_median` fields):
+
+| Tensor | Dtype | Size for 1B/4000-token cache |
+|---|---|---:|
+| K_base | bf16 | 62.5 MiB |
+| V_base | bf16 | 62.5 MiB |
+| K_accum | **fp32** | 125 MiB |
+| V_accum | **fp32** | 125 MiB |
+| **Total accumulator overhead** | — | **375 MiB** ≈ 3 × M_KV |
+
+The 3.04-3.06× factor is basically `2 × (1 + 0.5)` because fp32 accumulators are 2× the bf16 KV cache size, and the bf16 base-clones add another 0.5× each. The 0.04-0.06 extra is PyTorch allocator fragmentation/overhead.
+
+**Why all three (depth, branches, nodes) configs show the same multiplier:** `delta_full_in_kv_units` is **identical** (3.06375 at 1B; 3.037 at 3B) across (d=3,b=3,n=27), (d=5,b=3,n=81), (d=10,b=3,n=1700). That's not a coincidence — it's the empirical demonstration of Proposition 1's depth-independence claim. The accumulator is allocated once at the search root and rollback restores in-place; there's no per-node accumulator state, so measured peak memory doesn't change with depth/branches.
+
+**Caveats the smoke runner should know:**
+
+1. **The measurement does NOT run an actual MCTS search.** The driver allocates the accumulator structures, measures, then tears down. The argument that "peak memory is independent of search size" is a structural/theoretical claim backed by the code organization — not an empirical observation of memory during a real 1700-node depth-10 search. A skeptical reviewer could push back. The driver docstring explicitly acknowledges this: "We DO NOT run the full ReversibleMCTS rollout (per prompt: 'memory measurement only')."
+
+2. **The "162 GB at 20B" projection** the paper cites is **not measured** — it's extrapolated from the 1B/3B M_KV scaling (KV cache size ∝ #layers × hidden_dim × seq_len × 2 bytes for bf16), with the 3.04× factor then applied. Not measured directly because the 20B run doesn't fit on the RTX 3060 used for the empirical sweep.
+
+3. **The "naive parallel-cache MCTS" comparison** (`O(b^d · M_KV)` baseline that the paper says Reversible-MCTS beats) is a **theoretical worst-case** — the driver does not actually run a naive parallel-cache implementation to measure its memory. The paper's claim is "if you naively branched the cache at every expansion, you'd need O(b^d · M_KV)" — geometrically obvious but not empirically demonstrated.
+
+For verification purposes: the 3.04-3.06× number itself is real and reproducible; the 162 GB / 60× claims that build on it are projections from that empirical anchor.
+
 ### 6.6 The McNemar re-derivation snippet (for §6.1)
 
 The paper's pairwise headline is "paired McNemar exact p = 1.0 (3 discordant pairs each scale)." Re-derive:
