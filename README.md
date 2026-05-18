@@ -97,6 +97,8 @@ docs/
   dataset/                      — Croissant 1.1 schema artifacts
 ```
 
+> **Note on `docs/logs/`**: this directory contains ~120 development-process records (session logs, pre-mortems, draft prose, audit reports, prompts). They preserve the project's decision history but are **not required reading** for understanding or reproducing the paper. New collaborators should start with the paper TeX, `CLAUDE.md`, this README, and the per-track reports under `docs/paper/` and the published reports referenced from the canonical TeX's Appendix~A.
+
 ---
 
 ## Quick start
