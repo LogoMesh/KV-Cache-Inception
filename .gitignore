@@ -11,8 +11,11 @@ tmp/
 .idea/
 
 # LaTeX build artifacts (preserve figures/*.pdf)
-docs/paper/*.aux
-docs/paper/*.log
-docs/paper/*.out
+docs/paper/**/*.aux
+docs/paper/**/*.log
+docs/paper/**/*.out
+docs/paper/**/*.bbl
+docs/paper/**/*.blg
 docs/paper/kv-mcts-dimensional-escape.pdf
+docs/paper/05-18-2026_review/**/acl_latex.pdf
 

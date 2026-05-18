@@ -1,0 +1,169 @@
+% [REVISION | reproducibility-appendix-v1-D+ | 2026-05-14 | New §A Reproducibility Appendix v1 (ARR review version, target 1 page). Consolidates per-track protocols + hardware/software stack + MCTSConfig defaults from Tracks A/C/D/F primary reports and logomesh/kv_mcts.py dataclass (commit 3c5d741). Three metadata gaps acknowledged inline and deferred to the supplementary materials package: (1) HuggingFace checkpoint commit SHAs for meta-llama/Llama-3.2-{1,3}B-Instruct; (2) exhaustive library version pins beyond PyTorch 2.6.0+cu124; (3) full per-script command-line argument tables. Phase 3 camera-ready expansion (3-4 pages) fills these. Draft source: docs/logs/2026-05-13_session-A-prose-drafts-v10-reproducibility-appendix.md. — pending audit]
+\appendix
+\section{Reproducibility}\label{sec:reproducibility}
+
+\subsection{Hardware and software stack}
+All experiments reported in §\ref{sec:experiments} were conducted on a single NVIDIA RTX~3060 (12~GiB VRAM, driver version 591.44) running Windows~10 Pro 10.0.19045 with CUDA~12.4, Python~3.11, and PyTorch~2.6.0+cu124. Tokenization, model loading, and benchmark access used the HuggingFace \texttt{transformers} (5.3.0) and \texttt{datasets} libraries, with \texttt{accelerate}~(1.13.0), \texttt{huggingface\_hub}~($\geq$1.7.2), and \texttt{numpy}~(2.3.3) as load-bearing dependencies---chat-template rendering behavior in \texttt{transformers}~5.x and the \texttt{device\_map="auto"} flow in \texttt{accelerate}~1.x are reproducibility-critical, and the \texttt{numpy}~2.x ABI is required by the legacy-\texttt{RandomState} steering-direction generation in \texttt{scripts/diagnose\_track\_f\_negcontrol.py}. The full pinned manifest (including \texttt{scipy}, \texttt{tokenizers}, \texttt{safetensors}, and dev-tool versions) is recorded in the anonymized supplementary materials package as a \texttt{uv.lock} export.
+
+\subsection{Models and checkpoints}
+We evaluate two open-weight checkpoints from Meta's Llama~3.2 family: \texttt{meta-llama/Llama-3.2-1B-Instruct} (16~transformer layers, hidden dimension $d_{\text{model}} = 2048$, 8~grouped-query KV heads, head dimension 64, vocabulary $|V| = 128{,}256$, fp16) and \texttt{meta-llama/Llama-3.2-3B-Instruct} (28~transformer layers, 8~KV heads, head dimension 128, same vocabulary, fp16). Models are loaded via \texttt{AutoModelForCausalLM.from\_pretrained(..., torch\_dtype=torch.float16)}. Access prerequisites: reviewers must (i)~complete a HuggingFace authentication step via \texttt{huggingface-cli login} with a HuggingFace access token and (ii)~accept the Llama 3.2 Community License at \url{https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct} (and the corresponding 3B model page) before the checkpoints will download; the relevant Acceptable Use Policy is cited per \cite{meta2024llama3_2_aup}. The specific HuggingFace checkpoint commit SHAs used in this paper (one per scale) are recorded in the anonymized supplementary materials package; reviewers verifying exact-number reproduction should pass \texttt{revision=<SHA>} to \texttt{from\_pretrained} to pin to the paper's checkpoint revision (without an explicit revision, reviewers will pull the current \texttt{main} branch, which may differ if the model card has been re-uploaded since Phase~2 measurements).
+
+\subsection{Reversible MCTS configuration}
+The reference implementation is at \texttt{kvmcts/kv\_mcts.py}. The \texttt{MCTSConfig} dataclass defaults are \texttt{n\_nodes=50}, \texttt{branching\_factor=3}, \texttt{max\_depth=5}, \texttt{alpha\_values=(0.1, 0.5, 1.0, 2.0, 5.0)}, \texttt{exploration\_constant=1.414} (UCB1 $c = \sqrt{2}$), \texttt{steer\_layer=$-1$} (auto-middle-layer). Experiment~1 (§\ref{sec:exp1}) and Experiment~2 (§\ref{sec:exp2}) use a focused path-sampling variant of this engine: depth-$3$ trees with $27 = 3^3$ enumerated path samples drawn from a three-element alpha set $\{0.1, 0.5, 1.0\}$. The variant evaluates each path under the entropy-normalized reward (Eq.~\ref{eq:goodhart}) and re-applies the best-rewarded path permanently before generation; it does not use UCB1 tree expansion, because full enumeration of $27$ paths from $27$ leaves makes the bandit ordering redundant within the experimental budget.
+
+\subsection{Per-track configurations}
+
+\paragraph{Static entropy--correctness correlation (Track A).}
+The static $|r| \approx 0.60$ Pearson correlation between next-token entropy and answer correctness cited in §\ref{sec:exp1} Interpretation was measured by computing the Shannon entropy $H = -\sum_i p_i \log p_i$ over $\mathrm{softmax}(\mathrm{logits}_{[-1, :]})$ from a single fp16 forward pass on the chat-templated prompt, scored against a hand-written acceptable-answer list via case-insensitive substring match. Sample: 85 factual-recall items (25 easy + 30 hard + 30 ultra), evaluated with \texttt{model.generate(do\_sample=False, max\_new\_tokens=15, output\_scores=True)}. Wall-clock approximately 2~min for both 1B and 3B scales (raw artifact: $115.92$~s at 1B, $134.14$~s at 3B). Driver: \texttt{scripts/diagnose\_track\_a\_entropy.py}; raw artifacts \path|scripts/_track_a_results_meta-llama_Llama-3.2-{1B,3B}-Instruct.json|.
+
+\paragraph{Benchmark calibration (Track C).}
+The ARC-Easy 200-item subset used in Experiment~1 is the first 200 deterministic test-split items from \texttt{allenai/ai2\_arc} configuration ``ARC-Easy'' (indices $0\ldots199$, no shuffling or filtering). Prompts use the model's chat template with system message ``You are a careful, concise reasoner. Answer multiple-choice questions with a single capital letter.'' and user-side suffix ``Answer with the single capital letter (A/B/C/D):'' (verbatim from \texttt{SYSTEM\_PROMPT} in \texttt{scripts/diagnose\_track\_f\_negcontrol.py:64}; the user-side suffix is generated dynamically from each item's \texttt{labels} field and renders as the four-option form for ARC-Easy MCQ items). The sample size was selected via the paired-McNemar power formula $n_{\text{pairs}} \approx (z_{\alpha/2}\sqrt{\pi_d} + z_\beta \sqrt{\pi_d - \delta^2})^2 / \delta^2$ at $\alpha = 0.05$, power $= 0.80$, target effect size $\delta = 0.10$ absolute; the resulting budget admits detection for discordance rates up to $\pi_d \approx 0.25$. The calibration sweep examined six candidate benchmarks (ARC-Easy, SciQ, HellaSwag, AQuA-RAT, ProofWriter, LogiQA); SciQ qualifies as a corroboration target deferred to Phase 3. Wall-clock approximately 19~min for both scales. Driver: \texttt{scripts/diagnose\_track\_c\_benchmarks.py}.
+
+\paragraph{VRAM measurement protocol (Track D).}
+The $3.04$--$3.06 \cdot M_{\text{KV}}$ constant-factor memory result reported in Proposition~\ref{prop:memory} was measured via \texttt{torch.cuda.memory\_allocated()} for steady-state and \texttt{torch.cuda.max\_memory\_allocated()} for transient peak, cross-checked against \texttt{nvidia-smi --query-gpu=memory.used} at the largest configuration. Three configurations were swept: $(d, b, n) \in \{(3, 3, 27), (5, 3, 81), (10, 3, 1700)\}$, each with three repeats, at a fixed 4000-token seed prefill on both Llama 3.2-1B and -3B. Steady-state delta was identical across all $(d, b, n)$ cells at each scale (median over three repeats per cell), confirming branching-factor and depth independence. Wall-clock approximately 5~min for both scales. Driver: \texttt{scripts/measure\_kv\_mcts\_vram.py}.
+
+\paragraph{Entropy-MCTS negative control (Track F / Experiment~1).}
+The negative-control protocol underlying Experiment~1 evaluates three paired conditions on each of 200~ARC-Easy items at each model scale: G (greedy decoding, no MCTS); R (random-MCTS, $\hat{r}_R \sim \mathrm{Uniform}(0, 1)$); E (entropy-MCTS, $\hat{r}_E(\mathbf{h}) = -H_t / \log|V|$ from Eq.~\ref{eq:goodhart}). The MCTS arms enumerate all $27$ depth-$3$ paths from $\{0.1, 0.5, 1.0\}$; the best-rewarded path is re-applied permanently to the live KV cache before the model generates the 5-token answer continuation via \texttt{model.generate(do\_sample=False, max\_new\_tokens=5, output\_scores=True)}. The steering direction is a single random unit vector in $d_{\text{model}}$ space, seeded by \texttt{--seed 42}, shared identically across all items and across the R and E arms (the COCONUT defense; see §\ref{sec:exp1} Setup paragraph). The driver script imports \texttt{FP32Accumulator}, \texttt{\_extract\_kv\_tensors}, and \texttt{\_kv\_eval\_cache} from \texttt{kvmcts/kv\_mcts.py} as read-only primitives. Wall-clock: 18.3~min (1B sweep, 5.5~s/item) and 33.7~min (3B sweep, 10.1~s/item). Driver: \texttt{scripts/diagnose\_track\_f\_negcontrol.py}; raw artifacts \path|scripts/_track_f_results_meta-llama_Llama-3.2-{1B,3B}-Instruct.json|. To reproduce the Experiment~1 headline at each scale, run \texttt{python scripts/diagnose\_track\_f\_negcontrol.py --model meta-llama/Llama-3.2-1B-Instruct --seed 42} for the 1B sweep and \texttt{python scripts/diagnose\_track\_f\_negcontrol.py --model meta-llama/Llama-3.2-3B-Instruct --seed 42} for the 3B sweep; driver defaults are \texttt{--n=200}, \texttt{--device=auto}, output path \texttt{scripts/\_track\_f\_results\_<modelid>.json}, and the optional \texttt{--smoke} flag runs only 5 items for setup sanity-check before the full sweep.
+
+\subsection{Random seeds and reproducibility caveats}
+Greedy decoding (\texttt{do\_sample=False}) is deterministic given fixed model weights, tokenizer, and hardware; Tracks A, C, and D therefore do not set a manual seed beyond the default PyTorch initialization. Experiment~1 (Track F) and Experiment~2 (Latent Cartography) seed the steering direction with \texttt{--seed 42}; the per-item random number generator for the random-MCTS arm uses \texttt{hashlib.md5(f"\{item\_idx\}:R:\{seed\}")} so per-item draws are reproducible across runs at the same \texttt{--seed}. The 5-token completion accuracies and the per-condition perplexities reported in Table~\ref{tab:exp1-results} are deterministic. VRAM measurements (Table~\ref{tab:oei-alpha-sweep}'s parent paragraph and Proposition~\ref{prop:memory}'s constant factor) exhibit ${\sim}1$--$2\%$ between-run variation traceable to PyTorch's caching-allocator block-rounding to power-of-two boundaries; this affects measured VRAM but not any computed quantity in the paper. Exact HuggingFace checkpoint commit SHAs, the full library version pin manifest (\texttt{transformers}, \texttt{datasets}, \texttt{huggingface\_hub}, \texttt{numpy}, \texttt{scipy}), and per-script command-line argument references are recorded in the anonymized supplementary materials package, available at \url{https://anonymous.4open.science/r/kv-mcts-dimensional-escape-XXXX} (the final slug is assigned at Day-12 supplementary build per plan v2 §2).
+% [IMPL: COMPLETE — all driver scripts under scripts/ are read-only on logomesh/* and reproducible per their respective Appendix~A blocks in the Track A/C/D/F reports (docs/logs/2026-05-{09,10,11}_track-*-*.md).]
+
+% [REVISION | appendix-extended-related-work-Day10-batch1 | 2026-05-15 | Day-10 Batch 1: new appendix §B Extended Related Work absorbing the prose moved out of body §2.4 (MCTS for Language Model Search) and §2.5 (Continuous Latent Reasoning and KV-Cache Search) per Day-9 page-budget cut plan §3 rank #2. Body §2 retains §2.1 (Alignment Faking, trimmed) and §2.2 (RepE + Bailey 2024 complementarity, trimmed); the remaining related-work coverage lives here. — pending audit]
+\section{Extended Related Work}\label{sec:appendix-related-work}
+
+\subsection{MCTS for Language Model Search}\label{sec:appendix-mcts-lm}
+Monte Carlo Tree Search has been increasingly applied to automated red-teaming of LLMs. Wu et al.\ (2025)~\cite{wu2025mcts} proposed MCTS-based prompt autogeneration for jailbreak attacks. The DAMON framework~\cite{damon2025} introduced dialogue-aware MCTS for multi-turn jailbreaks. ACE-Safety~\cite{li2025ace} formulated attack-defense co-evolution via tree-group dual-aware search. All existing MCTS-based red-teaming operates exclusively in text space---mutating prompts, suffixes, or dialogue turns---fundamentally limiting the search to the discrete combinatorial space of token sequences and providing no access to the model's internal computational dynamics. Non-MCTS adversarial search methods face a related but distinct limitation: gradient-based attacks such as Greedy Coordinate Gradient (GCG)~\cite{zou2023gcg}---which require white-box gradient access---operate in discrete token space, constrained to the discrete combinatorial surface. Our MCTS conducts continuous arithmetic mutations of the KV cache with an exact FP32 rollback mechanism, enabling gradient-free, inference-time exploration of the model's representational landscape.
+
+\subsection{Continuous Latent Reasoning and KV-Cache Search}\label{sec:appendix-continuous-latent}
+COCONUT~\cite{hao2025coconut} bypasses discrete token decoding by feeding final-layer hidden states back as input embeddings, enabling emergent breadth-first latent tree search. This validates the viability of continuous latent search, but operates via recurrent hidden-state traversal rather than direct arithmetic mutation of a frozen transformer's KV-cache tensors. Most directly analogous to our architectural approach, the Okazaki-RAG framework~\cite{okazakirag2025} (unpublished conceptual contribution; not peer-reviewed) implements a beam-bounded search whose nodes are KV-cache fragment assemblies, with reversible primitive operations on the working set. However, Okazaki-RAG constructs its search tree by swapping pre-computed, discrete cache blocks rather than executing continuous arithmetic mutations across the differentiable tensor space. Our FP32 accumulator mechanism provides mathematically exact rollback without the VRAM overhead of duplicating multi-gigabyte cache states across branches---a barrier that block-swapping architectures do not resolve in the same form.
+
+\subsection{Structurally Related Baselines}\label{sec:appendix-baselines}
+Table~\ref{tab:baselines} catalogues inference-time and gradient-trained interventions on frozen language models that are structurally related to Reversible KV-Cache MCTS.
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Category} & \textbf{Method} & \textbf{Reference} \\
+\midrule
+Activation Steering & CAA (Contrastive Activation Addition) & Rimsky et al., 2024~\cite{rimsky2024steering} \\
+Cache Steering & One-shot static KV-cache steering & Belitsky et al., 2025~\cite{belitsky2025kvcache} \\
+Latent Monitor Evasion & RL-Obfuscation (weight finetuning) & Gupta \& Jenner, 2025~\cite{gupta2025rlobfuscation} \\
+Activation Obfuscation & Gradient-trained embedding suffixes & Bailey et al., 2024~\cite{bailey2024obfuscated} \\
+\bottomrule
+\end{tabular}
+\caption{Structurally related interventions on frozen language models. The four rows span complementary intervention sites (activation residual stream / KV cache / weight finetuning / input embedding) and complementary optimization regimes (corrective monitor vs surrogate reward; one-shot vs iterative search). Reversible KV-Cache MCTS combines iterative reversible KV-cache mutation, a surrogate reward (Eq.~\ref{eq:goodhart}), a frozen-weight regime, and inference-time-only computation. Bailey et al.~\cite{bailey2024obfuscated} is the closest empirical peer for the monitor-driven sub-case of Dimensional Escape (Hypothesis~\ref{hyp:monitor_driven}); their reported negative result is the empirical comparison point against which our reward-driven results in §\ref{sec:exp1} should be read. Published ASR figures from text-space jailbreak baselines (e.g., GCG on Vicuna-7B / AdvBench) are intentionally omitted: their tasks, models, and success criteria differ from ours, so a shared column would be a category error.}
+\label{tab:baselines}
+\end{table*}
+
+% [REVISION | appendix-impl-notes-Day10-batch2 | 2026-05-15 | Day-10 Batch 2: new appendix §D Implementation Notes absorbing the 5-item Phase 2 / Phase 3 Distinction paragraph moved out of body §5 per Day-9 page-budget cut plan §3 rank #5. The 2026-05-14 zou2023repe-citet-numbers-mode-fix-D+ marker (originally inline within items (i)+(ii)) is preserved verbatim below. — pending audit]
+\section{Implementation Notes (Phase 2 / Phase 3 Distinction)}\label{sec:appendix-impl-notes}
+
+The reference implementation backing this submission is a Phase~2 prototype on Llama~3.2-1B-Instruct and Llama~3.2-3B-Instruct on consumer hardware (NVIDIA RTX~3060). Several elements of the method as written in §\ref{sec:experiments} differ from this reference implementation in identifiable, bounded ways; we list them here as a single source of truth so a reviewer reading the paper alongside the released code finds one consolidated reference. The asymptotic claims---exact reversibility (Theorem~\ref{thm:reversibility}), memory-complexity scaling independent of the branching factor (Proposition~\ref{prop:memory})---are unaffected by the distinctions below; what differs is constants and operational details that resolve once the corresponding Phase~3 code work lands.
+
+% [REVISION | zou2023repe-citet-numbers-mode-fix-D+ | 2026-05-14 | Replaced two `\citet{zou2023repe}` textual citations at items (i) and (ii) with the prose-and-cite pattern "Zou et al.\ (2023)~\cite{zou2023repe}" used at line 214. Under the numbers-mode natbib quick-patch applied Day 4 (natbib-numbers-mode-D+ at line 8), `\citet{}` renders as a bare numeric `[N]` instead of "Zou et al.\ (2023)", producing awkward prose ("LAT procedure of [N]" and "[N] validate..."). The two-line surgery removes the rendering artifact while preserving the citation. — pending audit]
+\textit{(i) RepE probe extraction.} The Linear Artificial Tomography procedure of Zou et al.\ (2023)~\cite{zou2023repe} uses PCA on contrastive pairs. The Phase~2 implementation uses a difference-in-means estimator, which approximates the leading PCA component in expectation but is not equivalent to LAT as published. PCA-based extraction is deferred to Phase~3.
+
+\textit{(ii) Layer aggregation for the honesty probe.} The Phase~2 implementation aggregates the RepE honesty signal across all $L$ layers; Zou et al.\ (2023)~\cite{zou2023repe} validate the honesty probe on the middle layers only. Layer-restricted aggregation is deferred to Phase~3.
+
+\textit{(iii) Per-layer steering vectors.} The paper notation presents per-layer steering vectors $\mathbf{d}_K^{(\ell)}, \mathbf{d}_V^{(\ell)}$. The Phase~2 implementation broadcasts a single middle-layer vector to all layers; per-layer independent steering is deferred to Phase~3.
+
+\textit{(iv) Sparse accumulators and baseline-clone overhead.} The accumulator analysis in §\ref{sec:experiments} treats $K_{\text{acc}}$ as a sparse $S' \times d$ allocation with $S' \ll S$. The Phase~2 implementation allocates full-shape $S \times d$ accumulators and additionally stores a baseline cache clone of size $M_{\text{KV}}$ to enable rollback. The asymptotic claim that memory is independent of the branching factor $b$ (Proposition~\ref{prop:memory}) is unchanged. The constant factor in the Phase~2 implementation is approximately $2$--$3 \cdot M_{\text{KV}}$, with a Phase~2 floor at $20$B scale of approximately $80$~GB before any accumulator overhead. Sparse-accumulator implementation, baseline-clone elimination, and corrected example numbers backed by direct VRAM measurement are deferred to Phase~3.
+
+\textit{(v) On the reversibility theorem.} Theorem~\ref{thm:reversibility} is independent of the four distinctions above. It was empirically validated to numerical zero drift over $200$ apply-reverse cycles on Llama~3.2-1B-Instruct (residual norm $= 0.00$, 2026-04-16 gate) and confirmed at the 3B scale (residual norm $= 0.00$, 2026-05-05 probe). The headline algorithmic contribution is unaffected by any constant-factor revisions.
+
+% [REVISION | appendix-theorem-proof-Day10-batch1 | 2026-05-15 | Day-10 Batch 1: new appendix §C Theorem 1 Proof Detail absorbing the proof sketch moved out of body §6.1 per Day-9 page-budget cut plan §3 rank #18. — pending audit]
+\section{Theorem 1 Proof Detail}\label{sec:appendix-proof}
+
+\begin{proof}[Proof sketch for Theorem~\ref{thm:reversibility}]
+The FP32 accumulator maintains the exact cumulative delta. The only quantization error occurs in the final cast from FP32 to bf16, which is bounded by $\epsilon_{\text{bf16}}$ times the accumulator magnitude. After complete reversal, $\mathbf{A}_{\text{final}} = \mathbf{0}$, so $\mathbf{K}_n = \mathbf{K}_0$ exactly (up to the single bf16 quantization of zero, which is exact). \qed
+\end{proof}
+
+% [REVISION | appendix-algorithm-detail-Day10-batch4 | 2026-05-15 | Day-10 Batch 4: new appendix §E Algorithm Detail absorbing §4.2.2 Step 1/2/3 prose + eq:forward_mutation + eq:reverse_rollback + the Memory Complexity paragraph moved out of body §4.2 per Day-9 page-budget cut plan §3 rank #7. Body §4.2 retains the FP32 accumulator paragraph (load-bearing for Theorem~\ref{thm:reversibility}). The kv_memory equation (eq:kv_memory) originally in body §4.2.1 (Cut #13 DELETE) is preserved here in the bottleneck paragraph for the M_KV definition. — pending audit]
+\section{Algorithm Detail: The Reversible Rollback Procedure}\label{sec:appendix-algorithm}
+
+\paragraph{The computational bottleneck.} Standard MCTS in continuous latent space requires evaluating multiple future branches simultaneously. Mutating the past KV cache (e.g., under PagedAttention) invalidates all dependent computations, requiring a full physical cache copy for each branch. For a model with $L$ layers, sequence length $S$, and hidden dimension $d$, the KV cache occupies $M_{\text{KV}} = 2 \cdot L \cdot S \cdot d \cdot \text{sizeof(dtype)}$ bytes, and a standard MCTS with branching factor $b$ and depth $d$ requires $O(b^d \cdot M_{\text{KV}})$ working-set memory.
+
+\paragraph{Step 1: Forward Mutation (Steer).} Before evaluating a branch, mutate the KV tensors in place:
+\begin{equation}
+\mathbf{K}_t^{(\ell)} \leftarrow \mathbf{K}_t^{(\ell)} + \alpha_K \cdot \mathbf{d}_K^{(\ell)}, \qquad \mathbf{V}_t^{(\ell)} \leftarrow \mathbf{V}_t^{(\ell)} + \alpha_V \cdot \mathbf{d}_V^{(\ell)}
+\label{eq:forward_mutation}
+\end{equation}
+
+\paragraph{Step 2: Evaluation.} Execute the forward pass, generate the next token, compute the per-step next-token distribution $p(\cdot \mid \mathbf{h}_t)$, and evaluate the MCTS node reward $\hat{r}(\mathbf{h}_t)$ from this distribution (Eq.~\ref{eq:goodhart}). Latent-response measurements such as OEI (Eq.~\ref{eq:oei}) are recorded alongside the reward evaluation as static monitoring signals; they do not enter the reward.
+
+\paragraph{Step 3: Reverse Rollback (Restore).} Invert the mutation exactly:
+\begin{equation}
+\mathbf{K}_t^{(\ell)} \leftarrow \mathbf{K}_t^{(\ell)} - \alpha_K \cdot \mathbf{d}_K^{(\ell)}, \qquad \mathbf{V}_t^{(\ell)} \leftarrow \mathbf{V}_t^{(\ell)} - \alpha_V \cdot \mathbf{d}_V^{(\ell)}
+\label{eq:reverse_rollback}
+\end{equation}
+In the FP32-accumulator implementation (Eq.~\ref{eq:fp32_accumulator}), Step~3 is implemented by decrementing the accumulator $\mathbf{A}^{(\ell)}$ in FP32 and recasting the bf16 cache from base $\mathbf{K}_{\text{base},t}^{(\ell)}$, eliminating bf16 epsilon-drift accumulation across rollback cycles.
+
+\paragraph{Memory Complexity.} The reversible algorithm reduces working-set memory from $O(b^d \cdot M_{\text{KV}})$ to $O(M_{\text{KV}} + d \cdot L \cdot S' \cdot d_{\text{model}} \cdot 4)$, where $S'$ is the number of mutated token positions (typically $S' \ll S$). The branching factor $b$ does not appear in the bound. For a 20B model with $S' = 10$ mutated positions, the FP32 accumulator overhead is approximately 50~MB---negligible compared to the base cache. The Phase~2 implementation's full-shape allocation gives a constant factor of approximately $2$--$3 \cdot M_{\text{KV}}$ (Appendix~\ref{sec:appendix-impl-notes} item~(iv)).
+
+% [REVISION | appendix-telemetry-Day10-batch5 | 2026-05-15 | Day-10 Batch 5 drop-C2: new appendix §F Telemetry Matrix Framework absorbing §4.1 moved out of body per Josh-approved §8 escalation option (a). Preserves the formal definitions of σ_H (eq:hneuron_stress), ρ_R (eq:repe_signal), T_t (eq:telemetry_matrix) used elsewhere in the appendix (§G Measurement Pipeline, §A.4 Track A) and by the supplementary materials package, while §1 no longer claims the matrix as a paper-level contribution. The CRITIQUE NOTE on σ_H confound risk, the 2026-05-05 DRAFT-HOLD-block1-consolidated marker, the 2026-05-11 §4.1-RepE-probes-trim-D+ marker, and the 2026-05-11 §4.1-Table1-DiagnosticStates-delete-D+ marker are preserved verbatim. — pending audit]
+\section{Telemetry Matrix Framework}\label{sec:appendix-telemetry}
+
+We construct a telemetry matrix $\mathbf{T}_t \in \mathbb{R}^{2 \times L}$ at each generation step $t$ across $L$ transformer layers, combining two orthogonal monitoring channels.
+
+\paragraph{Bottom-Up Channel: H-Neuron Activation Tracking.}
+Following Gao et al.\ (2025)~\cite{gao2025hneurons}, we identify the set of hallucination-associated neurons $\mathcal{H} \subset \{1, \ldots, d_{\text{ffn}}\}$ for the target model. At each generation step $t$, we compute the aggregate H-Neuron stress signal:
+\begin{equation}
+\sigma_H^{(\ell)}(t) = \frac{1}{|\mathcal{H}|} \sum_{j \in \mathcal{H}} \text{ReLU}\left(a_j^{(\ell)}(t) - \bar{a}_j^{(\ell)}\right)
+\label{eq:hneuron_stress}
+\end{equation}
+where $a_j^{(\ell)}(t)$ is the activation of neuron $j$ at layer $\ell$ and step $t$, and $\bar{a}_j^{(\ell)}$ is its baseline activation computed over a calibration set of faithful generations.
+
+% [CRITIQUE NOTE | Confound risk] σ_H stress may conflate multiple failure modes (hallucination, mode-collapse, strategic masking pressure) unless discriminant controls are added. The H-Neuron literature establishes association with over-compliance and hallucination; extension to strategic deception is an extrapolation, not a settled equivalence. (Limitations §\ref{sec:limitations} item 4 acknowledges this.)
+
+% [REVISION | DRAFT-HOLD-block1-consolidated | 2026-05-05 | GAP-C1-05 (LAT/PCA vs difference-in-means) + P1-B Finding 4 (all-layer aggregation vs middle-layer recommendation) — content captured in Appendix~\ref{sec:appendix-impl-notes} items (i)+(ii). — pending audit]
+\paragraph{Top-Down Channel: RepE Linear Artificial Tomography.}
+% [REVISION | §4.1-RepE-probes-trim-D+ | 2026-05-11 | Trimmed RepE probe enumeration from {honesty, certainty, goal-coercion} to honesty-only per audit §4-1. — pending audit]
+We apply the Linear Artificial Tomography (LAT) procedure from Zou et al.\ (2023)~\cite{zou2023repe} to extract a linear probe for the honesty dimension ($\mathbf{w}_{\text{hon}}^{(\ell)}$). The RepE compliance signal at layer $\ell$ is:
+\begin{equation}
+\rho_R^{(\ell)}(t) = \mathbf{w}_{\text{hon}}^{(\ell)\top} \mathbf{h}_t^{(\ell)}
+\label{eq:repe_signal}
+\end{equation}
+
+The telemetry matrix combines the two channels:
+\begin{equation}
+\mathbf{T}_t = \begin{bmatrix} \sigma_H^{(1)}(t) & \cdots & \sigma_H^{(L)}(t) \\ \rho_R^{(1)}(t) & \cdots & \rho_R^{(L)}(t) \end{bmatrix}
+\label{eq:telemetry_matrix}
+\end{equation}
+
+% [REVISION | §4.1-Table1-DiagnosticStates-delete-D+ | 2026-05-11 | Deleted Table 1 "Diagnostic States" 4-state taxonomy (Creative Synthesis / Contextual Fabrication / Alignment Faking / Orthogonal Escape) per Decision 1. Replaced by Definition~\ref{def:dim_escape}-anchored structural interpretation. — pending audit]
+The joint signature characterizes the latent-response of a frozen model under inference-time KV-cache steering; the structural interpretation of divergence patterns between $\sigma_H$ and $\rho_R$ is given by Definition~\ref{def:dim_escape} and the two associated Hypotheses (§\ref{sec:dim_escape}), which decouple the geometric pathology from anthropomorphic claims about model intent.
+
+% [REVISION | appendix-measurement-pipeline-Day10-batch3 | 2026-05-15 | Day-10 Batch 3: new appendix §G Measurement Pipeline absorbing the prose + Table tab:oei-alpha-sweep moved out of body §7.4 per Day-9 page-budget cut plan §3 rank #1. — pending audit]
+\section{Measurement Pipeline}\label{sec:measurement-prereqs}
+
+The Off-monitor Escape Index (OEI) is the fraction of the steering-induced change $\Delta\mathbf{h} = \mathbf{h}_{\text{steered}} - \mathbf{h}_{\text{base}}$ that lies in the null space of a linear monitor $\mathbf{P}$:
+\begin{equation}
+\text{OEI} = \frac{\|\text{Proj}_{\text{Null}(\mathbf{P})}(\mathbf{h}_{\text{steered}} - \mathbf{h}_{\text{base}})\|_2}{\|\mathbf{h}_{\text{steered}} - \mathbf{h}_{\text{base}}\|_2}
+\label{eq:oei}
+\end{equation}
+$\text{OEI} \in [0, 1]$: $\text{OEI} \to 1$ indicates the activation change is entirely orthogonal to the monitor direction (complete off-monitor escape); $\text{OEI} \to 0$ indicates the change is aligned with the monitored direction.
+
+Any measurement of inference-time KV-cache perturbation, including OEI, requires that the steering direction $\mathbf{d}_K^{(\ell)}$ live in the same space as the cached key tensors. Representation-engineering probes are calibrated against residual-stream activations of dimension $d_{\text{model}}$, while the KV cache stores per-head representations of dimension $\text{kv\_heads} \times d_{\text{head}}$ under grouped-query attention. For Llama~3.2-1B these are 2048 and $8 \times 64$ respectively; an explicit projection between probe space and cache space is required. In our reference implementation we identified, characterized, and resolved a measurement-pipeline failure mode in which the broadcast layer silently zeroed the steering delta on shape incompatibility, producing forward passes that were bit-identical across $\alpha$. The fix projects probe directions through layer-specific key projection weights, $\mathbf{d}_K^{(\ell)} = \mathbf{W}_K^{(\ell)} \mathbf{d}_{\text{probe}}^{(\ell)}$, reshaped to per-head form. Two alternative approaches are also viable: intervening at the residual stream prior to the K/V projection and re-running the layer's forward computation, or calibrating probes directly in per-head cache space against contrastive cache states. Systematic comparison of the three is left to future work.
+
+Under the projection-based fix, OEI varies monotonically with steering magnitude on Llama~3.2-1B-Instruct (results in Table~\ref{tab:oei-alpha-sweep} below). The high baseline value (${\sim}0.99$) is geometrically expected: in $d_{\text{model}} = 2048$ with a rank-1 linear monitor, removing one direction from any perturbation leaves ${\sim}99\%$ of the perturbation's norm in the null space by default. This high-dimensional saturation is consistent with the regime Bailey et al.~\cite{bailey2024obfuscated} characterize when discussing why activation cosine similarity is hard to drive low in a behavior-preserving setting; the small but monotonic OEI spread we observe suggests the metric is responsive to genuine steering structure rather than producing a uniform default. Whether OEI under a richer monitor yields a more discriminative signal is a natural extension of the framework.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+$\alpha$ & 0.1 & 0.5 & 1.0 & 2.0 & 5.0 \\
+\midrule
+OEI & 0.991 & 0.991 & 0.992 & 0.992 & 0.995 \\
+$\rho_R$ & $-1.306$ & $-1.258$ & $-1.198$ & $-1.080$ & $-0.533$ \\
+$\sigma_H$ & 0.228 & 0.237 & 0.247 & 0.267 & 0.330 \\
+TDS & 0.084 & 0.080 & 0.076 & 0.068 & 0.040 \\
+\bottomrule
+\end{tabular}
+\caption{Per-$\alpha$ mean telemetry under inference-time KV-cache steering on Llama~3.2-1B-Instruct, with both measurement-pipeline issues resolved (steering projected through layer-specific $\mathbf{W}_K^{(\ell)}$ to per-head cache space; H-Neuron calibration applied per-layer). All four channels respond to steering: $\rho_R$ varies substantially, $\sigma_H$ rises monotonically with 14--15 of 17 layers firing, OEI shows the small monotonic variation expected in the high-dimensional saturation regime, and the cross-channel divergence TDS \emph{decreases} monotonically---the opposite of the signature predicted by the monitor-driven Dimensional Escape hypothesis (Hypothesis~\ref{hyp:monitor_driven}). Reversibility holds end-to-end (residual\_norm $= 0$).}
+\label{tab:oei-alpha-sweep}
+\end{table}
+
+The bottom-up H-Neuron stress channel ($\sigma_H$) initially reported zero across all $\alpha$. To distinguish whether the constancy reflected a calibration-regime mismatch~\cite{gao2025hneurons} or a deeper measurement issue, we ran a controlled three-prompt comparison at fixed $\alpha = 1.0$, varying only the test prompt across hallucination-style, coercion-style, and neutral regimes. $\sigma_H$ remained identically zero across all 17 layers in all three regimes. We additionally tested the per-neuron baseline-subtraction-and-ReLU formulation specified by Eq.~\ref{eq:hneuron_stress}; under this formulation $\sigma_H$ likewise remained zero, ruling out per-neuron normalization as the cause. The constancy resolved when we adopted per-layer H-Neuron calibration: in our initial implementation a single set of top-$K$ H-Neuron indices was identified at the deepest layer and applied uniformly across the layer stack as a Phase~2 approximation, while Eq.~\ref{eq:hneuron_stress} as written specifies per-layer indices and per-layer baselines. With per-layer calibration in place, $\sigma_H$ rises monotonically with $\alpha$ across the same alpha sweep (Table~\ref{tab:oei-alpha-sweep}), with 14--15 of 17 layers firing. Both measurement-pipeline issues---the steering-projection issue addressed by the $\mathbf{W}_K$-projection fix and the bottom-up calibration issue addressed by per-layer H-Neuron identification---are therefore resolved in the implementation reported here.

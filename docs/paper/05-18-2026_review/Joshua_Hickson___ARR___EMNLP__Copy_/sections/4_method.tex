@@ -1,0 +1,28 @@
+% ============================================================
+% 4. PROPOSED METHOD
+% ============================================================
+% [REVISION | sec-method-label-add-Day12 | 2026-05-17 | Day-12 prep edit for M5 patch: added \label{sec:method} on §4 section heading to support the M5 "Search-variant scope" paragraph's \ref{sec:method} forward reference (the framework defined in §4 supports both exhaustive enumeration and UCB1). Section heading text unchanged. — pending audit]
+\section{Proposed Method}\label{sec:method}
+
+% [REVISION | §4.1-move-Day10-batch5-drop-C2 | 2026-05-15 | Day-10 Batch 5: MOVED §4.1 Multi-Dimensional Micro-Telemetry Matrix (entire subsection: opening paragraph + Bottom-Up Channel paragraph + eq:hneuron_stress + Top-Down Channel paragraph + eq:repe_signal + eq:telemetry_matrix + closing paragraph on joint signature) to Appendix~\ref{sec:appendix-telemetry} as part of the Josh-approved drop-Contribution-2 surgery. Body §4 now flattens to one subsection (Reversible MCTS in KV-Cache Space, LaTeX renumbers to §4.1 automatically). The 2026-05-05 DRAFT-HOLD-block1-consolidated marker, the 2026-05-11 §4.1-RepE-probes-trim-D+ marker, the 2026-05-11 §4.1-Table1-DiagnosticStates-delete-D+ marker, and the CRITIQUE NOTE on σ_H confound risk are preserved at the new appendix location. — pending audit]
+
+% [REVISION | §4.2-algorithm-compact-Day10-batch4 | 2026-05-15 | Day-10 Batch 4 page-budget cuts #7 + #13: (i) DELETED §4.2.1 The Computational Bottleneck entirely (Cut #13; the 40~GB anchor reconciliation noted in Day-9 Pass L is resolved by removing the conflicting body figure — the M_KV reconciliation footnote at §6.2 still references Appendix~\ref{sec:appendix-impl-notes} for the Phase~2 80~GB constant); (ii) compacted §4.2.2 The Reversible Rollback Algorithm by moving Step 1/2/3 prose + eq:forward_mutation + eq:reverse_rollback + Memory Complexity paragraph to Appendix~\ref{sec:appendix-algorithm} (Cut #7). Body §4.2 retains the FP32 accumulator paragraph + eq:fp32_accumulator (load-bearing for Theorem~\ref{thm:reversibility}) and the MCTS Node Reward paragraph (load-bearing for Hypothesis~\ref{hyp:goodhart} / §\ref{sec:exp1}). The 2026-05-05 DRAFT-HOLD-block2-consolidated and DRAFT-HOLD-block3-consolidated markers are subsumed; the 2026-05-11 §4.2.3-MCTSnodeValuation-delete-D+ marker is preserved at the MCTS Node Reward paragraph below. Per Day-9 page-budget cut plan §3 rank #7 (MEDIUM risk, save 0.50 pp) + rank #13 (MEDIUM risk, save 0.30 pp). — pending audit]
+\subsection{Reversible MCTS in KV-Cache Space}
+
+We exploit the mathematical property that tensor addition is reversible, provided numerical stability is maintained. Let $\mathbf{K}_t^{(\ell)}, \mathbf{V}_t^{(\ell)}$ denote the key and value cache tensors at layer $\ell$ for token position $t$; let $\mathbf{d}_K^{(\ell)}, \mathbf{d}_V^{(\ell)}$ be the RepE steering vectors and $\alpha_K, \alpha_V$ the MCTS-chosen intervention magnitudes. Standard MCTS in this latent space would require $O(b^d)$ simultaneous cache copies---prohibitive at scale (Proposition~\ref{prop:memory}). Our algorithm instead mutates the cache in place ($\mathbf{K}_t^{(\ell)} \leftarrow \mathbf{K}_t^{(\ell)} + \alpha_K \cdot \mathbf{d}_K^{(\ell)}$, inverted exactly by $\mathbf{K}_t^{(\ell)} \leftarrow \mathbf{K}_t^{(\ell)} - \alpha_K \cdot \mathbf{d}_K^{(\ell)}$) via an FP32 accumulator that absorbs bf16 quantization error; the full three-step apply/evaluate/rollback algorithm is given in Appendix~\ref{sec:appendix-algorithm}.
+
+\paragraph{Precision Management: FP32 Accumulator.} Repeated bf16 addition and subtraction introduces epsilon drift that corrupts the cache over many rollbacks. We maintain an FP32 accumulator tensor $\mathbf{A}^{(\ell)} \in \mathbb{R}^{S \times d}$ that tracks the cumulative delta applied to each mutated position. All steering deltas are computed and accumulated in FP32; the bf16 cache is reconstructed from the accumulator at each step:
+
+\begin{equation}
+\begin{aligned}
+\mathbf{A}^{(\ell)} &\leftarrow \mathbf{A}^{(\ell)} + \alpha \cdot \mathbf{d}^{(\ell)} \quad (\text{FP32}), \\
+\mathbf{K}_t^{(\ell)} &\leftarrow \mathbf{K}_{\text{base},t}^{(\ell)} + \text{cast}_{\text{bf16}}(\mathbf{A}^{(\ell)})
+\end{aligned}
+\label{eq:fp32_accumulator}
+\end{equation}
+
+This guarantees exact baseline restoration after every MCTS node evaluation, achieving zero semantic degradation regardless of search depth (Theorem~\ref{thm:reversibility}).
+
+% [REVISION | §4.2.3-MCTSnodeValuation-delete-D+ | 2026-05-11 | Deleted §4.2.3 MCTS Node Valuation per Decision 2: keeping Eq.~mcts_reward (λ₁σ̄_H + λ₂(1-ρ̄_R) + λ₃Divergence) would publish a predicted-to-fail recipe (Gemini Part 2 #1 + Track F §7). UCB1 also dropped. Replacement is a pointer to Eq.~goodhart and §sec:future-work. — pending audit]
+\paragraph{MCTS Node Reward (Choice of $\hat{r}$).}
+The reward $\hat{r}(\mathbf{h})$ is a design choice; the framework is reward-agnostic. We test the entropy-normalized reward (Eq.~\ref{eq:goodhart}) as a null-control under Hypothesis~\ref{hyp:goodhart}; anti-Goodhart variants are a Phase~B research program (§\ref{sec:future-work}).

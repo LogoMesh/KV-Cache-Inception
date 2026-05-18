@@ -1,0 +1,42 @@
+% ============================================================
+% 6. THEORETICAL ANALYSIS
+% ============================================================
+\section{Theoretical Analysis}
+
+\subsection{Reversibility Guarantee}
+
+% [IMPL: EMPIRICALLY VALIDATED — measure_lipschitz_drift.py, n=200 cycles, FP32 accumulator_inf_norm = 0.00e+00]
+\begin{theorem}[Exact Reversibility with FP32 Accumulator]
+\label{thm:reversibility}
+% [REVISION | thm-label-add | 2026-05-06 | Added \label{thm:reversibility} to enable forward references from §1 abstract, §1 Contributions, and §7 Empirical Measurement Prerequisites subsection (all landed 2026-05-06). Theorem statement and proof unchanged. — pending audit]
+Let $\mathbf{K}_0 \in \mathbb{R}^{S \times d}$ be the baseline KV cache in bf16. Let $\{\delta_1, \ldots, \delta_n\}$ be a sequence of steering interventions applied and reversed via the FP32 accumulator. Then after $n$ complete apply-reverse cycles:
+
+\begin{equation}
+\|\mathbf{K}_n - \mathbf{K}_0\|_\infty \leq n \cdot \epsilon_{\text{bf16}} \cdot \max_i \|\delta_i\|_\infty
+\label{eq:reversibility_naive}
+\end{equation}
+
+where $\epsilon_{\text{bf16}} = 2^{-8} \approx 3.9 \times 10^{-3}$ is the bf16 machine epsilon. With FP32 accumulation, this bound tightens to:
+
+\begin{equation}
+\|\mathbf{K}_n - \mathbf{K}_0\|_\infty \leq \epsilon_{\text{bf16}} \cdot \|\mathbf{A}_{\text{final}}\|_\infty
+\label{eq:reversibility_fp32}
+\end{equation}
+
+which is independent of $n$, depending only on the final accumulator state (which is zero after complete reversal).
+\end{theorem}
+
+% [REVISION | §6.1-proof-move-Day10-batch1 | 2026-05-15 | Day-10 Batch 1 page-budget cut #18: moved Theorem 1 proof sketch from §6.1 body to §B.3 (appendix). The body retains the theorem statement (load-bearing for Contribution 1) and an inline pointer to the proof location. Per Day-9 page-budget cut plan §3 rank #18 (LOW risk, save 0.10 pp; pre-planned plan v2 §8 risk-register cut). — pending audit]
+A proof sketch establishing the bound via the FP32 accumulator's exact cumulative-delta property is given in Appendix~\ref{sec:appendix-proof}.
+
+% [REVISION | §6-worked-numbers-trackD-D+ | 2026-05-15 | Plan-v2 §2 Day-8 task: replace α+-vintage placeholder numbers (40.05 GB / 9.7 TB at M_KV=40 GB) in the §6 Memory Complexity worked example with Track D's measured constants ($M_{\text{KV}} \approx 162$ GB at 20B scale; $\sim 3.04 \cdot M_{\text{KV}}$ measured steady-state delta independent of branching factor; ${\sim}60\times$ reduction vs naive parallel-cache MCTS at $(b,d)=(3,5)$). Track D primary source: `docs/logs/2026-05-09_track-D-vram-report.md`. Subsumes the 2026-05-05 `DRAFT-HOLD-block5-consolidated` marker (the "pending Max's simplified Exp 3 VRAM measurements" gate it documented is now closed by Track D's three-cell three-repeat sweep at 1B + 3B scales, with the 20B figure being a derived projection — see §A.4 Track D protocol). The proposition statement and label remain unchanged; only the comparison sentence below it is rewritten. The 2026-05-06 `prop-label-add` marker preserved (it documents the label, not the numbers). — pending audit]
+\subsection{Memory Complexity}
+
+\begin{proposition}
+\label{prop:memory}
+% [REVISION | prop-label-add | 2026-05-06 | Added \label{prop:memory} to enable forward references from §1 Contributions and §7 Empirical Measurement Prerequisites subsection (both landed 2026-05-06). Proposition statement unchanged. — pending audit]
+The reversible MCTS algorithm achieves memory complexity $O(M_{\text{KV}} + d \cdot K_{\text{acc}})$ where $d$ is the maximum search depth and $K_{\text{acc}} = L \cdot S' \cdot d_{\text{model}} \cdot 4$ bytes is the per-step FP32 accumulator size for $S'$ mutated positions. This is independent of the branching factor $b$. Intuitively, naive parallel MCTS spawns $b^d$ cache copies (one per leaf), whereas our algorithm reuses a single baseline cache plus $d$ accumulators regardless of $b$.
+\end{proposition}
+
+% [REVISION | §6-honest-framing-refinement-D+ | 2026-05-15 | Day-8-evening refinement of the §6 worked-example numbers (commit `e628256`): the prior wording "Track D measured $M_{\text{KV}}$ at 20B" overstated the measurement scope per Josh's flag. Track D measured the $3.04 \cdot M_{\text{KV}}$ steady-state-delta constant at 1B and 3B across three (d,b,n) cells; $M_{\text{KV}}$ at 20B is a derivation from the open-weight gpt-oss-20b architecture spec (Track D side-finding). The ${\sim}60\times$ reduction is therefore a projection, not a direct 20B observation. Refinement: reframed "where Track~D measured" to "where the architectural specifications imply (Track~D side-finding)"; reframed "requires approximately" to "is projected to require approximately"; added footnote naming the projection-vs-measurement scope explicitly; added closing qualifier on the 60× claim. Page-budget cost: ~1 line for footnote anchor + ~3 lines for footnote body in ACL two-column. Day-12 parallel-review plan Axis 5 Pass K (NEW) explicitly evaluates whether the 20B-scale speculation is worth its body-page cost or should be trimmed for the 8-page review budget. — pending audit]
+Reversible MCTS reduces the working-set memory from $O(b^d \cdot M_{\text{KV}})$ in standard parallel-cache MCTS (one cache snapshot per leaf) to $O(M_{\text{KV}} + d \cdot K_{\text{acc}})$---from exponential in $b^d$ to additive in search depth $d$. The asymptotic separation is independent of model scale and is the methods contribution of this paper.
