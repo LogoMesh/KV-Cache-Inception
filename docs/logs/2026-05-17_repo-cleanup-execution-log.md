@@ -292,4 +292,56 @@ $ git commit -m "docs: fill §A.5 supplementary URL slug (Phase 4 of Session 3)"
 
 **Partial complete (Steps 1-4 of 8).** Substantive risk reduction: live-repo is cleaned of stale residue; supplementary tree is built, scrubbed clean, and live on a private GitHub repo waiting for the anonymous.4open.science proxy. The remaining ~30-45 min of Step 6-8 work on 2026-05-24 is mechanical (URL slug fill + smoke-compile + commit).
 
+---
+
+## Phase 4.2 addendum — Strip-down round (2026-05-17 EOD, post-initial-pause)
+
+Josh surfaced concerns about residual identifying content after the initial Steps 1-4 landed. Triggered a second-pass audit that found:
+
+1. **`Shi` (Tianyu's last name):** 0 hits in staging — confirmed clean.
+2. **`@anthropic`:** 0 hits — confirmed clean.
+3. **`Bill` (Tianyu's Discord handle):** 7 hits, all false positives in AQuA-RAT benchmark math-word-problem text. Safe.
+4. **`alignment-faking` keyword/RAI strings in `kvmcts/croissant_export.py` lines 343, 382:** α+ vintage residue. Patched.
+5. **`Phase A`/`Phase B` internal phasing in 10 files:** Patched with neutral phrasings ("exploratory" / "main extension" / "post-acceptance").
+6. **`logomesh` lowercase Python package name (84 hits across 20 files):** Renamed `logomesh` → `kvmcts` throughout the staging tree. Coupled with a 2-line paper TeX edit at §A.3 line 504 + §A.4 line 518 (rendered text `\texttt{logomesh/kv\_mcts.py}` → `\texttt{kvmcts/kv\_mcts.py}`; %-comment hits at lines 229, 493, 522 left untouched per the prompt's paper-TeX hard rule).
+
+Plus a 1-line legacy-context comment added in `kvmcts/telemetry_matrix.py` near the `ALIGNMENT_FAKING` DiagnosticState enum (Phase-2-vintage taxonomy retained for code compatibility; coordinated rename was out-of-scope per Q-J8 SURGICAL).
+
+Also: live `docs/dataset/croissant.json` had 3 unanonymized hits (creator.name×2 + url) — Phase 4.1 Q-J6 had intentionally left live as non-anon, but Josh upgraded to belt-and-suspenders given the privacy-switch-fallback risk. Live `MANIFEST.txt` sha256 for croissant.json updated to match (37,883 → 37,892 bytes, hash `694da469…` → `8330884b…`).
+
+### Strip-down file totals
+
+- Staging tree: **20 files touched, 84 logomesh→kvmcts swaps; 10 files Phase A/B-swept (20 swaps); 2 α+ string patches; 1 telemetry-enum docstring comment; 1 manifest sha256 patch; directory renamed `logomesh/` → `kvmcts/`**
+- Live worktree: **3 files modified — paper TeX 2-line rename, croissant.json 3-hit anon, MANIFEST.txt 1-hit hash patch**
+
+### Final verification (re-grep across staging tree)
+
+| Pattern | Hits |
+|---|---|
+| `Josh\|Tianyu\|Alaa\|McGill\|joshhickson\|LogoMesh\|Logomesh\|logomesh\|Hickson\|Toscano\|Elobaid\|AgentBeats\|\bShi\b\|@anthropic` | **0** ✓ |
+| `Phase A\|Phase B\|Phase-A\|Phase-B\|Session A\|Session B` | **0** ✓ |
+| `alignment.faking\|alignment-faking` | 13 hits — all functional code in `kvmcts/telemetry_matrix.py` (enum value + threshold param names); intentional, comment added |
+
+### Commits landed
+
+- **Live worktree HEAD `135b00e`** (Commit A, from initial round): cleanup deletions + .gitignore + α+ swaps + Phase-4 audit docs
+- **Live worktree HEAD will be Commit B** (this round): paper TeX 2-line rename + live croissant.json anon + MANIFEST.txt hash patch + this log update. NO PUSH.
+- **Staging tree HEAD will be amended `ab6c6d8'`** (single Anonymous commit containing the full strip-down result). NO PUSH; remote `joshhickson/kv-mcts-anon` still holds the original `ab6c6d8` (pre-strip-down). On 2026-05-24 the resume session updates the staging copy with the §A.5 slug + force-pushes the final amended commit in one motion.
+
+### Test verification
+
+Live worktree pytest: **179/179 passing in 7.47s** after the strip-down round (changes were docs-only — paper TeX + croissant.json + MANIFEST.txt; no Python code paths touched).
+
+Staging tree pytest not run (no tests/ in the staging tree; Q-J11 explicitly excluded tests/).
+
+### Updated wall-time estimate for 2026-05-24
+
+Strip-down adds ~5-10 min to the resume session (smoke-compile must re-check that the 2-line paper TeX rename didn't introduce any subtle issues — should be a no-op for the rendered PDF). Total 2026-05-24 wall: **~35-55 min**.
+
+---
+
+## Phase 4.2 verdict at 2026-05-17 EOD (revised post-strip-down)
+
+**Steps 1-4 complete + strip-down round complete + Commit B pending land on live worktree.** Substantive anonymity perimeter materially tightened beyond the original Phase 4.1 plan: package name `logomesh` no longer appears in the anon bundle (replaced with neutral `kvmcts`); paper TeX rendered text uses the neutral name; α+ vintage keywords + Phase A/B internal-phasing terminology scrubbed. 2026-05-24 resume now just adds the §A.5 URL slug fill + smoke-compile + force-push amended staging commit. Estimated wall: 35-55 min.
+
 ARR deadline 2026-05-25; T-8 days from this session's authoring date. Resume target T-1 (2026-05-24) preserves a full buffer day before submission.

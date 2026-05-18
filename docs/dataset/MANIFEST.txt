@@ -2,7 +2,7 @@ KV-Cache Inception: Reversible KV-Cache MCTS Runtime Evidence
 Built: 2026-05-17
 
 Files (with sha256):
-  docs\dataset\croissant.json  (37,883 bytes, sha256=694da469e9a44610f0f322463ea11875b0b6eedf519f1e3769e551c3a3602206)
+  docs\dataset\croissant.json  (37,892 bytes, sha256=8330884b72bf7f8bb34900f6ed077624ec6de660ca0ecda7f58de2aacf2f617e)
     Croissant 1.1 + RAI 1.0 metadata JSON-LD
 
   docs\dataset\data\track_f_negcontrol.csv  (186,912 bytes, sha256=52d0ad62c4cc105e09d1f7264fc5a5ea3de28d79d4d56b8787b9b826ea8465a7)
