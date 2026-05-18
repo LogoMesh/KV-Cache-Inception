@@ -1,0 +1,917 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "containedIn": "cr:containedIn",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "samplingRate": "cr:samplingRate",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "KV-Cache Inception: Reversible KV-Cache MCTS Runtime Evidence",
+  "description": "Runtime evidence and per-item records from Reversible KV-Cache Monte Carlo Tree Search (MCTS) on frozen Llama 3.2-{1B,3B}-Instruct, used to characterize the Dimensional Escape pathology (an instance of Goodhart's Law in high-dimensional latent-space search) under an entropy-normalized surrogate reward. Includes two headline experiments: Track F (entropy-MCTS negative control vs random-MCTS vs greedy baseline on 200 ARC-Easy items; n=200 paired McNemar, p=1.0 at both scales) and Track G (Latent Cartography across four prompt classes -- hand-constructed factual recall, ARC-Easy MCQ, HellaSwag continuation, TruthfulQA MCQ). Supporting tracks A, C, D provide static entropy-correctness correlation, benchmark calibration, and VRAM-measurement records that anchor the paper's reproducibility appendix Section A. Released as supplementary material for the ARR May 2026 / EMNLP 2026 paper 'Probing Dimensional Escape in Frozen Language Models via Reversible KV-Cache MCTS.'",
+  "conformsTo": [
+    "http://mlcommons.org/croissant/1.1",
+    "http://mlcommons.org/croissant/RAI/1.0"
+  ],
+  "license": "https://opensource.org/licenses/MIT",
+  "url": "https://github.com/LogoMesh/KV-Cache-Inception",
+  "creator": {
+    "@type": "sc:Organization",
+    "name": "LogoMesh Research Team"
+  },
+  "publisher": {
+    "@type": "sc:Organization",
+    "name": "LogoMesh Research Team"
+  },
+  "datePublished": "2026-05-17",
+  "dateCreated": "2026-05-17",
+  "dateModified": "2026-05-17",
+  "version": "1.0.0",
+  "sdVersion": "1.1",
+  "inLanguage": "en",
+  "keywords": [
+    "dimensional escape",
+    "reversible kv-cache mcts",
+    "frozen language model interpretability",
+    "latent geometry probing",
+    "goodhart's law",
+    "negative result"
+  ],
+  "citeAs": "@inproceedings{kvcache_inception_2026,\n  title = {Probing Dimensional Escape in Frozen Language Models via Reversible KV-Cache MCTS},\n  author = {[Authors]},\n  booktitle = {Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing (via ACL Rolling Review May 2026)},\n  year = {2026}\n}",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-f-csv",
+      "name": "track_f_negcontrol.csv",
+      "contentUrl": "data/track_f_negcontrol.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "52d0ad62c4cc105e09d1f7264fc5a5ea3de28d79d4d56b8787b9b826ea8465a7",
+      "description": "Flattened Track F records (1200 rows = 200 items x 3 conditions x 2 scales). Source-of-truth backing the track_f_negcontrol recordSet."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-g-csv",
+      "name": "track_g_cartography_mcts.csv",
+      "contentUrl": "data/track_g_cartography_mcts.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "ca59e5e58e872dcc38b5acfbf4e3cbab2f2d6bc50ef9a0803ba3ef9c0b11dfbc",
+      "description": "Flattened Track G MCTS-primary records (770 rows = 385 per scale x 2 scales; C3 has 85 at 3B due to HellaSwag tokenization drops). Source-of-truth backing the track_g_cartography_mcts recordSet."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-f-raw-1b",
+      "name": "_track_f_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "contentUrl": "data/raw/_track_f_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "040bc5591b058ad2541543b1c2e8f633d9c6d91ef8e5d843478aea0928404c1e",
+      "description": "Track F raw output, Llama 3.2-1B-Instruct (200 items x G/R/E conditions; full provenance)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-f-raw-3b",
+      "name": "_track_f_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "contentUrl": "data/raw/_track_f_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "eebaee0e2f24ebbf559990b451c2f0e6157486bd803ed657f9520e40da4ae69b",
+      "description": "Track F raw output, Llama 3.2-3B-Instruct (200 items x G/R/E conditions; full provenance)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-g-mcts-raw-1b",
+      "name": "_track_g_mcts_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "contentUrl": "data/raw/_track_g_mcts_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "29831ec4d5145722a6bf4b26904fd0068b91e2d60ffd6f658dca2582fa7942c3",
+      "description": "Track G MCTS-primary raw output, Llama 3.2-1B-Instruct (4 classes; C3 TruthfulQA mc1 yields 85 records due to <3-distractor filter, others=100; 385 records total)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-g-mcts-raw-3b",
+      "name": "_track_g_mcts_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "contentUrl": "data/raw/_track_g_mcts_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "d18aee34068bbea2370e4f8b9e50639918686c50034f04dbcb4db97a6178fffb",
+      "description": "Track G MCTS-primary raw output, Llama 3.2-3B-Instruct (4 classes; C3 TruthfulQA mc1 yields 85 records due to <3-distractor filter, others=100; 385 records total)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-g-init-raw-1b",
+      "name": "_track_g_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "contentUrl": "data/raw/_track_g_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "337de049df7491402b9b306720076e21248a889a10e6f51ed56c9aff64dd792f",
+      "description": "Track G initial parameter-sweep variant, 1B (HISTORICAL; supplemented by MCTS-primary above per 2026-05-11 protocol-fidelity re-run)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-g-init-raw-3b",
+      "name": "_track_g_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "contentUrl": "data/raw/_track_g_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "65eaafc6acec48196fd44b481eebddb10e344c17642c48586352e90c1a9e6eee",
+      "description": "Track G initial parameter-sweep variant, 3B (HISTORICAL; supplemented by MCTS-primary above per 2026-05-11 protocol-fidelity re-run)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-g-c1-definition",
+      "name": "_track_g_c1_factual_recall.json",
+      "contentUrl": "data/raw/_track_g_c1_factual_recall.json",
+      "encodingFormat": "application/json",
+      "sha256": "3f00f3c44b03fb0980814172d9a3ee065f21c471cf90f9e65e858726c7d282fd",
+      "description": "Dataset definition for Track G class C1 (factual recall): 100 hand-constructed items (25 capitals + 25 dates + 25 arithmetic + 25 common-knowledge)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-a-raw-1b",
+      "name": "_track_a_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "contentUrl": "data/raw/_track_a_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "44d397c6c1699f67828352733f1c8a3e95129f4ce04528f95bf9b5f6faf65c07",
+      "description": "Track A raw output, 1B: static entropy-correctness correlation on 85 factual-recall items (25 easy + 30 hard + 30 ultra)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-a-raw-3b",
+      "name": "_track_a_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "contentUrl": "data/raw/_track_a_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "14c5ff56e28136e70117b856ce053a4d7ad2a2142243c42e1436d7f7bbf9c525",
+      "description": "Track A raw output, 3B: static entropy-correctness correlation on 85 factual-recall items (25 easy + 30 hard + 30 ultra)."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-c-raw-1b",
+      "name": "_track_c_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "contentUrl": "data/raw/_track_c_results_meta-llama_Llama-3.2-1B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "f69cd1377b3e387bab663295e51ef3a76fbca89d4bffc6f93f4b9b1eae502f37",
+      "description": "Track C raw output, 1B: benchmark calibration sweep across 6 benchmarks (ARC-Easy, SciQ, HellaSwag, AQuA-RAT, ProofWriter, LogiQA), 100 items each."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-c-raw-3b",
+      "name": "_track_c_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "contentUrl": "data/raw/_track_c_results_meta-llama_Llama-3.2-3B-Instruct.json",
+      "encodingFormat": "application/json",
+      "sha256": "9a7ce55c437ae4cd2f7b152c5e674a4f337adf0b0a4347af3418a5ba58991b26",
+      "description": "Track C raw output, 3B: benchmark calibration sweep across 6 benchmarks (ARC-Easy, SciQ, HellaSwag, AQuA-RAT, ProofWriter, LogiQA), 100 items each."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-d-raw-1b",
+      "name": "_track_d_vram.json",
+      "contentUrl": "data/raw/_track_d_vram.json",
+      "encodingFormat": "application/json",
+      "sha256": "2a6a34b7f13442ccc6d52e84f6c0869c4da446a0850f16b15f6a18faef246f7a",
+      "description": "Track D raw output, 1B: VRAM measurement across 3 (depth, branches, nodes) configurations on RTX 3060."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "track-d-raw-3b",
+      "name": "_track_d_vram_3b.json",
+      "contentUrl": "data/raw/_track_d_vram_3b.json",
+      "encodingFormat": "application/json",
+      "sha256": "4cba2eaa2a67ec989019848e8982623885824ed1d4225e6df7383a7729cabb38",
+      "description": "Track D raw output, 3B: VRAM measurement across 3 (depth, branches, nodes) configurations on RTX 3060."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "uv-lock",
+      "name": "uv.lock",
+      "contentUrl": "data/uv.lock",
+      "encodingFormat": "text/plain",
+      "sha256": "7e95c6c36ff08c1537f8352c7076673b3e260ddca3ecf961bb5d155294766699",
+      "description": "Pinned dependency manifest (uv.lock) listing the exact resolved versions of every library used to produce the records. Reproducibility-critical: paper Appendix A.1 cites this file."
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "track_f_negcontrol",
+      "name": "track_f_negcontrol",
+      "description": "Per-item-per-condition records from Track F (Experiment 1: entropy-MCTS negative control). 200 ARC-Easy items at each of two model scales (1B, 3B), each evaluated under three decoding conditions: G (greedy, no MCTS), R (random-MCTS: paths scored with Uniform(0,1) reward), E (entropy-MCTS: paths scored with -H_t / log|V| from Eq. 1). All MCTS arms enumerate the 27 depth-3 paths from {0.1, 0.5, 1.0} and apply the best-rewarded path permanently before the 5-token answer continuation.",
+      "key": [
+        {
+          "@id": "track_f_negcontrol/scale"
+        },
+        {
+          "@id": "track_f_negcontrol/item_idx"
+        },
+        {
+          "@id": "track_f_negcontrol/condition"
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/scale",
+          "name": "scale",
+          "description": "Model scale: '1B' or '3B' (meta-llama/Llama-3.2-{1B,3B}-Instruct).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "scale"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/item_idx",
+          "name": "item_idx",
+          "description": "Item index 0-199 within the 200-item ARC-Easy subset (deterministic indices, no shuffling).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "item_idx"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/source_id",
+          "name": "source_id",
+          "description": "Source ARC-Easy item identifier (e.g., 'Mercury_417466').",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "source_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/gold_letter",
+          "name": "gold_letter",
+          "description": "Gold answer letter, one of A/B/C/D.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "gold_letter"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/n_options",
+          "name": "n_options",
+          "description": "Number of multiple-choice options (3 or 4 depending on item).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "n_options"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/condition",
+          "name": "condition",
+          "description": "Decoding condition: 'G' (greedy, no MCTS), 'R' (random-MCTS), 'E' (entropy-MCTS).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "condition"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/pred_letter",
+          "name": "pred_letter",
+          "description": "Predicted answer letter from the 5-token model.generate output.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "pred_letter"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/correct",
+          "name": "correct",
+          "description": "1 if pred_letter equals gold_letter (case-insensitive), else 0.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "correct"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/answer_text",
+          "name": "answer_text",
+          "description": "Decoded text from the model.generate output (max 5 new tokens).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "answer_text"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/first_token_entropy_nats",
+          "name": "first_token_entropy_nats",
+          "description": "Shannon entropy of the first-token distribution under the active condition (nats).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "first_token_entropy_nats"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/per_token_entropy_mean_nats",
+          "name": "per_token_entropy_mean_nats",
+          "description": "Mean per-token Shannon entropy across generated tokens (nats).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "per_token_entropy_mean_nats"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/perplexity_5tok",
+          "name": "perplexity_5tok",
+          "description": "Perplexity over the 5-token completion.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "perplexity_5tok"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/search_status",
+          "name": "search_status",
+          "description": "MCTS status: 'ok' (search ran), 'n/a' (greedy, no search).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "search_status"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/mean_search_reward",
+          "name": "mean_search_reward",
+          "description": "Mean reward across all 27 enumerated paths under the active condition (empty for greedy).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "mean_search_reward"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/best_search_reward",
+          "name": "best_search_reward",
+          "description": "Reward of the best-rewarded path applied to the live KV cache (empty for greedy).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "best_search_reward"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/mean_terminal_entropy_nats",
+          "name": "mean_terminal_entropy_nats",
+          "description": "Mean terminal-step entropy across all 27 paths (nats; empty for greedy).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "mean_terminal_entropy_nats"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/best_path_json",
+          "name": "best_path_json",
+          "description": "JSON-encoded best path: a 3-element list of alpha values from {0.1, 0.5, 1.0} (empty for greedy).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "best_path_json"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/n_paths_evaluated",
+          "name": "n_paths_evaluated",
+          "description": "Number of paths evaluated by MCTS (27 = depth-3 enumeration of {0.1,0.5,1.0}^3; empty for greedy).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "n_paths_evaluated"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_f_negcontrol/n_apply_failures",
+          "name": "n_apply_failures",
+          "description": "Number of paths that failed to apply (empty for greedy; empirically 0 for all R/E records).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-f-csv"
+            },
+            "extract": {
+              "column": "n_apply_failures"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "track_g_cartography_mcts",
+      "name": "track_g_cartography_mcts",
+      "description": "Per-item records from Track G (Experiment 2: Latent Cartography MCTS-primary variant). Four prompt classes (C1=factual_recall, C2=arc_easy_mcq, C3=truthfulqa_mcq, C4=hellaswag_continuation), 100 items per class at each of two model scales (with class C3 TruthfulQA mc1 yielding 85 records at both scales because 15 of the first 100 validation-set items have fewer than 3 distractors and are dropped at the dataset-construction step). Each record reports the best-path entropy-MCTS expansion's terminal token, next-token distribution top-5, and gold-token rank/probability.",
+      "key": [
+        {
+          "@id": "track_g_cartography_mcts/scale"
+        },
+        {
+          "@id": "track_g_cartography_mcts/class_code"
+        },
+        {
+          "@id": "track_g_cartography_mcts/item_idx"
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/scale",
+          "name": "scale",
+          "description": "Model scale: '1B' or '3B' (meta-llama/Llama-3.2-{1B,3B}-Instruct).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "scale"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/class_code",
+          "name": "class_code",
+          "description": "Prompt class code: C1 (factual recall), C2 (ARC-Easy MCQ), C3 (TruthfulQA mc1 MCQ), C4 (HellaSwag continuation).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "class_code"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/class_name",
+          "name": "class_name",
+          "description": "Human-readable class name (factual_recall, arc_easy_mcq, truthfulqa_mcq, hellaswag_continuation).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "class_name"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/item_idx",
+          "name": "item_idx",
+          "description": "Item index within the class (0-99 for C1/C2/C4; 0-84 for C3 at both scales, since 15 TruthfulQA mc1 items are dropped at the dataset-construction step for having fewer than 3 distractors).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "item_idx"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/subclass",
+          "name": "subclass",
+          "description": "Per-class subclass label: 'capital'/'date'/'arithmetic'/'knowledge' for C1; 'logical_deduction' for C2; 'moral_preference' for C3; 'creative_completion' for C4.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "subclass"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/source_id",
+          "name": "source_id",
+          "description": "Stable record identifier composed as '<class>_<idx>_<subclass>'.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "source_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/eval_mode",
+          "name": "eval_mode",
+          "description": "Evaluation mode used for the class (always 'first_token_str' for Track G MCTS-primary).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "eval_mode"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/prompt_preview",
+          "name": "prompt_preview",
+          "description": "First ~80 characters of the prompt template applied (chat-template not included for brevity).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "prompt_preview"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/gold",
+          "name": "gold",
+          "description": "Gold answer string for the item.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "gold"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/search_status",
+          "name": "search_status",
+          "description": "MCTS status: 'ok' (search ran), error code on failure.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "search_status"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/best_path_json",
+          "name": "best_path_json",
+          "description": "JSON-encoded best path: a 3-element list of alpha values from {0.1, 0.5, 1.0}.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "best_path_json"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/n_paths_evaluated",
+          "name": "n_paths_evaluated",
+          "description": "Number of paths evaluated by MCTS (always 27 for depth-3 enumeration).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "n_paths_evaluated"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/n_apply_failures",
+          "name": "n_apply_failures",
+          "description": "Number of paths that failed to apply.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "n_apply_failures"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/mean_search_reward",
+          "name": "mean_search_reward",
+          "description": "Mean reward across all 27 enumerated paths.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "mean_search_reward"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/best_search_reward",
+          "name": "best_search_reward",
+          "description": "Reward of the best-rewarded path.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "best_search_reward"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/mean_terminal_entropy_nats",
+          "name": "mean_terminal_entropy_nats",
+          "description": "Mean terminal-step entropy across all 27 paths (nats).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "mean_terminal_entropy_nats"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/best_terminal_entropy_nats",
+          "name": "best_terminal_entropy_nats",
+          "description": "Terminal-step entropy of the best-rewarded path (nats).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "best_terminal_entropy_nats"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/argmax_token_str",
+          "name": "argmax_token_str",
+          "description": "Decoded argmax first-token string under the best-path-steered KV cache.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "argmax_token_str"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/argmax_token_id",
+          "name": "argmax_token_id",
+          "description": "Argmax first-token vocabulary ID under the best-path-steered KV cache.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "argmax_token_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/next_token_entropy_nats",
+          "name": "next_token_entropy_nats",
+          "description": "Entropy of the next-token distribution at the generation step under best-path steering (nats).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "next_token_entropy_nats"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/top5_json",
+          "name": "top5_json",
+          "description": "JSON-encoded top-5 next-token distribution: list of [token_str, probability] pairs.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "top5_json"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/gold_first_token_rank",
+          "name": "gold_first_token_rank",
+          "description": "Rank of the gold first token in the full vocab distribution (0 = top; -1 if rank is outside top-K returned by the search).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "gold_first_token_rank"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/gold_first_token_prob",
+          "name": "gold_first_token_prob",
+          "description": "Probability mass on the gold first token under best-path steering.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "gold_first_token_prob"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "track_g_cartography_mcts/wallclock_sec",
+          "name": "wallclock_sec",
+          "description": "Wall-clock seconds for this item's MCTS expansion (path enumeration + reward evaluation + apply/rollback).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "track-g-csv"
+            },
+            "extract": {
+              "column": "wallclock_sec"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rai:dataUseCases": "Interpretability research on inference-time KV-cache search behavior in frozen language models. The data documents a negative-result characterization of Dimensional Escape (an instance of Goodhart's Law in high-dimensional latent-space search) under an entropy-normalized surrogate reward across two model scales. Use cases include: reproducing the paper's Track F (entropy-MCTS negative control) and Track G (Latent Cartography) headline findings; benchmarking subsequent reward designs against the dataset's pre-registered failure mode; extending the Cartography sweep to additional prompt classes or model families.",
+  "rai:dataLimitations": "Records are derived from two Llama 3.2 scales (1B and 3B Instruct variants) on a small sample of hand-curated and public-benchmark items (Track F: 200 ARC-Easy items per scale; Track G: ~100 items per prompt class per scale, with class C3 (TruthfulQA mc1 MCQ) yielding 85 records at both scales because 15 of the first 100 validation-set items have fewer than 3 distractors and are dropped at the dataset-construction step). No human-annotated ground-truth labels beyond the public benchmarks' provided gold answers. Top-5 token records and best-path entries are model-internal artifacts; cross-family comparability requires re-calibration of the steering protocol. Wall-clock seconds are captured per-item where available but cover the MCTS expansion loop only, not model-loading or evaluation overhead.",
+  "rai:dataBiases": "Findings are conditional on the specific steering direction (a single random unit vector in d_model space, seeded by --seed 42, shared across items and across the random-MCTS and entropy-MCTS arms) and on the Llama 3.2 instruction-tuned models. Behavioral patterns (first-letter prior amplification at 1B, greedy-collapse at 3B) are properties of this model family under this steering protocol and should not be generalized to other model families, other steering directions, or non-instruction-tuned base models without independent verification.",
+  "rai:personalSensitiveInformation": "No personal data. Prompts are drawn from public benchmarks (ARC-Easy, HellaSwag, TruthfulQA, SciQ, AQuA-RAT, ProofWriter, LogiQA) or hand-constructed factual-recall items (world capitals, historical dates, single-digit arithmetic, common-knowledge facts). Model-generated answers are 5-token continuations against multiple-choice options or first-token completions; no PII generation paths.",
+  "rai:dataReleaseMaintenancePlan": "Versioned snapshot for ACL Rolling Review May 2026 submission (EMNLP 2026 commitment). Provenance metadata baked into each record: random seed (42), HuggingFace model identifiers (meta-llama/Llama-3.2-1B-Instruct, meta-llama/Llama-3.2-3B-Instruct), PyTorch version (2.6.0+cu124), CUDA version (12.4). HuggingFace checkpoint commit SHAs are filled at submission via huggingface-cli per the paper's Appendix A.2. Phase B (post-acceptance) extensions will add additional models and prompt classes; the package version field will increment accordingly."
+}

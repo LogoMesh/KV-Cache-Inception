@@ -1,0 +1,54 @@
+KV-Cache Inception: Reversible KV-Cache MCTS Runtime Evidence
+Built: 2026-05-17
+
+Files (with sha256):
+  docs\dataset\croissant.json  (37,883 bytes, sha256=694da469e9a44610f0f322463ea11875b0b6eedf519f1e3769e551c3a3602206)
+    Croissant 1.1 + RAI 1.0 metadata JSON-LD
+
+  docs\dataset\data\track_f_negcontrol.csv  (186,912 bytes, sha256=52d0ad62c4cc105e09d1f7264fc5a5ea3de28d79d4d56b8787b9b826ea8465a7)
+    Track F flattened CSV (1200 rows)
+
+  docs\dataset\data\track_g_cartography_mcts.csv  (392,142 bytes, sha256=ca59e5e58e872dcc38b5acfbf4e3cbab2f2d6bc50ef9a0803ba3ef9c0b11dfbc)
+    Track G MCTS-primary flattened CSV (770 rows)
+
+  docs\dataset\data\raw\_track_f_results_meta-llama_Llama-3.2-1B-Instruct.json  (430,387 bytes, sha256=040bc5591b058ad2541543b1c2e8f633d9c6d91ef8e5d843478aea0928404c1e)
+    Track F raw output, Llama 3.2-1B-Instruct (200 items x G/R/E conditions; full provenance).
+
+  docs\dataset\data\raw\_track_f_results_meta-llama_Llama-3.2-3B-Instruct.json  (408,502 bytes, sha256=eebaee0e2f24ebbf559990b451c2f0e6157486bd803ed657f9520e40da4ae69b)
+    Track F raw output, Llama 3.2-3B-Instruct (200 items x G/R/E conditions; full provenance).
+
+  docs\dataset\data\raw\_track_g_mcts_results_meta-llama_Llama-3.2-1B-Instruct.json  (518,178 bytes, sha256=29831ec4d5145722a6bf4b26904fd0068b91e2d60ffd6f658dca2582fa7942c3)
+    Track G MCTS-primary raw output, Llama 3.2-1B-Instruct (4 classes; C3 TruthfulQA mc1 yields 85 records due to <3-distractor filter, others=100; 385 records total).
+
+  docs\dataset\data\raw\_track_g_mcts_results_meta-llama_Llama-3.2-3B-Instruct.json  (519,505 bytes, sha256=d18aee34068bbea2370e4f8b9e50639918686c50034f04dbcb4db97a6178fffb)
+    Track G MCTS-primary raw output, Llama 3.2-3B-Instruct (4 classes; C3 TruthfulQA mc1 yields 85 records due to <3-distractor filter, others=100; 385 records total).
+
+  docs\dataset\data\raw\_track_g_results_meta-llama_Llama-3.2-1B-Instruct.json  (2,403,941 bytes, sha256=337de049df7491402b9b306720076e21248a889a10e6f51ed56c9aff64dd792f)
+    Track G initial parameter-sweep variant, 1B (HISTORICAL; supplemented by MCTS-primary above per 2026-05-11 protocol-fidelity re-run).
+
+  docs\dataset\data\raw\_track_g_results_meta-llama_Llama-3.2-3B-Instruct.json  (2,413,015 bytes, sha256=65eaafc6acec48196fd44b481eebddb10e344c17642c48586352e90c1a9e6eee)
+    Track G initial parameter-sweep variant, 3B (HISTORICAL; supplemented by MCTS-primary above per 2026-05-11 protocol-fidelity re-run).
+
+  docs\dataset\data\raw\_track_g_c1_factual_recall.json  (12,057 bytes, sha256=3f00f3c44b03fb0980814172d9a3ee065f21c471cf90f9e65e858726c7d282fd)
+    Dataset definition for Track G class C1 (factual recall): 100 hand-constructed items (25 capitals + 25 dates + 25 arithmetic + 25 common-knowledge).
+
+  docs\dataset\data\raw\_track_a_results_meta-llama_Llama-3.2-1B-Instruct.json  (32,486 bytes, sha256=44d397c6c1699f67828352733f1c8a3e95129f4ce04528f95bf9b5f6faf65c07)
+    Track A raw output, 1B: static entropy-correctness correlation on 85 factual-recall items (25 easy + 30 hard + 30 ultra).
+
+  docs\dataset\data\raw\_track_a_results_meta-llama_Llama-3.2-3B-Instruct.json  (31,935 bytes, sha256=14c5ff56e28136e70117b856ce053a4d7ad2a2142243c42e1436d7f7bbf9c525)
+    Track A raw output, 3B: static entropy-correctness correlation on 85 factual-recall items (25 easy + 30 hard + 30 ultra).
+
+  docs\dataset\data\raw\_track_c_results_meta-llama_Llama-3.2-1B-Instruct.json  (587,860 bytes, sha256=f69cd1377b3e387bab663295e51ef3a76fbca89d4bffc6f93f4b9b1eae502f37)
+    Track C raw output, 1B: benchmark calibration sweep across 6 benchmarks (ARC-Easy, SciQ, HellaSwag, AQuA-RAT, ProofWriter, LogiQA), 100 items each.
+
+  docs\dataset\data\raw\_track_c_results_meta-llama_Llama-3.2-3B-Instruct.json  (583,668 bytes, sha256=9a7ce55c437ae4cd2f7b152c5e674a4f337adf0b0a4347af3418a5ba58991b26)
+    Track C raw output, 3B: benchmark calibration sweep across 6 benchmarks (ARC-Easy, SciQ, HellaSwag, AQuA-RAT, ProofWriter, LogiQA), 100 items each.
+
+  docs\dataset\data\raw\_track_d_vram.json  (6,424 bytes, sha256=2a6a34b7f13442ccc6d52e84f6c0869c4da446a0850f16b15f6a18faef246f7a)
+    Track D raw output, 1B: VRAM measurement across 3 (depth, branches, nodes) configurations on RTX 3060.
+
+  docs\dataset\data\raw\_track_d_vram_3b.json  (6,505 bytes, sha256=4cba2eaa2a67ec989019848e8982623885824ed1d4225e6df7383a7729cabb38)
+    Track D raw output, 3B: VRAM measurement across 3 (depth, branches, nodes) configurations on RTX 3060.
+
+  docs\dataset\data\uv.lock  (269,591 bytes, sha256=7e95c6c36ff08c1537f8352c7076673b3e260ddca3ecf961bb5d155294766699)
+    Pinned dependency manifest

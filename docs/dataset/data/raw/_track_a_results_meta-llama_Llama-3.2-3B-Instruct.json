@@ -1,0 +1,980 @@
+{
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "device": "cuda",
+  "calibration": {
+    "confident_entropies_nats": [
+      0.5725851655006409,
+      0.29162076115608215,
+      1.0777018070220947,
+      0.2199690341949463,
+      0.10682786256074905,
+      0.7033043503761292,
+      0.5820105075836182,
+      0.6774060726165771,
+      1.1355836391448975,
+      0.48641398549079895
+    ],
+    "uncertain_entropies_nats": [
+      1.584391474723816,
+      0.35354989767074585,
+      0.8353583216667175,
+      0.056670110672712326,
+      0.10525434464216232,
+      0.45290136337280273,
+      0.2563776969909668,
+      0.6108755469322205,
+      0.06334942579269409,
+      0.7439471483230591
+    ],
+    "confident_stats": {
+      "n": 10,
+      "mean": 0.5853423185646534,
+      "std": 0.3203561905649723,
+      "min": 0.10682786256074905,
+      "max": 1.1355836391448975,
+      "range": 1.0287557765841484
+    },
+    "uncertain_stats": {
+      "n": 10,
+      "mean": 0.5062675330787897,
+      "std": 0.44562628293858103,
+      "min": 0.056670110672712326,
+      "max": 1.584391474723816,
+      "range": 1.5277213640511036
+    },
+    "delta_mean_uncertain_minus_confident": -0.07907478548586366
+  },
+  "magnitude": {
+    "factual_entropies_nats": [
+      0.6646827459335327,
+      0.7408910393714905,
+      0.640519380569458,
+      0.34379705786705017,
+      0.9293830394744873,
+      0.05501573532819748,
+      0.046164799481630325,
+      0.06443264335393906,
+      0.06882429122924805,
+      0.6042484045028687,
+      0.011797965504229069,
+      0.505850613117218,
+      0.6993568539619446,
+      0.7131751775741577,
+      0.007165655493736267,
+      0.6776196956634521,
+      0.4813729524612427,
+      0.7780933380126953,
+      0.27069810032844543,
+      1.3617579936981201
+    ],
+    "ambiguous_entropies_nats": [
+      1.4986534118652344,
+      2.735703468322754,
+      0.10137677192687988,
+      1.0390554666519165,
+      1.8933748006820679,
+      1.9411754608154297,
+      0.545934796333313,
+      2.838369369506836,
+      2.0482702255249023,
+      0.3881893455982208,
+      1.3379871845245361,
+      1.6107624769210815,
+      2.21826171875,
+      0.7315179109573364,
+      1.1690658330917358
+    ],
+    "nonsense_entropies_nats": [
+      1.6229157447814941,
+      0.9120813012123108,
+      2.093247890472412,
+      2.0135509967803955,
+      2.792499542236328,
+      1.539406418800354,
+      1.1736721992492676,
+      1.8676398992538452,
+      1.4921809434890747,
+      2.427842140197754,
+      1.5737911462783813,
+      1.2727007865905762,
+      2.591142416000366,
+      1.3952019214630127,
+      1.2740412950515747
+    ],
+    "factual_stats": {
+      "n": 20,
+      "mean": 0.4832423741463572,
+      "std": 0.3584277964711901,
+      "min": 0.007165655493736267,
+      "max": 1.3617579936981201,
+      "range": 1.3545923382043839
+    },
+    "ambiguous_stats": {
+      "n": 15,
+      "mean": 1.4731798827648164,
+      "std": 0.7969469277764077,
+      "min": 0.10137677192687988,
+      "max": 2.838369369506836,
+      "range": 2.736992597579956
+    },
+    "nonsense_stats": {
+      "n": 15,
+      "mean": 1.7361276427904764,
+      "std": 0.5306939642170363,
+      "min": 0.9120813012123108,
+      "max": 2.792499542236328,
+      "range": 1.8804182410240173
+    },
+    "all_50_stats": {
+      "n": 50,
+      "mean": 1.1560892073251308,
+      "std": 0.7991262792611177,
+      "min": 0.007165655493736267,
+      "max": 2.838369369506836,
+      "range": 2.8312037140130997
+    },
+    "noise_floor_estimate_nats": 0.3584277964711901,
+    "range_to_noise_ratio": 7.898951314286998
+  },
+  "correctness": {
+    "easy": {
+      "records": [
+        {
+          "question": "What is the capital of France?",
+          "model_answer": "The capital of France is Paris.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5725851655006409,
+          "expected_substrs": [
+            "paris"
+          ]
+        },
+        {
+          "question": "What is the capital of Japan?",
+          "model_answer": "Tokyo.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.6646827459335327,
+          "expected_substrs": [
+            "tokyo"
+          ]
+        },
+        {
+          "question": "What is the capital of Australia?",
+          "model_answer": "The capital of Australia is Canberra.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.48787957429885864,
+          "expected_substrs": [
+            "canberra"
+          ]
+        },
+        {
+          "question": "What is the capital of Canada?",
+          "model_answer": "The capital of Canada is Ottawa.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.2744681239128113,
+          "expected_substrs": [
+            "ottawa"
+          ]
+        },
+        {
+          "question": "What is the capital of Brazil?",
+          "model_answer": "The capital of Brazil is Bras\u00edlia.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.3939712345600128,
+          "expected_substrs": [
+            "brasilia",
+            "bras\u00edlia"
+          ]
+        },
+        {
+          "question": "What is 7 times 8?",
+          "model_answer": "56.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.74089115858078,
+          "expected_substrs": [
+            "56"
+          ]
+        },
+        {
+          "question": "What is 12 plus 13?",
+          "model_answer": "12 + 13 = 25.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.661959171295166,
+          "expected_substrs": [
+            "25"
+          ]
+        },
+        {
+          "question": "What is 100 divided by 4?",
+          "model_answer": "100 divided by 4 is 25.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7588063478469849,
+          "expected_substrs": [
+            "25"
+          ]
+        },
+        {
+          "question": "What is 9 squared?",
+          "model_answer": "9 squared (9\u00b2) is 81.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.01197953149676323,
+          "expected_substrs": [
+            "81"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for gold?",
+          "model_answer": "The chemical symbol for gold is Au.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7131757140159607,
+          "expected_substrs": [
+            "au"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for water?",
+          "model_answer": "H2O.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5820105671882629,
+          "expected_substrs": [
+            "h2o",
+            "h\u2082o",
+            "h 2 o"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for sodium?",
+          "model_answer": "The chemical symbol for sodium is Na.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.6889302730560303,
+          "expected_substrs": [
+            "na"
+          ]
+        },
+        {
+          "question": "Who wrote Romeo and Juliet?",
+          "model_answer": "Romeo and Juliet was written by William Shakespeare.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.0784671306610107,
+          "expected_substrs": [
+            "shakespeare"
+          ]
+        },
+        {
+          "question": "Who wrote the novel 1984?",
+          "model_answer": "The novel \"1984\" was written by George Orwell.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7347737550735474,
+          "expected_substrs": [
+            "orwell"
+          ]
+        },
+        {
+          "question": "Who painted the Mona Lisa?",
+          "model_answer": "The Mona Lisa was painted by Leonardo da Vinci.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.6774063110351562,
+          "expected_substrs": [
+            "leonardo",
+            "da vinci",
+            "vinci"
+          ]
+        },
+        {
+          "question": "Who developed the theory of general relativity?",
+          "model_answer": "Albert Einstein developed the theory of general relativity.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5058507919311523,
+          "expected_substrs": [
+            "einstein"
+          ]
+        },
+        {
+          "question": "Who discovered penicillin?",
+          "model_answer": "Alexander Fleming discovered penicillin in 1928.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.6405197978019714,
+          "expected_substrs": [
+            "fleming"
+          ]
+        },
+        {
+          "question": "What planet is known as the Red Planet?",
+          "model_answer": "Mars is commonly known as the Red Planet.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.06882443279027939,
+          "expected_substrs": [
+            "mars"
+          ]
+        },
+        {
+          "question": "What is the largest planet in our solar system?",
+          "model_answer": "The largest planet in our solar system is Jupiter.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7033329010009766,
+          "expected_substrs": [
+            "jupiter"
+          ]
+        },
+        {
+          "question": "What is the largest ocean on Earth?",
+          "model_answer": "The Pacific Ocean is the largest of the world's five oceans, covering approximately",
+          "correct": 1,
+          "first_token_entropy_nats": 0.046164803206920624,
+          "expected_substrs": [
+            "pacific"
+          ]
+        },
+        {
+          "question": "How many sides does a hexagon have?",
+          "model_answer": "A hexagon has 6 sides.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.06443403661251068,
+          "expected_substrs": [
+            "6",
+            "six"
+          ]
+        },
+        {
+          "question": "How many continents are there on Earth?",
+          "model_answer": "There are 7 continents on Earth: Africa, Antarctica, Asia, Australia",
+          "correct": 1,
+          "first_token_entropy_nats": 0.024931930005550385,
+          "expected_substrs": [
+            "7",
+            "seven"
+          ]
+        },
+        {
+          "question": "What is the boiling point of water in Celsius at sea level?",
+          "model_answer": "The boiling point of water in Celsius at sea level is 100\u00b0C.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7940965294837952,
+          "expected_substrs": [
+            "100"
+          ]
+        },
+        {
+          "question": "In what year did World War II end?",
+          "model_answer": "World War II ended in 1945.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.0234612338244915,
+          "expected_substrs": [
+            "1945"
+          ]
+        },
+        {
+          "question": "What language is primarily spoken in Brazil?",
+          "model_answer": "The primary language spoken in Brazil is Portuguese.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.6042484045028687,
+          "expected_substrs": [
+            "portuguese"
+          ]
+        }
+      ],
+      "n_correct": 25,
+      "n_total": 25,
+      "accuracy": 1.0,
+      "pearson_r_entropy_vs_correct": NaN,
+      "spearman_rho_entropy_vs_correct": NaN,
+      "abs_pearson": NaN,
+      "abs_spearman": NaN
+    },
+    "hard": {
+      "records": [
+        {
+          "question": "What is the capital of Mongolia?",
+          "model_answer": "The capital of Mongolia is Ulaanbaatar.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7089424133300781,
+          "expected_substrs": [
+            "ulaanbaatar",
+            "ulan bator"
+          ]
+        },
+        {
+          "question": "What is the capital of Bhutan?",
+          "model_answer": "Thimphu is the capital of Bhutan.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5927035808563232,
+          "expected_substrs": [
+            "thimphu"
+          ]
+        },
+        {
+          "question": "What is the capital of Burkina Faso?",
+          "model_answer": "The capital of Burkina Faso is Ouagadougou.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.6907682418823242,
+          "expected_substrs": [
+            "ouagadougou"
+          ]
+        },
+        {
+          "question": "What is the capital of Kazakhstan?",
+          "model_answer": "The capital of Kazakhstan is Astana.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.9176947474479675,
+          "expected_substrs": [
+            "astana",
+            "nur-sultan",
+            "nursultan"
+          ]
+        },
+        {
+          "question": "What is the capital of Eritrea?",
+          "model_answer": "Asmara.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.2779112756252289,
+          "expected_substrs": [
+            "asmara"
+          ]
+        },
+        {
+          "question": "What is the capital of Suriname?",
+          "model_answer": "The capital of Suriname is Paramaribo.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.8226076364517212,
+          "expected_substrs": [
+            "paramaribo"
+          ]
+        },
+        {
+          "question": "What is 23 times 17?",
+          "model_answer": "23 \u00d7 17 = 391",
+          "correct": 1,
+          "first_token_entropy_nats": 0.8985561728477478,
+          "expected_substrs": [
+            "391"
+          ]
+        },
+        {
+          "question": "What is 144 divided by 12?",
+          "model_answer": "12",
+          "correct": 1,
+          "first_token_entropy_nats": 0.737745463848114,
+          "expected_substrs": [
+            "12"
+          ]
+        },
+        {
+          "question": "What is 13 squared?",
+          "model_answer": "13 squared (13\u00b2) is 169.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.1721336543560028,
+          "expected_substrs": [
+            "169"
+          ]
+        },
+        {
+          "question": "What is the square root of 196?",
+          "model_answer": "The square root of 196 is 14.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.2636227309703827,
+          "expected_substrs": [
+            "14"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for tungsten?",
+          "model_answer": "The chemical symbol for tungsten is W.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7061052322387695,
+          "expected_substrs": [
+            " w ",
+            " w.",
+            " w,",
+            "tungsten (w"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for tin?",
+          "model_answer": "Sn",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7076544165611267,
+          "expected_substrs": [
+            "sn"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for antimony?",
+          "model_answer": "The chemical symbol for antimony is Sb.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.29492419958114624,
+          "expected_substrs": [
+            "sb"
+          ]
+        },
+        {
+          "question": "What is the atomic number of iron?",
+          "model_answer": "The atomic number of iron is 26.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.1684204339981079,
+          "expected_substrs": [
+            "26"
+          ]
+        },
+        {
+          "question": "What is the atomic number of carbon?",
+          "model_answer": "The atomic number of carbon is 6.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.4801259934902191,
+          "expected_substrs": [
+            "6"
+          ]
+        },
+        {
+          "question": "Who wrote the novel 'The Brothers Karamazov'?",
+          "model_answer": "Fyodor Dostoevsky wrote the novel 'The Brothers Karam",
+          "correct": 1,
+          "first_token_entropy_nats": 0.9060138463973999,
+          "expected_substrs": [
+            "dostoevsky",
+            "dostoyevsky"
+          ]
+        },
+        {
+          "question": "Who wrote 'One Hundred Years of Solitude'?",
+          "model_answer": "Gabriel Garc\u00eda M\u00e1rquez wrote 'One Hundred Years of Solitude'.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.1263152360916138,
+          "expected_substrs": [
+            "garcia marquez",
+            "garc\u00eda m\u00e1rquez",
+            "marquez",
+            "m\u00e1rquez"
+          ]
+        },
+        {
+          "question": "Who composed 'The Four Seasons' violin concerti?",
+          "model_answer": "Antonio Vivaldi composed 'The Four Seasons'.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.9519403576850891,
+          "expected_substrs": [
+            "vivaldi"
+          ]
+        },
+        {
+          "question": "Who painted 'The Persistence of Memory'?",
+          "model_answer": "Salvador Dal\u00ed.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.0024867057800293,
+          "expected_substrs": [
+            "dali",
+            "dal\u00ed"
+          ]
+        },
+        {
+          "question": "Who proposed the theory of plate tectonics?",
+          "model_answer": "The theory of plate tectonics was proposed by Alfred Wegener,",
+          "correct": 1,
+          "first_token_entropy_nats": 1.0010168552398682,
+          "expected_substrs": [
+            "wegener"
+          ]
+        },
+        {
+          "question": "In what year was the Magna Carta signed?",
+          "model_answer": "The Magna Carta was signed in 1215.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.09187227487564087,
+          "expected_substrs": [
+            "1215"
+          ]
+        },
+        {
+          "question": "In what year did the French Revolution begin?",
+          "model_answer": "The French Revolution began in 1789.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.0021029463969171047,
+          "expected_substrs": [
+            "1789"
+          ]
+        },
+        {
+          "question": "In what year did the Treaty of Westphalia end the Thirty Years War?",
+          "model_answer": "The Treaty of Westphalia ended the Thirty Years War in 1648",
+          "correct": 1,
+          "first_token_entropy_nats": 0.004151526838541031,
+          "expected_substrs": [
+            "1648"
+          ]
+        },
+        {
+          "question": "What is the longest river in South America?",
+          "model_answer": "The Amazon River is the longest river in South America, stretching approximately 6",
+          "correct": 1,
+          "first_token_entropy_nats": 0.009213786572217941,
+          "expected_substrs": [
+            "amazon"
+          ]
+        },
+        {
+          "question": "What is the deepest oceanic trench?",
+          "model_answer": "The deepest oceanic trench is the Mariana Trench, specifically the Challenger",
+          "correct": 1,
+          "first_token_entropy_nats": 0.026131248101592064,
+          "expected_substrs": [
+            "mariana"
+          ]
+        },
+        {
+          "question": "Which Greek letter denotes the fine-structure constant in physics?",
+          "model_answer": "\u03b1 (alpha).",
+          "correct": 1,
+          "first_token_entropy_nats": 1.2247861623764038,
+          "expected_substrs": [
+            "alpha"
+          ]
+        },
+        {
+          "question": "What is the SI unit of magnetic flux?",
+          "model_answer": "The SI unit of magnetic flux is the weber (Wb).",
+          "correct": 1,
+          "first_token_entropy_nats": 0.0274673942476511,
+          "expected_substrs": [
+            "weber",
+            "wb"
+          ]
+        },
+        {
+          "question": "What is the SI unit of electrical conductance?",
+          "model_answer": "The SI unit of electrical conductance is the Siemens (S).",
+          "correct": 1,
+          "first_token_entropy_nats": 0.02898571826517582,
+          "expected_substrs": [
+            "siemens"
+          ]
+        },
+        {
+          "question": "What is the speed of sound in dry air at 20\u00b0C, in meters per second?",
+          "model_answer": "The speed of sound in dry air at 20\u00b0C is approximately 343",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5095667243003845,
+          "expected_substrs": [
+            "343"
+          ]
+        },
+        {
+          "question": "Who was the second president of the United States?",
+          "model_answer": "John Adams was the second president of the United States.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.20020106434822083,
+          "expected_substrs": [
+            "adams",
+            "john adams"
+          ]
+        }
+      ],
+      "n_correct": 30,
+      "n_total": 30,
+      "accuracy": 1.0,
+      "pearson_r_entropy_vs_correct": NaN,
+      "spearman_rho_entropy_vs_correct": NaN,
+      "abs_pearson": NaN,
+      "abs_spearman": NaN
+    },
+    "ultra": {
+      "records": [
+        {
+          "question": "What is the capital of Tuvalu?",
+          "model_answer": "Funafuti.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.835831880569458,
+          "expected_substrs": [
+            "funafuti"
+          ]
+        },
+        {
+          "question": "What is the capital of Comoros?",
+          "model_answer": "Moroni.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.1362512111663818,
+          "expected_substrs": [
+            "moroni"
+          ]
+        },
+        {
+          "question": "What is the capital of Liechtenstein?",
+          "model_answer": "The capital of Liechtenstein is Vaduz.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.40177521109580994,
+          "expected_substrs": [
+            "vaduz"
+          ]
+        },
+        {
+          "question": "What is the capital of Kiribati?",
+          "model_answer": "Tarawa.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.1348191499710083,
+          "expected_substrs": [
+            "tarawa"
+          ]
+        },
+        {
+          "question": "What is the capital of Sao Tome and Principe?",
+          "model_answer": "The capital of Sao Tome and Principe is S\u00e3o Tom\u00e9.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5750352740287781,
+          "expected_substrs": [
+            "s\u00e3o tom\u00e9",
+            "sao tome",
+            "s\u00e3o tom\u00e9"
+          ]
+        },
+        {
+          "question": "What is the capital of Equatorial Guinea?",
+          "model_answer": "Malabo.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5014548897743225,
+          "expected_substrs": [
+            "malabo"
+          ]
+        },
+        {
+          "question": "What is 47 times 53?",
+          "model_answer": "47 * 53 = 2481.",
+          "correct": 0,
+          "first_token_entropy_nats": 1.9427034854888916,
+          "expected_substrs": [
+            "2491"
+          ]
+        },
+        {
+          "question": "What is 31 cubed?",
+          "model_answer": "31 cubed (31\u00b3) is 29791.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.2440590262413025,
+          "expected_substrs": [
+            "29791",
+            "29,791"
+          ]
+        },
+        {
+          "question": "What is 17 squared minus 13 squared?",
+          "model_answer": "17\u00b2 = 289\n13\u00b2 = 169\n289 -",
+          "correct": 0,
+          "first_token_entropy_nats": 0.9442041516304016,
+          "expected_substrs": [
+            "120"
+          ]
+        },
+        {
+          "question": "What is the square root of 729?",
+          "model_answer": "The square root of 729 is 27.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.2218189835548401,
+          "expected_substrs": [
+            "27"
+          ]
+        },
+        {
+          "question": "What is 89 times 91?",
+          "model_answer": "7899.",
+          "correct": 0,
+          "first_token_entropy_nats": 2.5422117710113525,
+          "expected_substrs": [
+            "8099",
+            "8,099"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for niobium?",
+          "model_answer": "The chemical symbol for niobium is Nb.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7127559185028076,
+          "expected_substrs": [
+            "nb"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for ruthenium?",
+          "model_answer": "Ru",
+          "correct": 1,
+          "first_token_entropy_nats": 0.5419511795043945,
+          "expected_substrs": [
+            "ru"
+          ]
+        },
+        {
+          "question": "What is the chemical symbol for ytterbium?",
+          "model_answer": "The chemical symbol for ytterbium is Yb.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.7226725816726685,
+          "expected_substrs": [
+            "yb"
+          ]
+        },
+        {
+          "question": "What is the atomic number of platinum?",
+          "model_answer": "The atomic number of platinum is 78.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.21189862489700317,
+          "expected_substrs": [
+            "78"
+          ]
+        },
+        {
+          "question": "What is the atomic number of bismuth?",
+          "model_answer": "The atomic number of bismuth is 83.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.34937188029289246,
+          "expected_substrs": [
+            "83"
+          ]
+        },
+        {
+          "question": "Who wrote the novel 'Buddenbrooks'?",
+          "model_answer": "Thomas Mann wrote the novel 'Buddenbrooks'.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.9124476909637451,
+          "expected_substrs": [
+            "thomas mann",
+            "mann"
+          ]
+        },
+        {
+          "question": "Who wrote the novel 'Pale Fire'?",
+          "model_answer": "The novel 'Pale Fire' was written by Vladimir Nabokov.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.4069777727127075,
+          "expected_substrs": [
+            "nabokov"
+          ]
+        },
+        {
+          "question": "Who composed the opera 'Wozzeck'?",
+          "model_answer": "The opera 'Wozzeck' was composed by Alban Berg.",
+          "correct": 1,
+          "first_token_entropy_nats": 1.483031988143921,
+          "expected_substrs": [
+            "berg",
+            "alban berg"
+          ]
+        },
+        {
+          "question": "Who painted 'Las Meninas'?",
+          "model_answer": "\"Las Meninas\" was painted by the Spanish artist Diego Vel\u00e1zquez",
+          "correct": 1,
+          "first_token_entropy_nats": 1.465656042098999,
+          "expected_substrs": [
+            "vel\u00e1zquez",
+            "velazquez"
+          ]
+        },
+        {
+          "question": "In what year was the Treaty of Tordesillas signed?",
+          "model_answer": "The Treaty of Tordesillas was signed in 1494.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.013051182962954044,
+          "expected_substrs": [
+            "1494"
+          ]
+        },
+        {
+          "question": "In what year did the Tang Dynasty fall?",
+          "model_answer": "The Tang Dynasty fell in 907 AD.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.03128962963819504,
+          "expected_substrs": [
+            "907"
+          ]
+        },
+        {
+          "question": "In what year was the Edict of Nantes revoked?",
+          "model_answer": "The Edict of Nantes was revoked in 1685.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.022368676960468292,
+          "expected_substrs": [
+            "1685"
+          ]
+        },
+        {
+          "question": "In what year was the Battle of Lepanto fought?",
+          "model_answer": "The Battle of Lepanto was fought in 1571.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.008478831499814987,
+          "expected_substrs": [
+            "1571"
+          ]
+        },
+        {
+          "question": "What is the longest river in Asia?",
+          "model_answer": "The Yangtze River is the longest river in Asia, stretching approximately",
+          "correct": 1,
+          "first_token_entropy_nats": 0.002189129590988159,
+          "expected_substrs": [
+            "yangtze",
+            "chang jiang"
+          ]
+        },
+        {
+          "question": "What is the highest mountain in Africa?",
+          "model_answer": "Mount Kilimanjaro, located in Tanzania, is the highest mountain in",
+          "correct": 1,
+          "first_token_entropy_nats": 0.9217674732208252,
+          "expected_substrs": [
+            "kilimanjaro"
+          ]
+        },
+        {
+          "question": "What is the SI unit of inductance?",
+          "model_answer": "The SI unit of inductance is the Henry (H).",
+          "correct": 1,
+          "first_token_entropy_nats": 0.15219594538211823,
+          "expected_substrs": [
+            "henry"
+          ]
+        },
+        {
+          "question": "What is the SI unit of luminous intensity?",
+          "model_answer": "The SI unit of luminous intensity is the candela (cd).",
+          "correct": 1,
+          "first_token_entropy_nats": 0.11864137649536133,
+          "expected_substrs": [
+            "candela"
+          ]
+        },
+        {
+          "question": "Who was the third president of the United States?",
+          "model_answer": "Thomas Jefferson was the third president of the United States.",
+          "correct": 1,
+          "first_token_entropy_nats": 0.3701252341270447,
+          "expected_substrs": [
+            "jefferson"
+          ]
+        },
+        {
+          "question": "Who was the first emperor of the Han dynasty?",
+          "model_answer": "The first emperor of the Han dynasty was Gaozu (also known as",
+          "correct": 1,
+          "first_token_entropy_nats": 0.40756651759147644,
+          "expected_substrs": [
+            "liu bang",
+            "gaozu",
+            "gaodi",
+            "high emperor"
+          ]
+        }
+      ],
+      "n_correct": 27,
+      "n_total": 30,
+      "accuracy": 0.9,
+      "pearson_r_entropy_vs_correct": -0.6142829949947711,
+      "spearman_rho_entropy_vs_correct": -0.45571845964875235,
+      "abs_pearson": 0.6142829949947711,
+      "abs_spearman": 0.45571845964875235
+    },
+    "combined": {
+      "n_correct": 82,
+      "n_total": 85,
+      "accuracy": 0.9647058823529412,
+      "pearson_r_entropy_vs_correct": -0.5081318960658476,
+      "spearman_rho_entropy_vs_correct": -0.29103969292002424,
+      "abs_pearson": 0.5081318960658476,
+      "abs_spearman": 0.29103969292002424
+    }
+  },
+  "wallclock_seconds": 134.14208149909973
+}
