@@ -197,9 +197,9 @@ When slug URL arrives:
 ```
 grep -n "kv-mcts-dimensional-escape-XXXX" docs/paper/kv-mcts-dimensional-escape.tex
 ```
-Expected at ~line 521 (per Phase 0 discovery) but verify literal hit before editing — grep-first beats memory-string-then-fail.
+Expected at source line 521 (PDF rendered line ~1102 post the 2026-05-17 §A.4 overflow fix; was line 1100 pre-fix per Josh's late-Day-14 PDF read). The §A.5 paragraph ends with the `\url{...XXXX}` placeholder + the build-time parenthetical to drop. Verify literal hit before editing — grep-first beats memory-string-then-fail.
 
-**b)** Two edits in the TeX:
+**b)** Two edits in the TeX at line 521 (renders mid-paragraph at PDF lines ~1100-1102 of §A.5):
 1. Replace `...XXXX}` → `...<slug>}` in the `\url{}`
 2. Drop the parenthetical " (the final slug is assigned at Day-12 supplementary build per plan v2 §2)"
 
