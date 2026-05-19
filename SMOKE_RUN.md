@@ -22,10 +22,11 @@ Before you spend any GPU time, the doc author cross-checked every headline numer
 | Track F: Perplexity ratio E/G = 1.348 (1B), 1.058 (3B) | ✅ Verified (paper uses *ratio of means*; if you compute mean of ratios you'll get 1.328 / 1.062 — both valid, but cite the paper's method) |
 | Track G: 100 records per non-C3 class per scale; C3 = 85 | ✅ Verified |
 | Track G: Mean-step ᾱ per (class, scale) — all 8 cells | ✅ Verified within rounding (max abs delta 0.005) |
-| Track D: 3.04--3.06× M_KV constant factor | ✅ Verified (1B = 3.064, 3B = 3.037; identical across all 3 (depth, branches) configs at each scale) |
+| Track D: 3.04--3.06× M_KV constant factor (steady-state) | ✅ Verified (1B = 3.064, 3B = 3.037; identical across all 3 (depth, branches) configs at each scale) |
+| **Track D step-peak transient** | **⚠️ Not in headline.** Same JSON's `full_step_peak_mib_median` is 3,118 MiB at 1B depth=3, giving transient peak = (3118−2495)/125 = **4.98 × M_KV** during the in-place apply step. The paper headlines the steady-state 3.04× floor; the actual transient peak is ~5×. See §6.5. |
 | **Track A: \|r\| ≈ 0.60 entropy↔correctness** | **⚠️ Partial / overstated.** Actual combined-bucket Pearson at 1B is −0.469 (\|r\|=0.47); at 3B is −0.508 (\|r\|=0.51). The 0.60 figure is true for *specific buckets* (1B hard, 3B ultra) but not for the combined 85-item correlation that the paper text implies. See §6.3. |
 
-So if you only have time for one thing: **verify Track A — that's the one suspect claim** as of 2026-05-18. Everything else cross-checks against the cached JSON within tolerance.
+So if you only have time for two things: **verify Track A (overstated correlation) and run a depth=10 MCTS end-to-end to validate Track D's depth-independence claim empirically** — those are the two suspect-or-thinly-supported claims as of 2026-05-19. Everything else cross-checks against the cached JSON within tolerance. See §9 for the depth=10 plan.
 
 Re-running the full sweep (next sections) tests whether the cached JSON itself is right — i.e., whether your fresh re-run regenerates these same numbers from raw model outputs. If your re-run agrees with the cached JSON, that confirms the cached data is real. If your re-run *disagrees*, that's a separate kind of red flag (either seed instability or cached-data tampering).
 
@@ -68,12 +69,31 @@ For a fast smoke-only path: **~10 min** (Track A + Track F `--smoke` 5-item).
 
 ## 2. Hugging Face access (do this first; can take days)
 
-The two models the paper uses are **gated** — Meta requires manual approval per HuggingFace account:
+### 2.1 Model choice is load-bearing for the verification
+
+The two models the paper uses are:
 
 - `meta-llama/Llama-3.2-1B-Instruct`
 - `meta-llama/Llama-3.2-3B-Instruct`
 
-(Note: an earlier informal mention of "TinyLlama" was a misnomer — the actual models are Meta's Llama 3.2 family, not the TinyLlama-1.1B project.)
+**Every numerical claim in the paper is conditional on these specific checkpoints.** If you substitute another small open-weight model (e.g., TinyLlama-1.1B, Qwen 2.5-1.5B, Mistral-7B, SmolLM-1.7B) you can verify that:
+
+- ✅ The pipeline runs end-to-end without crashing
+- ✅ The FP32 accumulator reversibility holds (Theorem 1's zero-drift claim is architecture-independent)
+- ✅ The memory bound is roughly N×M_KV for some scale-dependent N (the structural argument applies to any frozen Transformer)
+
+But you **cannot** verify with substitutes:
+
+- ❌ The specific Track F numbers (Δ_{E−R} = ±0.005, McNemar p = 1.0, 185/200 "A" predictions) — these depend on Llama 3.2's specific tokenizer prior and first-letter-prior structure
+- ❌ The specific Track G ᾱ values per class (0.89/0.22 etc.) — class-conditional behavior is model-specific
+- ❌ The 3.04-3.06× M_KV constant — the bf16/fp32 ratio is universal but the precise figure depends on K_proj/V_proj dimensions, which differ per architecture (Llama 3.2 uses grouped-query attention with 8 KV heads; many models differ)
+- ❌ The Goodhart pathology direction-flip across 1B→3B — that's a scale-dependent property of *this* model family
+
+**Bottom line:** if your goal is the paper-claim verification protocol in §6, you need meta-llama/Llama-3.2 access. A substitute-model run validates the algorithm but does not reproduce Table 1 or Table 2.
+
+### 2.2 Getting access
+
+The Llama 3.2 models are **gated** — Meta requires manual approval per HuggingFace account.
 
 **Steps:**
 
@@ -85,7 +105,7 @@ The two models the paper uses are **gated** — Meta requires manual approval pe
 4. Create an access token at https://huggingface.co/settings/tokens (read scope is sufficient).
 5. Run `huggingface-cli login` and paste the token.
 
-If you do not have Meta-approval yet and the smoke run is time-critical, ask Josh whether he can share an access-token from an already-approved account. (Token sharing has security implications; the only legitimate uses are short-lived per-session inference, never CI or shared infrastructure.)
+If you do not have Meta-approval yet and the smoke run is time-critical, ask Josh whether he can share an access token from an already-approved account. (Token sharing has security implications; the only legitimate uses are short-lived per-session inference, never CI or shared infrastructure.)
 
 ---
 
@@ -330,15 +350,33 @@ The 3.04-3.06× factor is basically `2 × (1 + 0.5)` because fp32 accumulators a
 
 **Why all three (depth, branches, nodes) configs show the same multiplier:** `delta_full_in_kv_units` is **identical** (3.06375 at 1B; 3.037 at 3B) across (d=3,b=3,n=27), (d=5,b=3,n=81), (d=10,b=3,n=1700). That's not a coincidence — it's the empirical demonstration of Proposition 1's depth-independence claim. The accumulator is allocated once at the search root and rollback restores in-place; there's no per-node accumulator state, so measured peak memory doesn't change with depth/branches.
 
+**⚠️ The step-peak transient is materially higher than the headline.** The same JSON also captures `full_step_peak_mib_median` — peak memory during a single apply operation (the in-place `K_t ← K_t + α·d_K` op, which briefly allocates a temporary for `α·d_K` before the in-place add).
+
+At 1B depth=3:
+```
+full_step_peak_mib_median  = 3,118 MiB
+baseline_steady            = 2,495 MiB
+step_peak − baseline       = 623 MiB
+step_peak_in_kv_units      = 623 / 125 = 4.98 × M_KV
+```
+
+So the *actual peak memory during a step* is ~5 × M_KV, not 3.04 ×. The paper headlines the steady-state floor (3.04×). For hardware sizing, the relevant number is the step-peak (~5×), because that's what your GPU needs to hold for the transient. **Anyone sizing an H100 budget from the paper's 3.04× alone could OOM at the apply transient at large scale.**
+
+This isn't necessarily wrong reporting — the steady-state ratio is what proves depth-independence, and the step-peak is bounded by a single layer's transient (also depth-independent). But the paper should arguably report both, and a skeptical reviewer may push on it.
+
 **Caveats the smoke runner should know:**
 
 1. **The measurement does NOT run an actual MCTS search.** The driver allocates the accumulator structures, measures, then tears down. The argument that "peak memory is independent of search size" is a structural/theoretical claim backed by the code organization — not an empirical observation of memory during a real 1700-node depth-10 search. A skeptical reviewer could push back. The driver docstring explicitly acknowledges this: "We DO NOT run the full ReversibleMCTS rollout (per prompt: 'memory measurement only')."
+
+   **Why this isn't necessarily devastating:** the structural argument is sound. Reversible KV-Cache MCTS is built so the FP32Accumulator is allocated *once* at the search root, each expansion is an in-place add to the pre-allocated K tensor, each rollback is an in-place subtract — no tensors are created during the search itself. If you can prove every operation is in-place on pre-allocated tensors, then peak memory IS the post-allocation steady state. Track D measures that post-allocation state for the real algorithm's actual data structures (it imports `FP32Accumulator` from the live `logomesh/kv_mcts.py`, the same class `ReversibleMCTS` uses, which is unit-tested in `tests/test_phase2_modules.py`). Additionally, Tracks F and G between them ran ~1,170 actual MCTS searches end-to-end without OOM on a 12 GB consumer GPU — weak-form empirical confirmation that the structural argument holds in practice at depth-3.
+
+   **Why a reviewer might still push:** depth-independence is demonstrated structurally + by allocating three identical static states three times. The paper claims it holds at depth=10 with 1,700 nodes; that scale has never been empirically run end-to-end. PyTorch's allocator fragmentation behavior over 1,700 forward passes is untested. This is the strongest attack on Proposition 1's empirical surface. **See §9 for the recommended remedy: running one depth=10, 1,700-node search end-to-end.**
 
 2. **The "162 GB at 20B" projection** the paper cites is **not measured** — it's extrapolated from the 1B/3B M_KV scaling (KV cache size ∝ #layers × hidden_dim × seq_len × 2 bytes for bf16), with the 3.04× factor then applied. Not measured directly because the 20B run doesn't fit on the RTX 3060 used for the empirical sweep.
 
 3. **The "naive parallel-cache MCTS" comparison** (`O(b^d · M_KV)` baseline that the paper says Reversible-MCTS beats) is a **theoretical worst-case** — the driver does not actually run a naive parallel-cache implementation to measure its memory. The paper's claim is "if you naively branched the cache at every expansion, you'd need O(b^d · M_KV)" — geometrically obvious but not empirically demonstrated.
 
-For verification purposes: the 3.04-3.06× number itself is real and reproducible; the 162 GB / 60× claims that build on it are projections from that empirical anchor.
+For verification purposes: the 3.04-3.06× number itself is real and reproducible (steady-state); the 162 GB / 60× claims that build on it are projections from that empirical anchor; and the step-peak ~5× is real and currently un-headlined.
 
 ### 6.6 The McNemar re-derivation snippet (for §6.1)
 
@@ -406,3 +444,59 @@ The goal at the end of the smoke run is one of:
 - ❌ **Did not reproduce.** A headline claim materially failed. Stop submission; investigate; rewrite if needed.
 
 Submission deadline is **2026-05-25** (ARR May). Treat your smoke-run result as the final go/no-go gate.
+
+---
+
+## 9. Meaningfully stronger run — pre-submission upgrade actions
+
+If GPU time and Meta-approved HuggingFace access allow, two actions would materially strengthen the paper's empirical surface beyond what's in the cached `docs/dataset/data/raw/` JSONs. These are pre-submission upgrades — if either lands by 2026-05-24, the paper can cite the empirical observation directly in §6 / §A.4 rather than relying on the structural argument alone.
+
+### Action 9.1 — Run one depth=10 MCTS end-to-end and observe peak memory
+
+**Why:** Track D's "depth-independent 3.04× M_KV" claim is currently demonstrated *structurally* (three identical static accumulator allocations measured three times) and *circumstantially* (the depth-3 searches in Tracks F and G completed without OOM). The paper claims the bound holds at depth=10 with 1,700 nodes (the Track D config `(d=10, b=3, n=1700)`). That depth has not been empirically run end-to-end. A reviewer's strongest attack is exactly this gap: "you measured three copies of the same depth-3 static state and called it depth-independent."
+
+**What:** Add ~30 lines to `scripts/measure_kv_mcts_vram.py` (or write a new `scripts/measure_kv_mcts_depth10.py`) that:
+
+1. Loads `meta-llama/Llama-3.2-1B-Instruct` and seeds a 4,000-token prompt (same setup as Track D)
+2. Allocates `FP32Accumulator.from_kv_cache(...)` at root
+3. Runs **1,700 actual `apply` / `rollback` cycles** at depth ∈ {1, ..., 10} steering levels, on real KV tensors
+4. Polls `torch.cuda.max_memory_allocated()` every ~100 cycles (and after the loop) to record the running peak
+5. Asserts the observed peak does not materially exceed the static `full_step_peak_mib_median` (≈3,118 MiB at 1B) — i.e., that no per-node memory leak occurs over 1,700 iterations
+
+**Pass criteria:**
+- 1,700 cycles complete without OOM
+- Observed peak ≤ 1.05 × the static `full_step_peak_mib` (5% allocator-fragmentation tolerance)
+- `K_base, V_base, K_accum, V_accum` survive the cycles with byte-for-byte invariance at the start of each rollback (the Theorem 1 zero-drift assertion holds at scale)
+
+**Wall:** ~1-2 hours on RTX 3060 (1B model). Less on H100. Could be parallelized: 200 paths of depth 10 each ≈ 2,000 cycles on a single GPU.
+
+**Resulting paper claim:** "We empirically validate depth-independence by running 1,700 apply/rollback cycles end-to-end on Llama-3.2-1B; observed peak memory is X.XX × M_KV, within 5% of the structurally predicted bound." This converts the strongest reviewer attack from "you didn't measure it" into "we measured it; here's the number."
+
+### Action 9.2 — Report the step-peak transient alongside the steady-state in §6 / Proposition 1
+
+**Why:** The paper currently headlines the steady-state factor (3.04-3.06× M_KV) but the same Track D JSON also captures `full_step_peak_mib_median` showing a transient peak of ~5 × M_KV during the in-place apply. The transient is what an H100 or any GPU actually needs to hold; the steady-state is the resting floor after each apply completes. A reviewer sizing the 20B projection from 3.04× alone would underestimate by ~60%.
+
+**What:** Add a single column to Track D's reporting table (or one paragraph in §6 / §A.4 of the paper) reporting:
+
+| Scale | Steady-state | Step-peak (transient) | Step-peak − steady-state |
+|---|---:|---:|---:|
+| 1B | 3.06 × M_KV | 4.98 × M_KV | 1.92 × M_KV (one layer's `α·d_K` temporary) |
+| 3B | 3.04 × M_KV | TBD (re-read JSON) | TBD |
+
+Reading the existing JSON's `full_step_peak_mib_runs` field is sufficient — no new GPU work required. ~30 minutes of paper-text edit.
+
+**Resulting paper claim:** "The bound is 3.04 × M_KV at steady state, with transient peaks during in-place apply reaching ~5 × M_KV (bounded by a single layer's `α·d_K` allocation, also depth-independent). Hardware sizing should plan for the transient." Honest and complete — defuses the "you understated peak memory" attack pre-emptively.
+
+### Optional Action 9.3 — Re-measure Track A combined-bucket Pearson at a longer item budget
+
+**Why:** The Track A combined Pearson is 0.47-0.51 in the cached JSON, but the paper text claims "|r| ≈ 0.60" (which is only true for specific buckets). One way to "rescue" the headline claim would be to verify whether a larger sample reaches 0.60 — the current 85-item budget yields wide confidence intervals and the true |r| could be higher.
+
+**What:** Re-run `scripts/diagnose_track_a_entropy.py` with an expanded factual-recall item set (e.g., 300 items instead of 85), and check whether combined |r| stabilizes around 0.5 or rises toward 0.6.
+
+**Wall:** ~20-30 minutes.
+
+**Outcome:** Either confirms the paper's claim (and the cached 85-item value was just a small-sample fluctuation) or confirms the 0.5 value, in which case the paper text needs a one-word edit (`≈ 0.60` → `≈ 0.50`) or a bucket-specific qualifier.
+
+### How these connect to the smoke run
+
+These three actions are *not* part of the verification protocol in §6 — they're the next-step upgrades after §6 verification passes. The smoke run as written is sufficient to declare "the paper's existing claims reproduce." Actions 9.1-9.3 are about *strengthening* the paper's empirical surface to head off reviewer attacks pre-submission. Prioritize them in order if GPU budget is limited: 9.1 > 9.2 > 9.3.
