@@ -449,7 +449,20 @@ Submission deadline is **2026-05-25** (ARR May). Treat your smoke-run result as 
 
 ## 9. Meaningfully stronger run — pre-submission upgrade actions
 
-If GPU time and Meta-approved HuggingFace access allow, two actions would materially strengthen the paper's empirical surface beyond what's in the cached `docs/dataset/data/raw/` JSONs. These are pre-submission upgrades — if either lands by 2026-05-24, the paper can cite the empirical observation directly in §6 / §A.4 rather than relying on the structural argument alone.
+If GPU time and Meta-approved HuggingFace access allow, three actions would materially strengthen the paper's empirical surface beyond what's in the cached `docs/dataset/data/raw/` JSONs. These are pre-submission upgrades — if any of them lands by 2026-05-24, the paper can cite the empirical observation directly in §6 / §A.4 rather than relying on the structural argument alone.
+
+### Hardware summary
+
+| Action | Min VRAM | Recommended | Wall (RTX 3060) | Wall (H100) | Lambda $ cost |
+|---|---:|---:|---:|---:|---:|
+| 9.1 (depth=10 end-to-end) | 8 GB | 12 GB | ~15 min | ~5 min | ~$0.10 on A10 |
+| 9.2 (paper-text edit) | — (no GPU) | — | 30 min LaTeX | — | $0 |
+| 9.3 (Track A re-measure at 300 items) | 8 GB | 12 GB | ~15 min | ~5 min | ~$0.10 on A10 |
+| **All three** | **8 GB** | **12 GB** | **~30 min GPU + 30 min paper edit** | **~10 min GPU + 30 min paper edit** | **<$0.50** |
+
+None of these need expensive cloud hardware — any consumer NVIDIA card with 8 GB VRAM running CUDA suffices. On Lambda Cloud, an A10 (24 GB, ~$0.50/hr) clears all three for under a dollar; an H100 ($2-3/hr) is overkill at these scales and would only save ~20 minutes wall.
+
+Peak VRAM at 1B Llama-3.2 is ~3.1 GB (matches the cached `full_step_peak_mib_median`). At 3B Llama-3.2 it's ~6-7 GB. The 12 GB recommendation is for headroom; the actual workloads are far below it.
 
 ### Action 9.1 — Run one depth=10 MCTS end-to-end and observe peak memory
 
@@ -468,7 +481,7 @@ If GPU time and Meta-approved HuggingFace access allow, two actions would materi
 - Observed peak ≤ 1.05 × the static `full_step_peak_mib` (5% allocator-fragmentation tolerance)
 - `K_base, V_base, K_accum, V_accum` survive the cycles with byte-for-byte invariance at the start of each rollback (the Theorem 1 zero-drift assertion holds at scale)
 
-**Wall:** ~1-2 hours on RTX 3060 (1B model). Less on H100. Could be parallelized: 200 paths of depth 10 each ≈ 2,000 cycles on a single GPU.
+**Wall:** ~15 minutes on RTX 3060 (1B model, with 1-token forward pass per node). ~5 minutes on H100. Could also be run as apply/rollback math only (no forward pass) in ~1-2 minutes if you only want to test memory invariance of the accumulator math itself; the realistic test with forward passes per node is the one that exposes any allocator-fragmentation growth during a deep search and is the meaningful upgrade.
 
 **Resulting paper claim:** "We empirically validate depth-independence by running 1,700 apply/rollback cycles end-to-end on Llama-3.2-1B; observed peak memory is X.XX × M_KV, within 5% of the structurally predicted bound." This converts the strongest reviewer attack from "you didn't measure it" into "we measured it; here's the number."
 
@@ -493,7 +506,7 @@ Reading the existing JSON's `full_step_peak_mib_runs` field is sufficient — no
 
 **What:** Re-run `scripts/diagnose_track_a_entropy.py` with an expanded factual-recall item set (e.g., 300 items instead of 85), and check whether combined |r| stabilizes around 0.5 or rises toward 0.6.
 
-**Wall:** ~20-30 minutes.
+**Wall:** ~15 minutes on RTX 3060 for 1B + 3B at 300 items each (linear extrapolation from the cached 85-item Track A run that took 116 sec / 134 sec per scale).
 
 **Outcome:** Either confirms the paper's claim (and the cached 85-item value was just a small-sample fluctuation) or confirms the 0.5 value, in which case the paper text needs a one-word edit (`≈ 0.60` → `≈ 0.50`) or a bucket-specific qualifier.
 
